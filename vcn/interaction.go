@@ -275,31 +275,22 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 	reader := bufio.NewReader(os.Stdin)
 
 	if !acknowledge {
-		output := "\n" +
-			"vChain CodeNotary - code signing made easy:\n" +
-			"-------------------------------------------\n" +
-			"Attention, by signing this artifact you implicitly claim its ownership.\n" +
-			"Doing this can potentially infringe other publisher's intellectual\n" +
-			"property under the laws of your country of residence.\n" +
-			"vChain, CodeNotary and the Zero Trust Consortium cannot be\n" +
-			"held responsible for legal ramifications.\n\n"
-
-		fmt.Println(output)
-
+		fmt.Println("CodeNotary - code signing in 1 simple step:")
+		fmt.Println()
+		fmt.Println("Attention, by signing this asset with CodeNotary you implicitly claim its ownership.")
+		fmt.Println("Doing this can potentially infringe other publisher's intellectual property under the laws of your country of residence.")
+		fmt.Println("vChain and the Zero Trust Consortium cannot be held responsible for legal ramifications.")
 		color.Set(color.FgGreen)
-		fmt.Println("It's safe to continue if you are the owner of the asset,\ne.g. author, creator, publisher.")
+		fmt.Println()
+		fmt.Println("If you are the owner of the asset (e.g. author, creator, publisher) you can continue")
 		color.Unset()
-		fmt.Print("\nDo you understand and want to continue? (y/N):")
-
+		fmt.Println()
+		fmt.Print("I understand and want to continue. (y/n)")
 		question, _ := reader.ReadString('\n')
-
 		if strings.ToLower(strings.TrimSpace(question)) != "y" {
-
-			fmt.Println("Ok - exiting.")
-			os.Exit(0)
+			os.Exit(1)
 		}
 	}
-
 	fmt.Print("Keystore passphrase:")
 	passphrase, err := terminal.ReadPassword(int(syscall.Stdin))
 	fmt.Println(".")

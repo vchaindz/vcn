@@ -26,8 +26,8 @@ func main() {
 	InitLogging()
 	CreateVcnDirectories()
 	app := cli.NewApp()
-	app.Name = "vcn"
-	app.Usage = "code signing made easy"
+	app.Name = "CodeNotary vcn"
+	app.Usage = "code signing in 1 simple step"
 	app.Version = VcnVersion
 	app.Commands = []cli.Command{
 		{
