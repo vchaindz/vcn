@@ -357,14 +357,14 @@ func verify(filename string) (success bool) {
 	} else {
 		artifactHash = strings.TrimSpace(hash(filename))
 	}
-	if err := TrackVerify(artifactHash, filename); err != nil {
+	if err := TrackVerify(artifactHash, filepath.Base(filename)); err != nil {
 		log.Fatal("TrackVerify failed", err)
 	}
 	verification, err := BlockChainVerify(artifactHash)
 	if err != nil {
 		log.Fatal("unable to verify hash", err)
 	}
-	fmt.Println("Asset:\t", filename)
+	fmt.Println("Asset:\t", filepath.Base(filename))
 	fmt.Println("Hash:\t", artifactHash)
 
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
