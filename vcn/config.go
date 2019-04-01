@@ -70,16 +70,20 @@ func AssetsRelayContractAddress() string {
 	}
 }
 
-func StyleAffordance() (color.Attribute, color.Attribute, color.Attribute) {
-	return color.FgHiBlue, color.BgWhite, color.Bold
+func StyleAffordance() (color.Attribute, color.Attribute) {
+	return color.FgHiBlue, color.Bold
 }
 
-func StyleError() (color.Attribute, color.Attribute, color.Attribute) {
-	return color.FgHiRed, color.BgHiWhite, color.Bold
+func StyleError() (color.Attribute, color.Attribute) {
+	return color.FgRed, color.Bold
 }
 
-func StyleSuccess() (color.Attribute, color.Attribute, color.Attribute) {
-	return color.FgHiWhite, color.BgHiCyan, color.Bold
+func StyleWarning() (color.Attribute, color.Attribute) {
+	return color.FgYellow, color.Bold
+}
+
+func StyleSuccess() (color.Attribute, color.Attribute) {
+	return color.FgGreen, color.Bold
 }
 
 func ErrorWikiURL() string {

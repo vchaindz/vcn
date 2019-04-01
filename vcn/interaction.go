@@ -394,6 +394,9 @@ func verify(filename string) (success bool) {
 	if verification.Status == StatusTrusted {
 		color.Set(StyleSuccess())
 		success = true
+	} else if verification.Status == StatusUnknown {
+		color.Set(StyleWarning())
+		success = false
 	} else {
 		color.Set(StyleError())
 		success = false
