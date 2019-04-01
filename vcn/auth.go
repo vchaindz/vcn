@@ -57,7 +57,7 @@ func CheckPublisherExists(email string) (ret bool) {
 	restError := new(Error)
 
 	r, err := sling.New().
-		Get(PublisherEndpoint() + "/exists").
+		Get(PublisherEndpoint()+"/exists").
 		QueryStruct(params).
 		Receive(&response, restError)
 
@@ -99,11 +99,11 @@ func CheckToken(token string) (ret bool) {
 	case 403:
 		LOG.WithFields(logrus.Fields{
 			"error": err,
-		}).Error("Token not found")
+		}).Debug("Token not found")
 	case 419:
 		LOG.WithFields(logrus.Fields{
 			"error": err,
-		}).Error("Token expired")
+		}).Debug("Token expired")
 	case 200:
 		return true
 	}
@@ -120,7 +120,7 @@ func Authenticate(email string, password string) (ret bool, code int) {
 	authError := new(Error)
 
 	r, err := sling.New().
-		Post(PublisherEndpoint() + "/auth").
+		Post(PublisherEndpoint()+"/auth").
 		BodyJSON(AuthRequest{Email: email, Password: password}).
 		Receive(token, authError)
 	if err != nil {
