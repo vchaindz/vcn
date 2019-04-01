@@ -22,6 +22,7 @@ import (
 func main() {
 	var publicSigning bool
 	var quit bool
+	var acknowledge bool
 	InitLogging()
 	CreateVcnDirectories()
 	app := cli.NewApp()
@@ -55,12 +56,13 @@ func main() {
 				if c.NArg() == 0 {
 					return fmt.Errorf("filename or type:reference required")
 				}
-				Sign(c.Args().First(), StatusTrusted, VisibilityForFlag(publicSigning), quit)
+				Sign(c.Args().First(), StatusTrusted, VisibilityForFlag(publicSigning), quit, acknowledge)
 				return nil
 			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{Name: "public, p", Destination: &publicSigning},
 				cli.BoolTFlag{Name: "quit, q", Destination: &quit},
+				cli.BoolFlag{Name: "yes, y", Destination: &acknowledge},
 			},
 		},
 		{
@@ -72,12 +74,13 @@ func main() {
 				if c.NArg() == 0 {
 					return fmt.Errorf("filename or type:reference required")
 				}
-				Sign(c.Args().First(), StatusUntrusted, VisibilityForFlag(publicSigning), quit)
+				Sign(c.Args().First(), StatusUntrusted, VisibilityForFlag(publicSigning), quit, acknowledge)
 				return nil
 			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{Name: "public, p", Destination: &publicSigning},
 				cli.BoolTFlag{Name: "quit, q", Destination: &quit},
+				cli.BoolFlag{Name: "yes, y", Destination: &acknowledge},
 			},
 		},
 		{
@@ -89,12 +92,13 @@ func main() {
 				if c.NArg() == 0 {
 					return fmt.Errorf("filename or type:reference required")
 				}
-				Sign(c.Args().First(), StatusUnsupported, VisibilityForFlag(publicSigning), quit)
+				Sign(c.Args().First(), StatusUnsupported, VisibilityForFlag(publicSigning), quit, acknowledge)
 				return nil
 			},
 			Flags: []cli.Flag{
 				cli.BoolFlag{Name: "public, p", Destination: &publicSigning},
 				cli.BoolTFlag{Name: "quit, q", Destination: &quit},
+				cli.BoolFlag{Name: "yes, y", Destination: &acknowledge},
 			},
 		},
 		{

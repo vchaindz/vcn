@@ -229,7 +229,7 @@ func login(in *os.File) {
 }
 
 // Commit => "sign"
-func Sign(filename string, state Status, visibility Visibility, quit bool) {
+func Sign(filename string, state Status, visibility Visibility, quit bool, acknowledge bool) {
 
 	// check for token
 	token, _ := LoadToken()
@@ -274,28 +274,30 @@ func Sign(filename string, state Status, visibility Visibility, quit bool) {
 
 	reader := bufio.NewReader(os.Stdin)
 
-	output := "\n" +
-		"vChain CodeNotary - code signing made easy:\n" +
-		"-------------------------------------------\n" +
-		"Attention, by signing this artifact you implicitly claim its ownership.\n" +
-		"Doing this can potentially infringe other publisher's intellectual\n" +
-		"property under the laws of your country of residence.\n" +
-		"vChain, CodeNotary and the Zero Trust Consortium cannot be\n" +
-		"held responsible for legal ramifications.\n\n"
+	if !acknowledge {
+		output := "\n" +
+			"vChain CodeNotary - code signing made easy:\n" +
+			"-------------------------------------------\n" +
+			"Attention, by signing this artifact you implicitly claim its ownership.\n" +
+			"Doing this can potentially infringe other publisher's intellectual\n" +
+			"property under the laws of your country of residence.\n" +
+			"vChain, CodeNotary and the Zero Trust Consortium cannot be\n" +
+			"held responsible for legal ramifications.\n\n"
 
-	fmt.Println(output)
+		fmt.Println(output)
 
-	color.Set(color.FgGreen)
-	fmt.Println("It's safe to continue if you are the owner of the artif,\ne.g. author, creator, publisher.")
-	color.Unset()
-	fmt.Print("\nDo you understand and want to continue? (y/N):")
+		color.Set(color.FgGreen)
+		fmt.Println("It's safe to continue if you are the owner of the asset,\ne.g. author, creator, publisher.")
+		color.Unset()
+		fmt.Print("\nDo you understand and want to continue? (y/N):")
 
-	question, _ := reader.ReadString('\n')
+		question, _ := reader.ReadString('\n')
 
-	if strings.ToLower(strings.TrimSpace(question)) != "y" {
+		if strings.ToLower(strings.TrimSpace(question)) != "y" {
 
-		fmt.Println("Ok - exiting.")
-		os.Exit(0)
+			fmt.Println("Ok - exiting.")
+			os.Exit(0)
+		}
 	}
 
 	fmt.Print("Keystore passphrase:")
