@@ -350,9 +350,7 @@ func verify(filename string) (success bool) {
 	} else {
 		artifactHash = strings.TrimSpace(hash(filename))
 	}
-	if err := TrackVerify(artifactHash, filepath.Base(filename)); err != nil {
-		log.Fatal("TrackVerify failed", err)
-	}
+	_ = TrackVerify(artifactHash, filepath.Base(filename))
 	verification, err := BlockChainVerify(artifactHash)
 	if err != nil {
 		log.Fatal("unable to verify hash", err)
