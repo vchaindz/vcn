@@ -137,6 +137,10 @@ func main() {
 			},
 		},
 	}
+	app.CommandNotFound = func(c *cli.Context, command string) {
+		fmt.Println("No such command:", command)
+		_ = cli.ShowAppHelp(c)
+	}
 	LOG.WithFields(logrus.Fields{
 		"version": VcnVersion,
 		"stage":   StageName(StageEnvironment()),
