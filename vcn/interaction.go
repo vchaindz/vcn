@@ -291,11 +291,18 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 			os.Exit(1)
 		}
 	}
-	fmt.Print("Keystore passphrase:")
-	passphrase, err := terminal.ReadPassword(int(syscall.Stdin))
-	fmt.Println(".")
-	if err != nil {
-		log.Fatal(err)
+	var passphrase string
+	envPassword := os.Getenv("VCN_PASSWORD")
+	if envPassword == "" {
+		fmt.Print("Keystore passphrase:")
+		passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
+		fmt.Println(".")
+		if err != nil {
+			log.Fatal(err)
+		}
+		passphrase = string(passphraseBytes)
+	} else {
+		passphrase = envPassword
 	}
 
 	go displayLatency()
@@ -304,7 +311,7 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 	_ = TrackSign(artifactHash, filepath.Base(filename), state)
 
 	// TODO: return and display: block #, trx #
-	_, _ = commitHash(artifactHash, string(passphrase), filepath.Base(filename), fileSize, state, visibility)
+	_, _ = commitHash(artifactHash, passphrase, filepath.Base(filename), fileSize, state, visibility)
 	fmt.Println("")
 	fmt.Println("Asset:\t", filename)
 	fmt.Println("Hash:\t", artifactHash)
