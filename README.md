@@ -75,6 +75,13 @@ $> vcn sign <file>
 $> vcn sign docker:<image>
 ```
 
+By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the -public switch.
+
+```
+$> vcn sign -public <file>
+$> vcn sign -public docker:<image>
+```
+
 Change the asset's status
 
 ```
