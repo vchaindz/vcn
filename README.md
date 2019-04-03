@@ -64,29 +64,29 @@ $> vcn login
 You're good to use `verify` without the above registration.
 
 ```
-$> vcn verify <file>
+$> vcn verify <asset>
 $> vcn verify docker:<imageId>
 ```
 
 Once your public key is known on the blockchain you can sign assets:
 
 ```
-$> vcn sign <file>
+$> vcn sign <asset>
 $> vcn sign docker:<image>
 ```
 
 By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the --public switch.
 
 ```
-$> vcn sign --public <file>
+$> vcn sign --public <asset>
 $> vcn sign --public docker:<image>
 ```
 
 Change the asset's status
 
 ```
-$> vcn unsupport <file>
-$> vcn untrust <file>
+$> vcn unsupport <asset>
+$> vcn untrust <asset>
 ```
 
 Have a look at analytics and extended functionality on the dashboard (browser needed):
@@ -111,7 +111,7 @@ $> vcn verify docker:hello-world && docker run hello-world
 ```
 
 ```
-# verify multiple files by piping other commands' outputs into vcn
+# verify multiple assets by piping other commands' outputs into vcn
 $> ls | xargs vcn verify
 ```
 
@@ -121,7 +121,7 @@ $> ls | xargs vcn verify
 $> LOG_LEVEL=TRACE vcn login
 
 # or with a proxy
-$> HTTP_PROXY=http://localhost:3128 vcn verify <file>
+$> HTTP_PROXY=http://localhost:3128 vcn verify <asset>
 ```
 
 ## Development
