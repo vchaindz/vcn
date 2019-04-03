@@ -362,11 +362,8 @@ func verify(filename string) (success bool) {
 	if err != nil {
 		log.Fatal("unable to verify hash", err)
 	}
-	fmt.Println("Asset:\t", filepath.Base(filename))
-	fmt.Println("Hash:\t", artifactHash)
 
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		fmt.Println("Date:\t", verification.Timestamp)
 		metaHash, err := hashAsset(artifactHash)
 		if err != nil {
 			log.Fatal("Unable to calculate metahash")
@@ -375,18 +372,26 @@ func verify(filename string) (success bool) {
 		if err != nil {
 			log.Fatal("Unable to resolve metahash")
 		}
-		if artifact != nil && artifact.Visibility == "PUBLIC" {
+		if artifact.Visibility == "PUBLIC" {
+			fmt.Println("Asset:\t", artifact.Filename)
+			fmt.Println("Hash:\t", artifactHash)
+			fmt.Println("Date:\t", verification.Timestamp)
 			fmt.Println("Signer:\t", artifact.Publisher)
 			fmt.Println("Name:\t", artifact.Name)
-			fmt.Println("File:\t", artifact.Filename)
-		} else {
-			fmt.Println("Signer:\t", verification.Owner.Hex())
+			fmt.Println("Level:\t", LevelName(verification.Level))
 		}
-		fmt.Println("Level:\t", LevelName(verification.Level))
-
+		if artifact.Visibility == "PRIVATE" {
+			fmt.Println("Asset:\t", filepath.Base(filename))
+			fmt.Println("Hash:\t", artifactHash)
+			fmt.Println("Date:\t", verification.Timestamp)
+			fmt.Println("Signer:\t", verification.Owner.Hex())
+			fmt.Println("Level:\t", LevelName(verification.Level))
+		}
 	} else {
-		fmt.Println("Signer:\t NA")
-		fmt.Println("Level:\t NA")
+		fmt.Println("Asset:\t", filepath.Base(filename))
+		fmt.Println("Hash:\t", artifactHash)
+		fmt.Println("Signer:\t", "NA")
+		fmt.Println("Level:\t", "NA")
 	}
 	fmt.Print("Status:\t ")
 	if verification.Status == StatusTrusted {
