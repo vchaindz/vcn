@@ -33,14 +33,19 @@ type PagedArtifactResponse struct {
 }
 
 type ArtifactResponse struct {
-	Name       string `json:"name"`
-	Hash       string `json:"hash"`
-	Filename   string `json:"filename"`
-	Level      int    `json:"level"`
-	Visibility string `json:"visibility"`
-	Status     string `json:"status"`
-	Publisher  string `json:"publisher"`
-	CreatedAt  string `json:"createdAt"`
+	Name               string `json:"name"`
+	Hash               string `json:"hash"`
+	Filename           string `json:"filename"`
+	FileSize           uint64 `json:"fileSize"`
+	Url                string `json:"url"`
+	License            string `json:"license"`
+	Level              int64  `json:"level"`
+	Visibility         string `json:"visibility"`
+	Status             string `json:"status"`
+	Publisher          string `json:"publisher"`
+	CountVerifications uint64 `json:"countVerifications"`
+	CountConflicts     uint64 `json:"countConflicts"`
+	CreatedAt          string `json:"createdAt"`
 }
 
 func (a ArtifactResponse) String() string {
@@ -112,7 +117,7 @@ func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 	return response.Content, nil
 }
 
-func LoadArtifactsForHash(hash string, metahash string) (*ArtifactResponse, error) {
+func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error) {
 	response := new(ArtifactResponse)
 	restError := new(Error)
 	token, err := LoadToken()
@@ -120,7 +125,7 @@ func LoadArtifactsForHash(hash string, metahash string) (*ArtifactResponse, erro
 		log.Fatal(err)
 	}
 	r, err := sling.New().
-		Get(ArtifactEndpoint() + "/" + hash + "/" + metahash).
+		Get(ArtifactEndpoint()+"/"+hash+"/"+metahash).
 		Add("Authorization", "Bearer "+token).
 		Receive(&response, restError)
 	if err != nil {

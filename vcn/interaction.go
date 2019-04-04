@@ -24,6 +24,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fatih/color"
 	"github.com/pkg/browser"
@@ -363,21 +364,21 @@ func verify(filename string) (success bool) {
 		log.Fatal("unable to verify hash", err)
 	}
 
+	var artifact *ArtifactResponse
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		metaHash, err := hashAsset(artifactHash)
-		if err != nil {
-			log.Fatal("Unable to calculate metahash")
+		metaHash, _ := hashAsset(artifactHash)
+		if metaHash != "" {
+			artifact, _ = LoadArtifactForHash(artifactHash, metaHash)
 		}
-		artifact, err := LoadArtifactsForHash(artifactHash, metaHash)
-		if err != nil {
-			log.Fatal("Unable to resolve metahash")
-		}
+	}
+	if artifact != nil {
 		if artifact.Visibility == "PUBLIC" {
 			fmt.Println("Asset:\t", artifact.Filename)
 			fmt.Println("Hash:\t", artifactHash)
 			fmt.Println("Date:\t", verification.Timestamp)
 			fmt.Println("Signer:\t", artifact.Publisher)
 			fmt.Println("Name:\t", artifact.Name)
+			fmt.Println("Size:\t", humanize.Bytes(artifact.FileSize))
 			fmt.Println("Level:\t", LevelName(verification.Level))
 		}
 		if artifact.Visibility == "PRIVATE" {
@@ -385,13 +386,23 @@ func verify(filename string) (success bool) {
 			fmt.Println("Hash:\t", artifactHash)
 			fmt.Println("Date:\t", verification.Timestamp)
 			fmt.Println("Signer:\t", verification.Owner.Hex())
+			fmt.Println("Visibility:\t", "Private")
+			fmt.Println("Name:\t", "NA")
+			fmt.Println("Size:\t", "NA")
 			fmt.Println("Level:\t", LevelName(verification.Level))
 		}
 	} else {
 		fmt.Println("Asset:\t", filepath.Base(filename))
 		fmt.Println("Hash:\t", artifactHash)
 		fmt.Println("Signer:\t", "NA")
+		if verification.Timestamp != time.Unix(0, 0) {
+			fmt.Println("Date:\t", verification.Timestamp)
+		} else {
+			fmt.Println("Date:\t", "NA")
+		}
 		fmt.Println("Level:\t", "NA")
+		fmt.Println("Name:\t", "NA")
+		fmt.Println("Size:\t", "NA")
 	}
 	fmt.Print("Status:\t ")
 	if verification.Status == StatusTrusted {
