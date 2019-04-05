@@ -122,7 +122,7 @@ func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error
 	restError := new(Error)
 	token, err := LoadToken()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	r, err := sling.New().
 		Get(ArtifactEndpoint()+"/"+hash+"/"+metahash).
