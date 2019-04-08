@@ -54,7 +54,8 @@ func (a ArtifactResponse) String() string {
 		a.Name, a.Hash, a.Status)
 }
 
-func CreateArtifact(walletAddress string, name string, hash string, fileSize int64, visibility Visibility, status Status) error {
+func CreateArtifact(verification *BlockchainVerification, walletAddress string,
+	name string, hash string, fileSize int64, visibility Visibility, status Status) error {
 	restError := new(Error)
 	token, err := LoadToken()
 	if err != nil {
@@ -62,10 +63,7 @@ func CreateArtifact(walletAddress string, name string, hash string, fileSize int
 		PrintErrorURLCustom("sign", 404)
 		os.Exit(1)
 	}
-	metaHash, err := hashAsset(hash)
-	if err != nil {
-		log.Fatal("unable to hash asset", err)
-	}
+	metaHash := hashAsset(verification)
 	r, err := sling.New().
 		Post(ArtifactEndpointForWallet(walletAddress)).
 		Add("Authorization", "Bearer "+token).

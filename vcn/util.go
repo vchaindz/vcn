@@ -93,11 +93,7 @@ func formatErrorURLByEndpoint(resource string, verb string, status int) string {
 
 }
 
-func hashAsset(assetHash string) (metadataHash string, err error) {
-	verification, err := BlockChainVerify(assetHash)
-	if err != nil {
-		return "", err
-	}
+func hashAsset(verification *BlockchainVerification) string {
 	metadata := fmt.Sprintf("%s-%d-%d-%d",
 		verification.Owner.Hex(),
 		int64(verification.Level),
@@ -107,5 +103,5 @@ func hashAsset(assetHash string) (metadataHash string, err error) {
 	LOG.WithFields(logrus.Fields{
 		"metahash": metadata,
 	}).Trace("Generated metahash")
-	return fmt.Sprintf("%x", metadataHashAsBytes), nil
+	return fmt.Sprintf("%x", metadataHashAsBytes)
 }

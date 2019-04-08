@@ -66,7 +66,7 @@ func LevelName(level Level) (name string) {
 		return "99 - VCHAIN"
 	default:
 		log.Fatal("unsupported level", name)
-		return "";
+		return ""
 	}
 }
 
@@ -82,7 +82,7 @@ func StatusName(status Status) (name string) {
 		return "UNSUPPORTED"
 	default:
 		log.Fatal("unsupported status", name)
-		return "";
+		return ""
 	}
 }
 

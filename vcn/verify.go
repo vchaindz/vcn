@@ -9,6 +9,8 @@
 package main
 
 import (
+	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -49,4 +51,38 @@ func BlockChainVerify(hash string) (verification *BlockchainVerification, err er
 		WithField("verification", verification).
 		Trace("Received blockchain verification")
 	return verification, nil
+}
+
+func BlockChainVerifyMatchingPublicKey(hash string, publicKey string) (verification *BlockchainVerification, err error) {
+	LOG.WithFields(logrus.Fields{
+		"hash": hash,
+	}).Trace("BlockChainVerifyMatchingPublicKey")
+	client, err := ethclient.Dial(MainNetEndpoint())
+	if err != nil {
+		return nil, err
+	}
+	contractAddress := common.HexToAddress(AssetsRelayContractAddress())
+	instance, err := NewAssetsRelay(contractAddress, client)
+	if err != nil {
+		return nil, err
+	}
+	count, err := instance.GetAssetCountForHash(nil, hash)
+	if err != nil {
+		return nil, err
+	}
+	for i := count.Int64() - 1; i >= 0; i-- {
+		address, level, status, timestamp, err := instance.VerifyByIndex(nil, hash, big.NewInt(i))
+		if err != nil {
+			return nil, err
+		}
+		if address.Hex() == publicKey {
+			return &BlockchainVerification{
+				Owner:     address,
+				Level:     Level(level.Int64()),
+				Status:    Status(status.Int64()),
+				Timestamp: time.Unix(timestamp.Int64(), 0),
+			}, nil
+		}
+	}
+	return nil, fmt.Errorf("no matching asset for hash %s and publicKey %s", hash, publicKey)
 }

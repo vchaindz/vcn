@@ -50,13 +50,6 @@ func commitHash(hash string, passphrase string, filename string, fileSize int64,
 			"to thank you for your patience.")
 		os.Exit(1)
 	}
-	if err != nil {
-		LOG.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("Could not load contract")
-		PrintErrorURLCustom("sign", 401)
-		os.Exit(1)
-	}
 	transactor.GasLimit = GasLimit()
 	transactor.GasPrice = GasPrice()
 	client, err := ethclient.Dial(MainNetEndpoint())
@@ -98,7 +91,11 @@ func commitHash(hash string, passphrase string, filename string, fileSize int64,
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = CreateArtifact(publicKey, filename, hash, fileSize, visibility, status)
+	verification, err := BlockChainVerifyMatchingPublicKey(hash, transactor.From.Hex())
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = CreateArtifact(verification, publicKey, filename, hash, fileSize, visibility, status)
 	if err != nil {
 		log.Fatal(err)
 	}

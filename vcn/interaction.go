@@ -366,7 +366,7 @@ func verify(filename string) (success bool) {
 
 	var artifact *ArtifactResponse
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		metaHash, _ := hashAsset(artifactHash)
+		metaHash := hashAsset(verification)
 		if metaHash != "" {
 			artifact, _ = LoadArtifactForHash(artifactHash, metaHash)
 		}
