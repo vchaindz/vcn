@@ -40,12 +40,12 @@ func TrackVerify(hash string, filename string) (err error) {
 	restError := new(Error)
 	token, _ := LoadToken()
 	r, err := NewSling(token).
-		Post(TrackingEvent() + "/verify").
+		Post(TrackingEvent()+"/verify").
 		BodyJSON(VerifyArtifactTrackingEventRequest{
 			Client:   VcnClientName(),
 			Filename: filename,
 			Hash:     hash,
-		}).Receive(nil, &restError)
+		}).Receive(nil, restError)
 	if err != nil {
 		return err
 	}
@@ -65,10 +65,10 @@ func TrackPublisher(event string) (err error) {
 		return err
 	}
 	r, err := NewSling(token).
-		Post(TrackingEvent() + "/publisher").
+		Post(TrackingEvent()+"/publisher").
 		BodyJSON(PublisherTrackingEventRequest{
 			Name: event,
-		}).Receive(nil, &restError)
+		}).Receive(nil, restError)
 	if err != nil {
 		return err
 	}
@@ -90,12 +90,12 @@ func TrackSign(hash string, filename string, status Status) (err error) {
 		return err
 	}
 	r, err := NewSling(token).
-		Post(TrackingEvent() + "/sign").
+		Post(TrackingEvent()+"/sign").
 		BodyJSON(SignArtifactTrackingEventRequest{
 			Name:     StatusName(status),
 			Hash:     hash,
 			Filename: filename,
-		}).Receive(nil, &restError)
+		}).Receive(nil, restError)
 	if err != nil {
 		return err
 	}

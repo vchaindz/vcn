@@ -75,40 +75,23 @@ func CheckPublisherExists(email string) (ret bool) {
 	return response.Exists
 }
 
-func CheckToken(token string) (ret bool) {
-
-	if token == "" {
-		LOG.Debug("Token not provided")
-		return false
-	}
-
+func CheckToken(token string) (ret bool, err error) {
 	restError := new(Error)
-
-	r, err := sling.New().
+	r, err := NewSling(token).
 		Get(TokenCheckEndpoint()).
-		Add("Authorization", "Bearer "+token).
 		Receive(nil, restError)
-
+	LOG.WithFields(logrus.Fields{
+		"err":       err,
+		"restError": restError,
+	}).Trace("CheckToken")
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
-			"error": err,
-		}).Debug("Token invalid")
-		return false
+		return false, err
 	}
-	switch r.StatusCode {
-	case 403:
-		LOG.WithFields(logrus.Fields{
-			"error": err,
-		}).Debug("Token not found")
-	case 419:
-		LOG.WithFields(logrus.Fields{
-			"error": err,
-		}).Debug("Token expired")
-	case 200:
-		return true
+	if r.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, fmt.Errorf("authentication failed: %+v", restError)
 	}
-
-	return false
 }
 
 func Authenticate(email string, password string) (ret bool, code int) {

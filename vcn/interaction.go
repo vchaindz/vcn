@@ -62,7 +62,7 @@ func login(in *os.File) {
 	// synckeys
 
 	token, _ := LoadToken()
-	tokenValid := CheckToken(token)
+	tokenValid, _ := CheckToken(token)
 
 	if tokenValid == false {
 		var email string
@@ -234,9 +234,10 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 
 	// check for token
 	token, _ := LoadToken()
-	if token == "" {
+	checkOk, _ := CheckToken(token)
+	if !checkOk {
 		fmt.Println("You need to be logged in to sign.")
-		fmt.Println("Proceed by authenticating yourself using <vcn auth>")
+		fmt.Println("Proceed by authenticating yourself using <vcn login>")
 		// PrintErrorURLCustom("token", 428)
 		os.Exit(1)
 	}
