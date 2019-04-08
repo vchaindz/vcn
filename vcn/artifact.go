@@ -120,13 +120,8 @@ func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error) {
 	response := new(ArtifactResponse)
 	restError := new(Error)
-	token, err := LoadToken()
-	if err != nil {
-		return nil, err
-	}
 	r, err := sling.New().
 		Get(ArtifactEndpoint()+"/"+hash+"/"+metahash).
-		Add("Authorization", "Bearer "+token).
 		Receive(&response, restError)
 	if err != nil {
 		return nil, err
