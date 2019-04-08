@@ -19,6 +19,7 @@ import (
 	"syscall"
 
 	"github.com/fatih/color"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -103,5 +104,8 @@ func hashAsset(assetHash string) (metadataHash string, err error) {
 		int64(verification.Status),
 		int64(verification.Timestamp.Unix()))
 	metadataHashAsBytes := sha256.Sum256([]byte(metadata))
+	LOG.WithFields(logrus.Fields{
+		"metahash": metadata,
+	}).Trace("Generated metahash")
 	return fmt.Sprintf("%x", metadataHashAsBytes), nil
 }

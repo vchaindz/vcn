@@ -45,5 +45,8 @@ func BlockChainVerify(hash string) (verification *BlockchainVerification, err er
 	verification.Level = Level(level.Int64())
 	verification.Status = Status(status.Int64())
 	verification.Timestamp = time.Unix(timestamp.Int64(), 0)
+	LOG.
+		WithField("verification", verification).
+		Trace("Received blockchain verification")
 	return verification, nil
 }
