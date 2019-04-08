@@ -293,7 +293,7 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 		}
 	}
 	var passphrase string
-	envPassword := os.Getenv("VCN_PASSWORD")
+	envPassword := os.Getenv("KEYSTORE_PASSWORD")
 	if envPassword == "" {
 		fmt.Print("Keystore passphrase:")
 		passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
