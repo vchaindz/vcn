@@ -10,18 +10,15 @@ package main
 
 import (
 	"crypto/sha256"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 	"syscall"
 
 	"github.com/fatih/color"
-	"github.com/yalp/jsonpath"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -83,19 +80,6 @@ func formatErrorURLCustom(domain string, status int) string {
 
 }
 
-// PrintErrorURLByEndpoint takes API errors and creates github wiki links
-func PrintErrorURLByEndpoint(resource string, verb string, status int) {
-
-	fmt.Print("Get help for this error at:\n")
-
-	color.Set(StyleError())
-	fmt.Print(formatErrorURLByEndpoint(resource, verb, status))
-	color.Unset()
-
-	fmt.Println()
-	return
-
-}
 func formatErrorURLByEndpoint(resource string, verb string, status int) string {
 
 	errorPage := ErrorWikiURL()
@@ -106,51 +90,6 @@ func formatErrorURLByEndpoint(resource string, verb string, status int) string {
 
 	return fmt.Sprintf("%s%s-%s-%d", errorPage, resource, strings.ToLower(verb), status)
 
-}
-
-func getDockerHash(param string) (hash string) {
-
-	dockerID := strings.Replace(param, "docker:", "", 1)
-
-	// TODO: sanitize even further
-	// so far, let's check dockerID is a string without whitespaces
-	dockerID = strings.Replace(dockerID, " ", "", -1)
-
-	/*
-
-		hash = string(output)
-		hash = strings.Replace(hash, `"`, ``, -1)
-		hash = strings.Replace(hash, "sha256:", "", 1)
-	*/
-
-	cmd := exec.Command("docker", "inspect", dockerID)
-	cmdOutput, err := cmd.Output()
-	if err != nil {
-		fmt.Printf(fmt.Sprintf("Failed to execute docekr inspect command."))
-		fmt.Printf(err.Error())
-		PrintErrorURLCustom("docker", 500)
-		os.Exit(1)
-	}
-
-	// var dockerInspect interface {}
-	dockerIDFilter, err := jsonpath.Prepare("$..Id")
-	if err != nil {
-		panic(err)
-	}
-	var data interface{}
-	if err = json.Unmarshal(cmdOutput, &data); err != nil {
-		panic(err)
-	}
-	out, err := dockerIDFilter(data)
-	if err != nil {
-		panic(err)
-	}
-
-	// out is an interface which needs to be coreced into string array before
-	dockerHash := out.([]interface{})[0]
-	dockerHashStr := strings.TrimSpace(strings.Replace(fmt.Sprint(dockerHash), "sha256:", "", 1))
-
-	return dockerHashStr
 }
 
 func hashAsset(assetHash string) (metadataHash string, err error) {

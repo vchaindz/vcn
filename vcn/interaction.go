@@ -250,19 +250,19 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 		os.Exit(1)
 	}
 
+	var err error
 	var artifactHash string
 	var fileSize int64 = 0
 
-	// artifact types
 	if strings.HasPrefix(filename, "docker:") {
-
-		artifactHash = getDockerHash(filename)
-		// fmt.Printf("Docker: Not yet implemented\n")
-		// os.Exit(1)
-
-	} else if strings.HasPrefix(filename, "git:") {
-		fmt.Printf("git: Not yet implemented\n")
-		os.Exit(1)
+		artifactHash, err = GetDockerHash(filename)
+		if err != nil {
+			log.Fatal("failed to get hash for docker image", err)
+		}
+		fileSize, err = GetDockerSize(filename)
+		if err != nil {
+			log.Fatal("failed to get size for docker image", err)
+		}
 	} else {
 		// file mode
 		artifactHash = hash(filename)
@@ -348,13 +348,13 @@ func VerifyAll(files []string, quit bool) {
 
 func verify(filename string) (success bool) {
 	var artifactHash string
+	var err error
 
-	// TODO: make this switch available for all functions
 	if strings.HasPrefix(filename, "docker:") {
-
-		artifactHash = getDockerHash(filename)
-		// fmt.Printf("Docker: Not yet implemented\n")
-		// os.Exit(1)
+		artifactHash, err = GetDockerHash(filename)
+		if err != nil {
+			log.Fatal("failed to get hash for docker image", err)
+		}
 	} else {
 		artifactHash = strings.TrimSpace(hash(filename))
 	}
@@ -386,7 +386,6 @@ func verify(filename string) (success bool) {
 			fmt.Println("Hash:\t", artifactHash)
 			fmt.Println("Date:\t", verification.Timestamp)
 			fmt.Println("Signer:\t", verification.Owner.Hex())
-			fmt.Println("Visibility:\t", "Private")
 			fmt.Println("Name:\t", "NA")
 			fmt.Println("Size:\t", "NA")
 			fmt.Println("Level:\t", LevelName(verification.Level))
