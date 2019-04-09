@@ -18,7 +18,7 @@ const VERIFIED_USER = "mathias@vchain.us"
 func TestCheckTokenNoInput(t *testing.T) {
 
 	token := ""
-	ret := CheckToken(token)
+	ret, _ := CheckToken(token)
 
 	if ret != false {
 		t.Error(fmt.Sprintf(`CheckToken() with empty string input must return false`))
