@@ -124,22 +124,15 @@ func login(in *os.File) {
 				authenticated, returnCode = Authenticate(email, passwordString)
 
 				if returnCode > 0 {
-
 					if returnCode == 401 {
 						fmt.Println("Please enter a correct password.")
-
 					} else if returnCode == 400 {
-
-						PrintErrorURLCustom("customer-verification", 412)
-
-						LOG.WithFields(logrus.Fields{
-							"code": returnCode,
-						}).Fatal("API request failed: Email not confirmed.")
+						fmt.Println("Your email address was not confirmed.")
+						fmt.Println("Please confirm it by clicking on the link we sent to " + email + ".")
+						fmt.Println("If you did not receive the email, please go to dashboard.codenotary.io and click on the link \"Resend email\"")
 					}
 				}
-
 			}
-
 		} else {
 			fmt.Println("It looks like you have not yet registered.")
 			color.Set(StyleAffordance())

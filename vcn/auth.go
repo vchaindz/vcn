@@ -94,7 +94,7 @@ func CheckToken(token string) (ret bool, err error) {
 	}
 }
 
-func Authenticate(email string, password string) (ret bool, code int) {
+func Authenticate(email string, password string) (ret bool, code int) { // TODO: rework
 
 	if password == "" {
 		return false, 401
