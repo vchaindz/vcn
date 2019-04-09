@@ -43,8 +43,8 @@ type ArtifactResponse struct {
 	Visibility         string `json:"visibility"`
 	Status             string `json:"status"`
 	Publisher          string `json:"publisher"`
-	CountVerifications uint64 `json:"countVerifications"`
-	CountConflicts     uint64 `json:"countConflicts"`
+	CountVerifications uint64 `json:"verificationCount"`
+	CountConflicts     uint64 `json:"publisherCount"`
 	CreatedAt          string `json:"createdAt"`
 }
 
