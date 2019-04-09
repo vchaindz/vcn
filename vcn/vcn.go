@@ -60,9 +60,17 @@ func main() {
 				return nil
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{Name: "public, p", Destination: &publicSigning},
-				cli.BoolTFlag{Name: "quit, q", Destination: &quit},
-				cli.BoolFlag{Name: "yes, y", Destination: &acknowledge},
+				cli.BoolFlag{
+					Name:        "public, p",
+					Usage:       "when signed as public, the asset name and the signer's identity will be visible to everyone",
+					Destination: &publicSigning},
+				cli.BoolTFlag{
+					Name:        "quit, q",
+					Destination: &quit},
+				cli.BoolFlag{
+					Name:        "yes, y",
+					Usage:       "when used, you automatically confirm the ownership of this asset",
+					Destination: &acknowledge},
 			},
 		},
 		{
@@ -78,15 +86,21 @@ func main() {
 				return nil
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{Name: "public, p", Destination: &publicSigning},
+				cli.BoolFlag{
+					Name:        "public, p",
+					Usage:       "when signed as public, the asset name and the signer's identity will be visible to everyone",
+					Destination: &publicSigning},
 				cli.BoolTFlag{Name: "quit, q", Destination: &quit},
-				cli.BoolFlag{Name: "yes, y", Destination: &acknowledge},
+				cli.BoolFlag{
+					Name:        "yes, y",
+					Usage:       "when used, you automatically confirm the ownership of this asset",
+					Destination: &acknowledge},
 			},
 		},
 		{
 			Category: "Artifact actions",
 			Name:     "unsupport",
-			Aliases:  []string{"ut"},
+			Aliases:  []string{"us"},
 			Usage:    "Unsupport a digital asset.",
 			Action: func(c *cli.Context) error {
 				if c.NArg() == 0 {
@@ -96,9 +110,15 @@ func main() {
 				return nil
 			},
 			Flags: []cli.Flag{
-				cli.BoolFlag{Name: "public, p", Destination: &publicSigning},
+				cli.BoolFlag{
+					Name:        "public, p",
+					Usage:       "when signed as public, the asset name and the signer's identity will be visible to everyone",
+					Destination: &publicSigning},
 				cli.BoolTFlag{Name: "quit, q", Destination: &quit},
-				cli.BoolFlag{Name: "yes, y", Destination: &acknowledge},
+				cli.BoolFlag{
+					Name:        "yes, y",
+					Usage:       "when used, you automatically confirm the ownership of this asset",
+					Destination: &acknowledge},
 			},
 		},
 		{
