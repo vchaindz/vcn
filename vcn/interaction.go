@@ -47,33 +47,21 @@ func login(in *os.File) {
 	if in == nil {
 		in = os.Stdin
 	}
-
-	// file system: token exists && api: token is valid
-	// no => enter email
-	//        api: publisher exists
-	//        yes => enter pw
-	//               authenticate()
-	//               fails => retry pw entry up to 3 times
-	//        no  => hint at registration
-	// filesystem: keystore exists
-	// no => createkeystore
-	// synckeys
-
 	token, _ := LoadToken()
 	tokenValid, err := CheckToken(token)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if tokenValid == false {
+	if !tokenValid {
 		email, err := ProvidePlatformUsername()
 		if err != nil {
 			log.Fatal(err)
 		}
-		exists, err := CheckPublisherExists(email)
+		publisherExists, err := CheckPublisherExists(email)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if exists {
+		if publisherExists {
 			password, err := ProvidePlatformPassword()
 			if err != nil {
 				log.Fatal(err)
@@ -83,15 +71,8 @@ func login(in *os.File) {
 				log.Fatal(err)
 			}
 		} else {
-			fmt.Println("It looks like you have not yet registered.")
-			color.Set(StyleAffordance())
-			fmt.Printf("Please create an account first at %s", DashboardURL())
-			color.Unset()
-			fmt.Println()
-			dashboard()
-			os.Exit(1)
+			log.Fatal("no such user. please create an account at: ", DashboardURL())
 		}
-
 	}
 
 	_ = TrackPublisher("VCN_LOGIN")
