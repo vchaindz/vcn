@@ -65,20 +65,10 @@ func login(in *os.File) {
 	tokenValid, _ := CheckToken(token)
 
 	if tokenValid == false {
-		var email string
-
-		fmt.Print("Email address: ")
-		_, err := fmt.Scanln(&email)
+		email, err := ProvideUsername()
 		if err != nil {
 			log.Fatal(err)
 		}
-		email = strings.Trim(email, "\n")
-		email = strings.Trim(email, "\r")
-
-		LOG.WithFields(logrus.Fields{
-			"email": email,
-		}).Trace("Email entered")
-
 		publisherExists := CheckPublisherExists(email)
 
 		if publisherExists {
