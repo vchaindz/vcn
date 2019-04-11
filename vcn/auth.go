@@ -115,7 +115,7 @@ func Authenticate(email string, password string) (ret bool, code int) { // TODO:
 		LOG.WithFields(logrus.Fields{
 			"code":  r.StatusCode,
 			"error": authError.Message,
-		}).Error("API request failed")
+		}).Trace("API request failed")
 
 		return false, authError.Status
 

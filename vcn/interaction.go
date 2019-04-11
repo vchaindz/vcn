@@ -21,7 +21,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -29,7 +28,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/pkg/browser"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 var displayProgress = true
@@ -77,41 +75,17 @@ func login(in *os.File) {
 				"email": email,
 			}).Debug("Publisher exists")
 
-			authenticated := false
-			counter := 0
-
-			for authenticated == false {
-
-				counter++
-				attempt := ""
-				if counter == 2 {
-					attempt = " (next try)"
-				} else if counter == 3 {
-					attempt = " (final try)"
-				} else if counter == 4 {
-					PrintErrorURLCustom("password", 404)
-					os.Exit(1)
-				}
-
-				var passwordString string
-
-				fmt.Printf("Password%s: ", attempt)
-				password, _ := terminal.ReadPassword(int(syscall.Stdin))
-				passwordString = string(password)
-				fmt.Println("")
-
-				returnCode := 0
-				authenticated, returnCode = Authenticate(email, passwordString)
-
-				if returnCode > 0 {
-					if returnCode == 401 {
-						fmt.Println("Please enter a correct password.")
-					} else if returnCode == 400 {
-						fmt.Println("Your email address was not confirmed.")
-						fmt.Println("Please confirm it by clicking on the link we sent to " + email + ".")
-						fmt.Println("If you did not receive the email, please go to dashboard.codenotary.io and click on the link \"Resend email\"")
-					}
-				}
+			password, err := ProvidePlatformPassword()
+			if err != nil {
+				log.Fatal(err)
+			}
+			_, returnCode := Authenticate(email, password)
+			if returnCode == 401 {
+				log.Fatal("Invalid password")
+			} else if returnCode == 400 {
+				log.Fatal("Your email address was not confirmed.\n" +
+					"Please confirm it by clicking on the link we sent to " + email + ".\n" +
+					"If you did not receive the email, please go to dashboard.codenotary.io and click on the link \"Resend email\"")
 			}
 		} else {
 			fmt.Println("It looks like you have not yet registered.")
