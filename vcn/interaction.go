@@ -286,18 +286,10 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 			os.Exit(1)
 		}
 	}
-	var passphrase string
-	envPassword := os.Getenv("KEYSTORE_PASSWORD")
-	if envPassword == "" {
-		fmt.Print("Keystore passphrase:")
-		passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
-		fmt.Println(".")
-		if err != nil {
-			log.Fatal(err)
-		}
-		passphrase = string(passphraseBytes)
-	} else {
-		passphrase = envPassword
+
+	passphrase, err := ProvideKeystorePassword()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	go displayLatency()
