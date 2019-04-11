@@ -11,7 +11,7 @@ import (
 )
 
 func ProvideKeystorePassword() (passphrase string, err error) {
-	passphrase = os.Getenv("KEYSTORE_PASSWORD")
+	passphrase = os.Getenv(KeyStorePasswordEnv)
 	if passphrase != "" {
 		LOG.Trace("Keystore password provided (environment)")
 		return passphrase, nil
@@ -27,7 +27,7 @@ func ProvideKeystorePassword() (passphrase string, err error) {
 }
 
 func ProvidePlatformUsername() (user string, err error) {
-	user = os.Getenv("VCN_USER")
+	user = os.Getenv(VcnUserEnv)
 	if user != "" {
 		LOG.WithFields(logrus.Fields{
 			"username": user,
@@ -50,7 +50,7 @@ func ProvidePlatformUsername() (user string, err error) {
 }
 
 func ProvidePlatformPassword() (password string, err error) {
-	password = os.Getenv("VCN_PASSWORD")
+	password = os.Getenv(VcnPasswordEnv)
 	if password != "" {
 		LOG.Trace("Platform password provided (environment)")
 		return password, nil

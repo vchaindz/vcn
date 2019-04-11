@@ -44,6 +44,20 @@ const (
 	VisibilityPrivate Visibility = 1
 )
 
+const (
+	VcnLoginEvent         string = "VCN_LOGIN"
+	VcnSignEvent          string = "VCN_SIGN"
+	VcnVerifyEvent        string = "VCN_VERIFY"
+	KeyStoreCreatedEvent  string = "KEYSTORE_CREATED"
+	KeyStoreUploadedEvent string = "KEYSTORE_UPLOADED"
+)
+
+const (
+	VcnUserEnv          string = "VCN_USER"
+	VcnPasswordEnv      string = "VCN_PASSWORD"
+	KeyStorePasswordEnv string = "KEYSTORE_PASSWORD"
+)
+
 func VcnClientName() (name string) {
 	return "VCN:" + VcnVersion
 }

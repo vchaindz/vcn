@@ -45,7 +45,7 @@ func CreateKeystore(password string) (pubKey string, wallet string) {
 	pubKey = account.Address.Hex()
 	wallet = WalletDirectory()
 
-	_ = TrackPublisher("KEYSTORE_CREATED")
+	_ = TrackPublisher(KeyStoreCreatedEvent)
 
 	return pubKey, wallet
 }
@@ -149,7 +149,7 @@ func SyncKeys() {
 			authError.Status)
 	}
 
-	_ = TrackPublisher("KEYSTORE_UPLOADED")
+	_ = TrackPublisher(KeyStoreUploadedEvent)
 }
 
 func PublicKeyForLocalWallet() (string, error) {

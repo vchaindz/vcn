@@ -75,7 +75,7 @@ func login(in *os.File) {
 		}
 	}
 
-	_ = TrackPublisher("VCN_LOGIN")
+	_ = TrackPublisher(VcnLoginEvent)
 
 	hasKeystore, err := HasKeystore()
 	if err != nil {
@@ -224,7 +224,7 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 
 	go displayLatency()
 
-	_ = TrackPublisher("VCN_SIGN")
+	_ = TrackPublisher(VcnSignEvent)
 	_ = TrackSign(artifactHash, filepath.Base(filename), state)
 
 	// TODO: return and display: block #, trx #
@@ -245,7 +245,7 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 }
 
 func VerifyAll(files []string, quit bool) {
-	_ = TrackPublisher("VCN_VERIFY")
+	_ = TrackPublisher(VcnVerifyEvent)
 	var success = true
 	for _, file := range files {
 		success = success && verify(file)
