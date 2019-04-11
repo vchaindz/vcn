@@ -61,6 +61,10 @@ func ProvidePlatformPassword() (password string, err error) {
 	if err != nil {
 		return "", nil
 	}
+	password = string(passphraseBytes)
 	LOG.Trace("Platform password provided (interactive)")
-	return string(passphraseBytes), nil
+	if password == "" {
+		return "", fmt.Errorf("password must not be empty")
+	}
+	return password, nil
 }
