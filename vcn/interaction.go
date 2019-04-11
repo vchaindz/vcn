@@ -65,7 +65,7 @@ func login(in *os.File) {
 	tokenValid, _ := CheckToken(token)
 
 	if tokenValid == false {
-		email, err := ProvideUsername()
+		email, err := ProvidePlatformUsername()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -93,22 +93,12 @@ func login(in *os.File) {
 					os.Exit(1)
 				}
 
-				// handle not-displayed password via STDIN
-				// as well as file input for automated tests
 				var passwordString string
 
 				fmt.Printf("Password%s: ", attempt)
-				// TODO: solution for reading from file inputs whose compilation does not fail on windows
-				// if terminal.IsTerminal(syscall.Stdin) {
 				password, _ := terminal.ReadPassword(int(syscall.Stdin))
 				passwordString = string(password)
 				fmt.Println("")
-				/*} else {
-
-					passwordString, _ = reader.ReadString('\n')
-					passwordString = strings.TrimSuffix(passwordString, "\n")
-
-				}*/
 
 				returnCode := 0
 				authenticated, returnCode = Authenticate(email, passwordString)

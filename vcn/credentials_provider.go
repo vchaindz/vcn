@@ -26,12 +26,12 @@ func ProvideKeystorePassword() (passphrase string, err error) {
 	return string(passphraseBytes), nil
 }
 
-func ProvideUsername() (user string, err error) {
+func ProvidePlatformUsername() (user string, err error) {
 	user = os.Getenv("VCN_USER")
 	if user != "" {
 		LOG.WithFields(logrus.Fields{
 			"username": user,
-		}).Trace("Username provided (environment)")
+		}).Trace("Platform user provided (environment)")
 		return user, nil
 	}
 	fmt.Print("Email address: ")
@@ -45,6 +45,22 @@ func ProvideUsername() (user string, err error) {
 	user = strings.TrimSpace(user)
 	LOG.WithFields(logrus.Fields{
 		"username": user,
-	}).Trace("Username provided (interactive)")
+	}).Trace("Platform user provided (interactive)")
 	return user, nil
+}
+
+func ProvidePlatformPassword() (password string, err error) {
+	password = os.Getenv("VCN_PASSWORD")
+	if password != "" {
+		LOG.Trace("Platform password provided (environment)")
+		return password, nil
+	}
+	fmt.Print("Password: ")
+	passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
+	fmt.Println(".")
+	if err != nil {
+		return "", nil
+	}
+	LOG.Trace("Platform password provided (interactive)")
+	return string(passphraseBytes), nil
 }
