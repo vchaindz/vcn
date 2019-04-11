@@ -76,13 +76,9 @@ func login(in *os.File) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			_, returnCode := Authenticate(email, password)
-			if returnCode == 401 {
-				log.Fatal("Invalid password")
-			} else if returnCode == 400 {
-				log.Fatal("Your email address was not confirmed.\n" +
-					"Please confirm it by clicking on the link we sent to " + email + ".\n" +
-					"If you did not receive the email, please go to dashboard.codenotary.io and click on the link \"Resend email\"")
+			err = Authenticate(email, password)
+			if err != nil {
+				log.Fatal(err)
 			}
 		} else {
 			fmt.Println("It looks like you have not yet registered.")

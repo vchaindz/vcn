@@ -10,7 +10,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/dghubble/sling"
@@ -70,58 +69,51 @@ func CheckPublisherExists(email string) (success bool, err error) {
 
 func CheckToken(token string) (ret bool, err error) {
 	restError := new(Error)
-	r, err := NewSling(token).
+	response, err := NewSling(token).
 		Get(TokenCheckEndpoint()).
 		Receive(nil, restError)
 	LOG.WithFields(logrus.Fields{
+		"response":  response,
 		"err":       err,
 		"restError": restError,
 	}).Trace("CheckToken")
 	if err != nil {
 		return false, err
 	}
-	if r.StatusCode == 200 {
+	if response.StatusCode == 200 {
 		return true, nil
 	} else {
 		return false, fmt.Errorf("authentication failed: %+v", restError)
 	}
 }
 
-func Authenticate(email string, password string) (ret bool, code int) { // TODO: rework
-
-	if password == "" {
-		return false, 401
-	}
-	token := new(TokenResponse)
-	authError := new(Error)
-
+func Authenticate(email string, password string) (err error) { // TODO: rework
+	response := new(TokenResponse)
+	restError := new(Error)
 	r, err := sling.New().
 		Post(PublisherEndpoint()+"/auth").
 		BodyJSON(AuthRequest{Email: email, Password: password}).
-		Receive(token, authError)
+		Receive(response, restError)
+	LOG.WithFields(logrus.Fields{
+		"email":     email,
+		"response":  response,
+		"err":       err,
+		"restError": restError,
+	}).Trace("Authenticate")
 	if err != nil {
-
-		log.Fatal(err)
+		return err
 	}
-	if r.StatusCode != 200 {
-
-		LOG.WithFields(logrus.Fields{
-			"code":  r.StatusCode,
-			"error": authError.Message,
-		}).Trace("API request failed")
-
-		return false, authError.Status
-
+	switch r.StatusCode {
+	case 200:
+		return WriteToken(response.Token)
+	case 400:
+		return fmt.Errorf("Your email address was not confirmed. " +
+			"Please confirm it by clicking on the link we sent to " + email + ". " +
+			"If you did not receive the email, please go to dashboard.codenotary.io and click on the link \"Resend email\"")
+	case 401:
+		return fmt.Errorf("invalid password")
 	}
-	err = ioutil.WriteFile(TokenFile(), []byte(token.Token),
-		os.FileMode(0600))
-	if err != nil {
-
-		log.Fatal(err)
-	}
-
-	return true, 0
-
+	return fmt.Errorf("unhandled authentication error: %+v", restError)
 }
 
 func LoadToken() (jwtToken string, err error) {
@@ -135,4 +127,8 @@ func LoadToken() (jwtToken string, err error) {
 		return "", err
 	}
 	return string(contents), nil
+}
+
+func WriteToken(token string) (err error) {
+	return ioutil.WriteFile(TokenFile(), []byte(token), os.FileMode(0600))
 }
