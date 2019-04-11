@@ -9,8 +9,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
@@ -114,21 +112,4 @@ func Authenticate(email string, password string) (err error) { // TODO: rework
 		return fmt.Errorf("invalid password")
 	}
 	return fmt.Errorf("unhandled authentication error: %+v", restError)
-}
-
-func LoadToken() (jwtToken string, err error) {
-
-	LOG.WithFields(logrus.Fields{
-		"tokenFile": TokenFile(),
-	}).Trace("Access local token")
-
-	contents, err := ioutil.ReadFile(TokenFile())
-	if err != nil {
-		return "", err
-	}
-	return string(contents), nil
-}
-
-func WriteToken(token string) (err error) {
-	return ioutil.WriteFile(TokenFile(), []byte(token), os.FileMode(0600))
 }
