@@ -67,14 +67,11 @@ func login(in *os.File) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		publisherExists := CheckPublisherExists(email)
-
-		if publisherExists {
-
-			LOG.WithFields(logrus.Fields{
-				"email": email,
-			}).Debug("Publisher exists")
-
+		exists, err := CheckPublisherExists(email)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if exists {
 			password, err := ProvidePlatformPassword()
 			if err != nil {
 				log.Fatal(err)

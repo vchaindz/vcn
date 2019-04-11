@@ -12,7 +12,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
@@ -48,31 +47,25 @@ type PublisherResponse struct {
 	LastName    string   `json:"lastName"`
 }
 
-func CheckPublisherExists(email string) (ret bool) {
-
-	email = strings.TrimSpace(email)
-
-	params := &PublisherExistsParams{Email: email}
+func CheckPublisherExists(email string) (success bool, err error) {
 	response := new(PublisherExistsResponse)
 	restError := new(Error)
-
 	r, err := sling.New().
 		Get(PublisherEndpoint()+"/exists").
-		QueryStruct(params).
+		QueryStruct(&PublisherExistsParams{Email: email}).
 		Receive(&response, restError)
-
+	LOG.WithFields(logrus.Fields{
+		"response":  response,
+		"err":       err,
+		"restError": restError,
+	}).Trace("CheckPublisherExists")
 	if err != nil {
-		fmt.Printf(err.Error())
-		return false
+		return false, err
 	}
 	if r.StatusCode != 200 {
-
-		fmt.Printf(fmt.Sprintf("request failed: %s (%d)",
-			restError.Message, restError.Status))
-		return false
+		return false, fmt.Errorf("check publisher failed: %+v", restError)
 	}
-
-	return response.Exists
+	return response.Exists, nil
 }
 
 func CheckToken(token string) (ret bool, err error) {
