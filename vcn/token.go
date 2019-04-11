@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -15,7 +16,7 @@ func LoadToken() (jwtToken string, err error) {
 	if err != nil {
 		return "", err
 	}
-	return string(contents), nil
+	return strings.TrimSpace(string(contents)), nil
 }
 
 func WriteToken(token string) (err error) {

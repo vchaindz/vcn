@@ -59,13 +59,13 @@ func CheckPublisherExists(email string) (success bool, err error) {
 	if err != nil {
 		return false, err
 	}
-	if r.StatusCode != 200 {
-		return false, fmt.Errorf("check publisher failed: %+v", restError)
+	if r.StatusCode == 200 {
+		return response.Exists, nil
 	}
-	return response.Exists, nil
+	return false, fmt.Errorf("check publisher failed: %+v", restError)
 }
 
-func CheckToken(token string) (ret bool, err error) {
+func CheckToken(token string) (success bool, err error) {
 	restError := new(Error)
 	response, err := NewSling(token).
 		Get(TokenCheckEndpoint()).
@@ -78,11 +78,17 @@ func CheckToken(token string) (ret bool, err error) {
 	if err != nil {
 		return false, err
 	}
-	if response.StatusCode == 200 {
+	switch response.StatusCode {
+	case 200:
 		return true, nil
-	} else {
-		return false, fmt.Errorf("authentication failed: %+v", restError)
+	case 401:
+		fallthrough
+	case 403:
+		fallthrough
+	case 419:
+		return false, nil
 	}
+	return false, fmt.Errorf("check token failed: %+v", restError)
 }
 
 func Authenticate(email string, password string) (err error) { // TODO: rework
@@ -111,5 +117,5 @@ func Authenticate(email string, password string) (err error) { // TODO: rework
 	case 401:
 		return fmt.Errorf("invalid password")
 	}
-	return fmt.Errorf("unhandled authentication error: %+v", restError)
+	return fmt.Errorf("authentication failed: %+v", restError)
 }

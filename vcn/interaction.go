@@ -60,8 +60,10 @@ func login(in *os.File) {
 	// synckeys
 
 	token, _ := LoadToken()
-	tokenValid, _ := CheckToken(token)
-
+	tokenValid, err := CheckToken(token)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if tokenValid == false {
 		email, err := ProvidePlatformUsername()
 		if err != nil {
