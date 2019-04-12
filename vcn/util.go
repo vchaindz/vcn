@@ -10,6 +10,7 @@ package main
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -18,6 +19,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/dghubble/sling"
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
@@ -104,4 +106,26 @@ func hashAsset(verification *BlockchainVerification) string {
 		"metahash": metadata,
 	}).Trace("Generated metahash")
 	return fmt.Sprintf("%x", metadataHashAsBytes)
+}
+
+func hash(filename string) string {
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	h := sha256.New()
+	if _, err := io.Copy(h, file); err != nil {
+		log.Fatal(err)
+	}
+	checksum := h.Sum(nil)
+	return hex.EncodeToString(checksum)
+}
+
+func NewSling(token string) (s *sling.Sling) {
+	s = sling.New()
+	if token != "" {
+		s = s.Add("Authorization", "Bearer "+token)
+	}
+	return s
 }
