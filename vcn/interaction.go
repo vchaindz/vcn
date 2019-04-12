@@ -302,8 +302,16 @@ func verify(filename string) (success bool) {
 			fmt.Println("Hash:\t", artifactHash)
 			fmt.Println("Date:\t", verification.Timestamp)
 			fmt.Println("Signer:\t", verification.Owner.Hex())
-			fmt.Println("Name:\t", "NA")
-			fmt.Println("Size:\t", "NA")
+			if artifact.Name != "" {
+				fmt.Println("Name:\t", artifact.Name)
+			} else {
+				fmt.Println("Name:\t", "NA")
+			}
+			if artifact.FileSize > 0 {
+				fmt.Println("Size:\t", humanize.Bytes(artifact.FileSize))
+			} else {
+				fmt.Println("Size:\t", "NA")
+			}
 			fmt.Println("Level:\t", LevelName(verification.Level))
 		}
 	} else {
