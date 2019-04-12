@@ -34,14 +34,9 @@ type Error struct {
 type PublisherExistsResponse struct {
 	Exists bool `json:"exists"`
 }
+
 type PublisherExistsParams struct {
 	Email string `url:"email"`
-}
-type PublisherResponse struct {
-	Authorities []string `json:"authorities"`
-	Email       string   `json:"email"`
-	FirstName   string   `json:"firstName"`
-	LastName    string   `json:"lastName"`
 }
 
 func CheckPublisherExists(email string) (success bool, err error) {
