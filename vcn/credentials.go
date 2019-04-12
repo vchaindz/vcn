@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"syscall"
 
 	"github.com/sirupsen/logrus"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 func ProvideKeystorePassword() (passphrase string, err error) {
@@ -16,14 +14,12 @@ func ProvideKeystorePassword() (passphrase string, err error) {
 		LOG.Trace("Keystore password provided (environment)")
 		return passphrase, nil
 	}
-	fmt.Print("Keystore passphrase: ")
-	passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
-	fmt.Println(".")
+	passphrase, err = readPassword("Keystore passphrase: ")
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	LOG.Trace("Keystore password provided (interactive)")
-	return string(passphraseBytes), nil
+	return passphrase, nil
 }
 
 func ProvidePlatformUsername() (user string, err error) {
@@ -55,16 +51,13 @@ func ProvidePlatformPassword() (password string, err error) {
 		LOG.Trace("Platform password provided (environment)")
 		return password, nil
 	}
-	fmt.Print("Password: ")
-	passphraseBytes, err := terminal.ReadPassword(int(syscall.Stdin))
-	fmt.Println(".")
+	password, err = readPassword("Password: ")
 	if err != nil {
-		return "", nil
+		return "", err
 	}
-	password = string(passphraseBytes)
-	LOG.Trace("Platform password provided (interactive)")
 	if password == "" {
 		return "", fmt.Errorf("password must not be empty")
 	}
+	LOG.Trace("Platform password provided (interactive)")
 	return password, nil
 }
