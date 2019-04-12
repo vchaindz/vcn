@@ -10,6 +10,9 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 )
 
@@ -30,7 +33,17 @@ func TestErrorURLComposition(t *testing.T) {
 }
 
 func TestHash(t *testing.T) {
-	if hash("../resources/testHash.example") != "181210f8f9c779c26da1d9b2075bde0127302ee0e3fca38c9a83f5b1dd8e5d3b" {
-		t.Error(`hash("../resources/testHash.example") does not match`)
+	file, err := ioutil.TempFile("", "example")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.Remove(file.Name())
+	err = ioutil.WriteFile(file.Name(), []byte("123\n"), 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hash := hash(file.Name())
+	if hash != "181210f8f9c779c26da1d9b2075bde0127302ee0e3fca38c9a83f5b1dd8e5d3b" {
+		t.Error("hash does not match:", hash)
 	}
 }
