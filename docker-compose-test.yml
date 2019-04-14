@@ -2,12 +2,13 @@ version: '3.7'
 services:
   vcn:
     image: golang:1.12-stretch
-    entrypoint: "sh -c 'mkdir -p /go/bin && cd /app/vcn && go clean && go get -v && go get -t 'bou.ke/monkey' && go build -v && LOG_LEVEL=TRACE go test -v'"
+    entrypoint: "sh -c 'cp -R /src/* /build && cd /build && go mod vendor && go build -v ./cmd/vcn && go test -v ./...'"
     environment:
-      GOPATH: /go
-      GOBIN: /go/bin
+      LOG_LEVEL: "TRACE"
     volumes:
-      - "./:/app"
-      - "gosrc:/go/src"
-volumes:
-  gosrc:
+      - "./:/src"
+      - "build:/build"
+      - "gopkg:/go/pkg"
+volumes: 
+  build:
+  gopkg:
