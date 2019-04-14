@@ -9,30 +9,11 @@
 package cli
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"testing"
-
-	"github.com/vchain-us/vcn/pkg/meta"
 )
-
-func TestErrorURLComposition(t *testing.T) {
-
-	expectedURL := "https://github.com/vchain-us/vcn/wiki/Errors#publisher-post-412"
-
-	res := meta.PublisherEndpoint()
-	verb := "pOsT" // should do lowercase
-	status := 412
-
-	actualURL := formatErrorURLByEndpoint(res, verb, status)
-
-	if expectedURL != actualURL {
-		t.Error(fmt.Sprintf("formatErrorURLByEndpoint() does not match [%s != %s]", expectedURL, actualURL))
-	}
-
-}
 
 func TestHash(t *testing.T) {
 	file, err := ioutil.TempFile("", "example")

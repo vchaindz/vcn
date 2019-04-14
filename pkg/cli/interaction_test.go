@@ -61,20 +61,3 @@ func IgnoreTestLoginVerifiedUser(t *testing.T) {
 	// // TODO: parse STDOUT
 
 }
-func TestVerifyOutput(t *testing.T) {
-
-	/*
-		expectedURL := "htertps://github.com/vchain-us/vcn/wiki/Errors#publisher-post-412"
-
-		res := meta.PublisherEndpoint()
-		verb := "pOsT" // should do lowercase
-		status := 412
-
-		actualURL := formatErrorURLByEndpoint(res, verb, status)
-
-		if expectedURL != actualURL {
-			t.Error(fmt.Sprintf("formatErrorURLByEndpoint() does not match [%s != %s]", expectedURL, actualURL))
-		}
-	*/
-
-}

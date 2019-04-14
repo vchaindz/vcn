@@ -5,7 +5,6 @@
  * https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  */
-
 package errors
 
 import (
@@ -17,15 +16,11 @@ import (
 )
 
 func formatErrorURLCustom(domain string, status int) string {
-
 	errorPage := meta.ErrorWikiURL()
-
 	return fmt.Sprintf("%s%s-%d", errorPage, domain, status)
-
 }
 
 func formatErrorURLByEndpoint(resource string, verb string, status int) string {
-
 	errorPage := meta.ErrorWikiURL()
 
 	// get last part of endpoint
@@ -33,19 +28,24 @@ func formatErrorURLByEndpoint(resource string, verb string, status int) string {
 	resource = x[len(x)-1]
 
 	return fmt.Sprintf("%s%s-%s-%d", errorPage, resource, strings.ToLower(verb), status)
-
 }
 
-// PrintErrorURLCustom takes custom domain and status code
-func PrintErrorURLCustom(domain string, code int) {
-
+func prettyPrintError(errMsg string) {
 	fmt.Print("Get help for this error at:\n")
 
 	color.Set(meta.StyleError())
-	fmt.Print(formatErrorURLCustom(domain, code))
+	fmt.Print(errMsg)
 	color.Unset()
 
 	fmt.Println()
-	return
+}
 
+// PrintErrorURLCustom takes custom domain and status code
+func PrintErrorURLCustom(domain string, status int) {
+	prettyPrintError(formatErrorURLCustom(domain, status))
+}
+
+// PrintErrorURLByEndpoint takes resource, verb and status code
+func PrintErrorURLByEndpoint(resource string, verb string, status int) {
+	prettyPrintError(formatErrorURLByEndpoint(resource, verb, status))
 }
