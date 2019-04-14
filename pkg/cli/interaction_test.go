@@ -9,55 +9,50 @@
 package cli
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
+
+	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-// of course this is a temporary measure;-)
-const USER = "mathias@vchain.us"
-const PASSWORD = "***"
-const PASSPHRASE = "WHATEVER"
+const testUserEnv = "VCN_TEST_USER"
+const testPassEnv = "VCN_TEST_PASS"
 
-func IgnoreTestLoginVerifiedUser(t *testing.T) {
+const testPassphrase = "BT>WQX2Gb)gDcZ6{"
 
-	// // fmt.Println(VcnDirectory())
+// leogr (todo): decouple integration tests
+func TestLoginByEnv(t *testing.T) {
 
-	// tdir, err := ioutil.TempDir("", "vcn-testing")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer os.RemoveAll(tdir) // clean up
+	user := os.Getenv(testUserEnv)
+	password := os.Getenv(testPassEnv)
 
-	// monkey.Patch(
-	// 	VcnDirectory,
-	// 	func() string {
-	// 		return tdir
-	// 	},
-	// )
+	if user == "" || password == "" {
+		t.Skip(
+			fmt.Sprintf(
+				"Please set %s and %s environment variables to run this test.",
+				testUserEnv,
+				testPassEnv,
+			),
+		)
+		return
+	}
 
-	// CreateVcnDirectories()
+	tdir, err := ioutil.TempDir("", "vcn-testing")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tdir) // clean up
 
-	// // fmt.Println(VcnDirectory())
+	// Setup temporary env
+	os.Setenv("HOME", tdir)
+	CreateVcnDirectories()
 
-	// in, err := ioutil.TempFile("", "")
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	// defer in.Close()
+	os.Setenv(meta.VcnUserEnv, user)
+	os.Setenv(meta.VcnPasswordEnv, password)
+	api.CreateKeystore(testPassphrase)
 
-	// _, err = io.WriteString(
-	// 	in,
-	// 	fmt.Sprintf("%s\n%s\n%s\n%s\n",
-	// 		USER, PASSWORD, PASSPHRASE, PASSPHRASE))
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-
-	// _, err = in.Seek(0, os.SEEK_SET)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-
-	// login(in)
-	// // TODO: parse STDOUT
-
+	Login(nil)
 }
