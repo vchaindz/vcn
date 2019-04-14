@@ -5,13 +5,15 @@
  * https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-package main
+package api
 
 import (
 	"fmt"
 
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 type AuthRequest struct {
@@ -43,10 +45,10 @@ func CheckPublisherExists(email string) (success bool, err error) {
 	response := new(PublisherExistsResponse)
 	restError := new(Error)
 	r, err := sling.New().
-		Get(PublisherEndpoint()+"/exists").
+		Get(meta.PublisherEndpoint()+"/exists").
 		QueryStruct(&PublisherExistsParams{Email: email}).
 		Receive(&response, restError)
-	LOG.WithFields(logrus.Fields{
+	logs.LOG.WithFields(logrus.Fields{
 		"response":  response,
 		"err":       err,
 		"restError": restError,
@@ -62,10 +64,10 @@ func CheckPublisherExists(email string) (success bool, err error) {
 
 func CheckToken(token string) (success bool, err error) {
 	restError := new(Error)
-	response, err := NewSling(token).
-		Get(TokenCheckEndpoint()).
+	response, err := newSling(token).
+		Get(meta.TokenCheckEndpoint()).
 		Receive(nil, restError)
-	LOG.WithFields(logrus.Fields{
+	logs.LOG.WithFields(logrus.Fields{
 		"response":  response,
 		"err":       err,
 		"restError": restError,
@@ -90,10 +92,10 @@ func Authenticate(email string, password string) (err error) { // TODO: rework
 	response := new(TokenResponse)
 	restError := new(Error)
 	r, err := sling.New().
-		Post(PublisherEndpoint()+"/auth").
+		Post(meta.PublisherEndpoint()+"/auth").
 		BodyJSON(AuthRequest{Email: email, Password: password}).
 		Receive(response, restError)
-	LOG.WithFields(logrus.Fields{
+	logs.LOG.WithFields(logrus.Fields{
 		"email":     email,
 		"response":  response,
 		"err":       err,

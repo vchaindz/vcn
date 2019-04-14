@@ -6,17 +6,10 @@
  *
  */
 
-package main
+package cli
 
 import (
-	"fmt"
-	"io"
-	"io/ioutil"
-	"log"
-	"os"
 	"testing"
-
-	"bou.ke/monkey"
 )
 
 // of course this is a temporary measure;-)
@@ -26,46 +19,46 @@ const PASSPHRASE = "WHATEVER"
 
 func IgnoreTestLoginVerifiedUser(t *testing.T) {
 
-	// fmt.Println(VcnDirectory())
+	// // fmt.Println(VcnDirectory())
 
-	tdir, err := ioutil.TempDir("", "vcn-testing")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer os.RemoveAll(tdir) // clean up
+	// tdir, err := ioutil.TempDir("", "vcn-testing")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer os.RemoveAll(tdir) // clean up
 
-	monkey.Patch(
-		VcnDirectory,
-		func() string {
-			return tdir
-		},
-	)
+	// monkey.Patch(
+	// 	VcnDirectory,
+	// 	func() string {
+	// 		return tdir
+	// 	},
+	// )
 
-	CreateVcnDirectories()
+	// CreateVcnDirectories()
 
-	// fmt.Println(VcnDirectory())
+	// // fmt.Println(VcnDirectory())
 
-	in, err := ioutil.TempFile("", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer in.Close()
+	// in, err := ioutil.TempFile("", "")
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
+	// defer in.Close()
 
-	_, err = io.WriteString(
-		in,
-		fmt.Sprintf("%s\n%s\n%s\n%s\n",
-			USER, PASSWORD, PASSPHRASE, PASSPHRASE))
-	if err != nil {
-		t.Fatal(err)
-	}
+	// _, err = io.WriteString(
+	// 	in,
+	// 	fmt.Sprintf("%s\n%s\n%s\n%s\n",
+	// 		USER, PASSWORD, PASSPHRASE, PASSPHRASE))
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
 
-	_, err = in.Seek(0, os.SEEK_SET)
-	if err != nil {
-		t.Fatal(err)
-	}
+	// _, err = in.Seek(0, os.SEEK_SET)
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
 
-	login(in)
-	// TODO: parse STDOUT
+	// login(in)
+	// // TODO: parse STDOUT
 
 }
 func TestVerifyOutput(t *testing.T) {
@@ -73,7 +66,7 @@ func TestVerifyOutput(t *testing.T) {
 	/*
 		expectedURL := "htertps://github.com/vchain-us/vcn/wiki/Errors#publisher-post-412"
 
-		res := PublisherEndpoint()
+		res := meta.PublisherEndpoint()
 		verb := "pOsT" // should do lowercase
 		status := 412
 

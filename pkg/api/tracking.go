@@ -6,12 +6,14 @@
  *
  */
 
-package main
+package api
 
 import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 type VerifyArtifactTrackingEventRequest struct {
@@ -33,16 +35,16 @@ type PublisherTrackingEventRequest struct {
 }
 
 func TrackVerify(hash string, filename string) (err error) {
-	LOG.WithFields(logrus.Fields{
+	logs.LOG.WithFields(logrus.Fields{
 		"hash":     hash,
 		"filename": filename,
 	}).Trace("TrackVerify")
 	restError := new(Error)
 	token, _ := LoadToken()
-	r, err := NewSling(token).
-		Post(TrackingEvent()+"/verify").
+	r, err := newSling(token).
+		Post(meta.TrackingEvent()+"/verify").
 		BodyJSON(VerifyArtifactTrackingEventRequest{
-			Client:   VcnClientName(),
+			Client:   meta.VcnClientName(),
 			Filename: filename,
 			Hash:     hash,
 		}).Receive(nil, restError)
@@ -56,7 +58,7 @@ func TrackVerify(hash string, filename string) (err error) {
 }
 
 func TrackPublisher(event string) (err error) {
-	LOG.WithFields(logrus.Fields{
+	logs.LOG.WithFields(logrus.Fields{
 		"event": event,
 	}).Trace("TrackPublisher")
 	restError := new(Error)
@@ -64,8 +66,8 @@ func TrackPublisher(event string) (err error) {
 	if err != nil {
 		return err
 	}
-	r, err := NewSling(token).
-		Post(TrackingEvent()+"/publisher").
+	r, err := newSling(token).
+		Post(meta.TrackingEvent()+"/publisher").
 		BodyJSON(PublisherTrackingEventRequest{
 			Name: event,
 		}).Receive(nil, restError)
@@ -78,8 +80,8 @@ func TrackPublisher(event string) (err error) {
 	return nil
 }
 
-func TrackSign(hash string, filename string, status Status) (err error) {
-	LOG.WithFields(logrus.Fields{
+func TrackSign(hash string, filename string, status meta.Status) (err error) {
+	logs.LOG.WithFields(logrus.Fields{
 		"hash":     hash,
 		"filename": filename,
 		"status":   status,
@@ -89,10 +91,10 @@ func TrackSign(hash string, filename string, status Status) (err error) {
 	if err != nil {
 		return err
 	}
-	r, err := NewSling(token).
-		Post(TrackingEvent()+"/sign").
+	r, err := newSling(token).
+		Post(meta.TrackingEvent()+"/sign").
 		BodyJSON(SignArtifactTrackingEventRequest{
-			Name:     StatusName(status),
+			Name:     meta.StatusName(status),
 			Hash:     hash,
 			Filename: filename,
 		}).Receive(nil, restError)

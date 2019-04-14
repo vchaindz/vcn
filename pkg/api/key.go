@@ -6,7 +6,7 @@
  *
  */
 
-package main
+package api
 
 import (
 	"encoding/json"
@@ -18,6 +18,9 @@ import (
 	"github.com/dghubble/sling"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/internal/utils"
+	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 type Wallet struct {
@@ -34,23 +37,23 @@ type PagedWalletResponse struct {
 
 func CreateKeystore(password string) (pubKey string, wallet string) {
 	if password == "" {
-		LOG.Error("Keystore passphrase cannot be empty")
+		logs.LOG.Error("Keystore passphrase cannot be empty")
 	}
-	ks := keystore.NewKeyStore(WalletDirectory(), keystore.StandardScryptN, keystore.StandardScryptP)
+	ks := keystore.NewKeyStore(meta.WalletDirectory(), keystore.StandardScryptN, keystore.StandardScryptP)
 	account, err := ks.NewAccount(password)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	pubKey = account.Address.Hex()
-	wallet = WalletDirectory()
+	wallet = meta.WalletDirectory()
 
-	_ = TrackPublisher(KeyStoreCreatedEvent)
+	_ = TrackPublisher(meta.KeyStoreCreatedEvent)
 
 	return pubKey, wallet
 }
 
-func isWalletSynced(address string) (result bool, err error) {
+func IsWalletSynced(address string) (result bool, err error) {
 	authError := new(Error)
 	pagedWalletResponse := new(PagedWalletResponse)
 	token, err := LoadToken()
@@ -59,7 +62,7 @@ func isWalletSynced(address string) (result bool, err error) {
 	}
 	r, err := sling.New().
 		Add("Authorization", "Bearer "+token).
-		Get(WalletEndpoint()).
+		Get(meta.WalletEndpoint()).
 		Receive(pagedWalletResponse, authError)
 	if err != nil {
 		return false, err
@@ -80,13 +83,13 @@ func isWalletSynced(address string) (result bool, err error) {
 
 func HasKeystore() (bool, error) {
 
-	LOG.WithFields(logrus.Fields{
-		"keystore": WalletDirectory(),
+	logs.LOG.WithFields(logrus.Fields{
+		"keystore": meta.WalletDirectory(),
 	}).Trace("HasKeystore()")
 
-	files, err := ioutil.ReadDir(WalletDirectory())
+	files, err := ioutil.ReadDir(meta.WalletDirectory())
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("ReadDir() failed")
 		return false, err
@@ -103,7 +106,7 @@ func LoadPublicKeys() (addresses []string, err error) {
 	}
 	r, err := sling.New().
 		Add("Authorization", "Bearer "+token).
-		Get(WalletEndpoint()).
+		Get(meta.WalletEndpoint()).
 		Receive(pagedWalletResponse, authError)
 	if err != nil {
 		log.Fatal(err)
@@ -138,7 +141,7 @@ func SyncKeys() {
 	}
 	r, err := sling.New().
 		Add("Authorization", "Bearer "+token).
-		Post(WalletEndpoint()).
+		Post(meta.WalletEndpoint()).
 		BodyJSON(Wallet{Address: localAddress}).
 		Receive(nil, authError)
 	if err != nil {
@@ -149,11 +152,11 @@ func SyncKeys() {
 			authError.Status)
 	}
 
-	_ = TrackPublisher(KeyStoreUploadedEvent)
+	_ = TrackPublisher(meta.KeyStoreUploadedEvent)
 }
 
 func PublicKeyForLocalWallet() (string, error) {
-	reader, err := firstFile(WalletDirectory())
+	reader, err := utils.FirstFile(meta.WalletDirectory())
 	if err != nil {
 		return "", err
 	}

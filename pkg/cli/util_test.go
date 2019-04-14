@@ -6,7 +6,7 @@
  *
  */
 
-package main
+package cli
 
 import (
 	"fmt"
@@ -14,13 +14,15 @@ import (
 	"log"
 	"os"
 	"testing"
+
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 func TestErrorURLComposition(t *testing.T) {
 
 	expectedURL := "https://github.com/vchain-us/vcn/wiki/Errors#publisher-post-412"
 
-	res := PublisherEndpoint()
+	res := meta.PublisherEndpoint()
 	verb := "pOsT" // should do lowercase
 	status := 412
 

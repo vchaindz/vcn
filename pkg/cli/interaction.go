@@ -11,7 +11,7 @@
  *
  */
 
-package main
+package cli
 
 import (
 	"bufio"
@@ -21,6 +21,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -28,27 +29,34 @@ import (
 	"github.com/fatih/color"
 	"github.com/pkg/browser"
 	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/internal/docker"
+	"github.com/vchain-us/vcn/internal/errors"
+	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 var displayProgress = true
 
-func dashboard() {
+var wg sync.WaitGroup
+
+func Dashboard() {
 	// open dashboard
 	// we intentionally do not read the customer's token from disk
 	// and GET the dashboard => this would be insecure as tokens would
 	// be visible in server logs. in case the anyhow long-running web session
 	// has expired the customer will have to log in
-	url := DashboardURL()
+	url := meta.DashboardURL()
 	fmt.Println(fmt.Sprintf("Taking you to <%s>", url))
 	browser.OpenURL(url)
 }
 
-func login(in *os.File) {
+func Login(in *os.File) {
 	if in == nil {
 		in = os.Stdin
 	}
-	token, _ := LoadToken()
-	tokenValid, err := CheckToken(token)
+	token, _ := api.LoadToken()
+	tokenValid, err := api.CheckToken(token)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,7 +65,7 @@ func login(in *os.File) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		publisherExists, err := CheckPublisherExists(email)
+		publisherExists, err := api.CheckPublisherExists(email)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -66,20 +74,20 @@ func login(in *os.File) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			err = Authenticate(email, password)
+			err = api.Authenticate(email, password)
 			if err != nil {
 				log.Fatal(err)
 			}
 		} else {
-			log.Fatal("no such user. please create an account at: ", DashboardURL())
+			log.Fatal("no such user. please create an account at: ", meta.DashboardURL())
 		}
 	}
 
-	_ = TrackPublisher(VcnLoginEvent)
+	_ = api.TrackPublisher(meta.VcnLoginEvent)
 
-	hasKeystore, err := HasKeystore()
+	hasKeystore, err := api.HasKeystore()
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error": err,
 		}).Fatal("Could not access keystore directory")
 	}
@@ -88,7 +96,7 @@ func login(in *os.File) {
 		fmt.Println("You have no keystore set up yet.")
 		fmt.Println("<vcn> will now do this for you and upload the public key to the platform.")
 
-		color.Set(StyleAffordance())
+		color.Set(meta.StyleAffordance())
 		fmt.Print("Attention: Please pick a strong passphrase. There is no recovery possible.")
 		color.Unset()
 		fmt.Println()
@@ -104,7 +112,7 @@ func login(in *os.File) {
 
 			if counter == 4 {
 				fmt.Println("Too many attempts failed.")
-				PrintErrorURLCustom("password", 404)
+				errors.PrintErrorURLCustom("password", 404)
 				os.Exit(1)
 
 			}
@@ -134,7 +142,7 @@ func login(in *os.File) {
 
 		}
 
-		pubKey, wallet := CreateKeystore(keystorePassphrase)
+		pubKey, wallet := api.CreateKeystore(keystorePassphrase)
 
 		fmt.Println("Keystore successfully created. We are updating your user profile.\n" +
 			"You will be able to sign your first asset in one minute")
@@ -144,33 +152,33 @@ func login(in *os.File) {
 	}
 
 	//
-	SyncKeys()
+	api.SyncKeys()
 
 	fmt.Println("Login successful.")
 
-	WG.Wait()
+	wg.Wait()
 
 }
 
 // Commit => "sign"
-func Sign(filename string, state Status, visibility Visibility, quit bool, acknowledge bool) {
+func Sign(filename string, state meta.Status, visibility meta.Visibility, quit bool, acknowledge bool) {
 
 	// check for token
-	token, _ := LoadToken()
-	checkOk, _ := CheckToken(token)
+	token, _ := api.LoadToken()
+	checkOk, _ := api.CheckToken(token)
 	if !checkOk {
 		fmt.Println("You need to be logged in to sign.")
 		fmt.Println("Proceed by authenticating yourself using <vcn login>")
-		// PrintErrorURLCustom("token", 428)
+		// errors.PrintErrorURLCustom("token", 428)
 		os.Exit(1)
 	}
 
 	// keystore
-	hasKeystore, _ := HasKeystore()
+	hasKeystore, _ := api.HasKeystore()
 	if hasKeystore == false {
 		fmt.Printf("You need a keystore to sign.\n")
 		fmt.Println("Proceed by authenticating yourself using <vcn auth>")
-		// PrintErrorURLCustom("keystore", 428)
+		// errors.PrintErrorURLCustom("keystore", 428)
 		os.Exit(1)
 	}
 
@@ -179,18 +187,18 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 	var fileSize int64 = 0
 
 	if strings.HasPrefix(filename, "docker:") {
-		artifactHash, err = GetDockerHash(filename)
+		artifactHash, err = docker.GetHash(filename)
 		if err != nil {
 			log.Fatal("failed to get hash for docker image", err)
 		}
-		fileSize, err = GetDockerSize(filename)
+		fileSize, err = docker.GetSize(filename)
 		if err != nil {
 			log.Fatal("failed to get size for docker image", err)
 		}
 	} else {
 		// file mode
 		artifactHash = hash(filename)
-		fi, err := os.Stat(filename);
+		fi, err := os.Stat(filename)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -224,8 +232,8 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 
 	go displayLatency()
 
-	_ = TrackPublisher(VcnSignEvent)
-	_ = TrackSign(artifactHash, filepath.Base(filename), state)
+	_ = api.TrackPublisher(meta.VcnSignEvent)
+	_ = api.TrackSign(artifactHash, filepath.Base(filename), state)
 
 	// TODO: return and display: block #, trx #
 	_, _ = commitHash(artifactHash, passphrase, filepath.Base(filename), fileSize, state, visibility)
@@ -235,7 +243,7 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 	// fmt.Println("Date:\t\t", time.Now())
 	// fmt.Println("Signer:\t", "<pubKey>")
 
-	WG.Wait()
+	wg.Wait()
 	displayProgress = false
 	if !quit {
 		if _, err := fmt.Scanln(); err != nil {
@@ -245,7 +253,7 @@ func Sign(filename string, state Status, visibility Visibility, quit bool, ackno
 }
 
 func VerifyAll(files []string, quit bool) {
-	_ = TrackPublisher(VcnVerifyEvent)
+	_ = api.TrackPublisher(meta.VcnVerifyEvent)
 	var success = true
 	for _, file := range files {
 		success = success && verify(file)
@@ -267,24 +275,24 @@ func verify(filename string) (success bool) {
 	var err error
 
 	if strings.HasPrefix(filename, "docker:") {
-		artifactHash, err = GetDockerHash(filename)
+		artifactHash, err = docker.GetHash(filename)
 		if err != nil {
 			log.Fatal("failed to get hash for docker image", err)
 		}
 	} else {
 		artifactHash = strings.TrimSpace(hash(filename))
 	}
-	_ = TrackVerify(artifactHash, filepath.Base(filename))
-	verification, err := BlockChainVerify(artifactHash)
+	_ = api.TrackVerify(artifactHash, filepath.Base(filename))
+	verification, err := api.BlockChainVerify(artifactHash)
 	if err != nil {
 		log.Fatal("unable to verify hash", err)
 	}
 
-	var artifact *ArtifactResponse
+	var artifact *api.ArtifactResponse
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		metaHash := hashAsset(verification)
+		metaHash := verification.HashAsset()
 		if metaHash != "" {
-			artifact, _ = LoadArtifactForHash(artifactHash, metaHash)
+			artifact, _ = api.LoadArtifactForHash(artifactHash, metaHash)
 		}
 	}
 	if artifact != nil {
@@ -295,7 +303,7 @@ func verify(filename string) (success bool) {
 			fmt.Println("Signer:\t", artifact.Publisher)
 			fmt.Println("Name:\t", artifact.Name)
 			fmt.Println("Size:\t", humanize.Bytes(artifact.FileSize))
-			fmt.Println("Level:\t", LevelName(verification.Level))
+			fmt.Println("Level:\t", meta.LevelName(verification.Level))
 		}
 		if artifact.Visibility == "PRIVATE" {
 			fmt.Println("Asset:\t", filepath.Base(filename))
@@ -312,7 +320,7 @@ func verify(filename string) (success bool) {
 			} else {
 				fmt.Println("Size:\t", "NA")
 			}
-			fmt.Println("Level:\t", LevelName(verification.Level))
+			fmt.Println("Level:\t", meta.LevelName(verification.Level))
 		}
 	} else {
 		fmt.Println("Asset:\t", filepath.Base(filename))
@@ -328,17 +336,17 @@ func verify(filename string) (success bool) {
 		fmt.Println("Size:\t", "NA")
 	}
 	fmt.Print("Status:\t ")
-	if verification.Status == StatusTrusted {
-		color.Set(StyleSuccess())
+	if verification.Status == meta.StatusTrusted {
+		color.Set(meta.StyleSuccess())
 		success = true
-	} else if verification.Status == StatusUnknown {
-		color.Set(StyleWarning())
+	} else if verification.Status == meta.StatusUnknown {
+		color.Set(meta.StyleWarning())
 		success = false
 	} else {
-		color.Set(StyleError())
+		color.Set(meta.StyleError())
 		success = false
 	}
-	fmt.Print(StatusName(verification.Status))
+	fmt.Print(meta.StatusName(verification.Status))
 	color.Unset()
 	fmt.Println()
 	return success

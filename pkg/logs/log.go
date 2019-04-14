@@ -1,4 +1,4 @@
-package main
+package logs
 
 import (
 	"os"
@@ -6,9 +6,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// LOG is the global instance of logrus.Logger
 var LOG = logrus.New()
 
-func InitLogging() {
+func init() {
 	ll := os.Getenv("LOG_LEVEL")
 	switch ll {
 	case "TRACE":

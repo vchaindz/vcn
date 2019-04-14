@@ -1,4 +1,4 @@
-package main
+package docker
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/yalp/jsonpath"
 )
 
-func GetDockerHash(descriptor string) (hash string, err error) {
+func GetHash(descriptor string) (hash string, err error) {
 	id := getDockerId(descriptor)
 	data, err := inspectDocker(id)
 	if err != nil {
@@ -29,7 +29,7 @@ func GetDockerHash(descriptor string) (hash string, err error) {
 	return hash, nil
 }
 
-func GetDockerSize(descriptor string) (size int64, err error) {
+func GetSize(descriptor string) (size int64, err error) {
 	id := getDockerId(descriptor)
 	data, err := inspectDocker(id)
 	if err != nil {

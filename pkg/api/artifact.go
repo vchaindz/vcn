@@ -6,7 +6,7 @@
  *
  */
 
-package main
+package api
 
 import (
 	"fmt"
@@ -14,6 +14,8 @@ import (
 	"os"
 
 	"github.com/dghubble/sling"
+	"github.com/vchain-us/vcn/internal/errors"
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 type ArtifactRequest struct {
@@ -55,25 +57,25 @@ func (a ArtifactResponse) String() string {
 }
 
 func CreateArtifact(verification *BlockchainVerification, walletAddress string,
-	name string, hash string, fileSize int64, visibility Visibility, status Status) error {
+	name string, hash string, fileSize int64, visibility meta.Visibility, status meta.Status) error {
 	restError := new(Error)
 	token, err := LoadToken()
 	if err != nil {
 		fmt.Printf("\n%s\n", err.Error())
-		PrintErrorURLCustom("sign", 404)
+		errors.PrintErrorURLCustom("sign", 404)
 		os.Exit(1)
 	}
-	metaHash := hashAsset(verification)
+	metaHash := verification.HashAsset()
 	r, err := sling.New().
-		Post(ArtifactEndpointForWallet(walletAddress)).
+		Post(meta.ArtifactEndpointForWallet(walletAddress)).
 		Add("Authorization", "Bearer "+token).
 		BodyJSON(ArtifactRequest{
 			Name:       name,
 			Hash:       hash,
 			Filename:   name,
 			FileSize:   fileSize,
-			Visibility: VisibilityName(visibility),
-			Status:     StatusName(status),
+			Visibility: meta.VisibilityName(visibility),
+			Status:     meta.StatusName(status),
 			MetaHash:   metaHash,
 		}).Receive(nil, restError)
 	if err != nil {
@@ -102,7 +104,7 @@ func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 		log.Fatal(err)
 	}
 	r, err := sling.New().
-		Get(ArtifactEndpointForWallet(walletAddress)).
+		Get(meta.ArtifactEndpointForWallet(walletAddress)).
 		Add("Authorization", "Bearer "+token).
 		Receive(&response, restError)
 	if err != nil {
@@ -119,7 +121,7 @@ func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error
 	response := new(ArtifactResponse)
 	restError := new(Error)
 	r, err := sling.New().
-		Get(ArtifactEndpoint()+"/"+hash+"/"+metahash).
+		Get(meta.ArtifactEndpoint()+"/"+hash+"/"+metahash).
 		Receive(&response, restError)
 	if err != nil {
 		return nil, err

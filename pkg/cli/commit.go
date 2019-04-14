@@ -4,11 +4,9 @@
  * The full license information can be found under:
  * https://www.gnu.org/licenses/gpl-3.0.en.html
  *
- * Built on top of CLI (MIT license)
- * https://github.com/urfave/cli#overview
  */
 
-package main
+package cli
 
 import (
 	"context"
@@ -21,12 +19,18 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/internal/blockchain"
+	"github.com/vchain-us/vcn/internal/errors"
+	"github.com/vchain-us/vcn/internal/utils"
+	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func commitHash(hash string, passphrase string, filename string, fileSize int64, status Status, visibility Visibility) (ret bool, code int) {
-	reader, err := firstFile(WalletDirectory())
+func commitHash(hash string, passphrase string, filename string, fileSize int64, status meta.Status, visibility meta.Visibility) (ret bool, code int) {
+	reader, err := utils.FirstFile(meta.WalletDirectory())
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error": err,
 		}).Fatal("Could not load keystore")
 	}
@@ -34,68 +38,68 @@ func commitHash(hash string, passphrase string, filename string, fileSize int64,
 	if err != nil {
 		log.Fatal(err)
 	}
-	walletSynced, err := isWalletSynced(transactor.From.Hex())
+	walletSynced, err := api.IsWalletSynced(transactor.From.Hex())
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("Could not load wallets")
-		PrintErrorURLCustom("wallet", 400)
+		errors.PrintErrorURLCustom("wallet", 400)
 		os.Exit(1)
 	}
 	if !walletSynced {
-		LOG.Error("\n", filename, " cannot be signed with CodeNotary. We are "+
+		logs.LOG.Error("\n", filename, " cannot be signed with CodeNotary. We are "+
 			"finalizing your account configuration.\nWe will complete the "+
 			"configuration shortly and we will update you as soon as this "+
 			"is done.\nWe are sorry for the inconvenience and would like "+
 			"to thank you for your patience.")
 		os.Exit(1)
 	}
-	transactor.GasLimit = GasLimit()
-	transactor.GasPrice = GasPrice()
-	client, err := ethclient.Dial(MainNetEndpoint())
+	transactor.GasLimit = meta.GasLimit()
+	transactor.GasPrice = meta.GasPrice()
+	client, err := ethclient.Dial(meta.MainNetEndpoint())
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error":   err,
-			"network": MainNetEndpoint(),
+			"network": meta.MainNetEndpoint(),
 		}).Fatal("Cannot connect to blockchain")
 	}
-	address := common.HexToAddress(AssetsRelayContractAddress())
-	instance, err := NewAssetsRelay(address, client)
+	address := common.HexToAddress(meta.AssetsRelayContractAddress())
+	instance, err := blockchain.NewAssetsRelay(address, client)
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error":    err,
-			"contract": AssetsRelayContractAddress(),
+			"contract": meta.AssetsRelayContractAddress(),
 		}).Fatal("Cannot instantiate contract")
 	}
 	tx, err := instance.Sign(transactor, hash, big.NewInt(int64(status)))
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error": err,
 			"hash":  hash,
 		}).Fatal("method <Sign> failed")
 	}
-	timeout, err := waitForTx(tx.Hash(), TxVerificationRounds(), PollInterval())
+	timeout, err := waitForTx(tx.Hash(), meta.TxVerificationRounds(), meta.PollInterval())
 	if err != nil {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("Could not write to blockchain")
-		PrintErrorURLCustom("blockchain-permission", 403)
+		errors.PrintErrorURLCustom("blockchain-permission", 403)
 		os.Exit(1)
 	}
 	if timeout {
-		LOG.WithFields(logrus.Fields{
+		logs.LOG.WithFields(logrus.Fields{
 			"error": err,
 		}).Fatal("Writing to blockchain timed out")
 	}
-	publicKey, err := PublicKeyForLocalWallet()
+	publicKey, err := api.PublicKeyForLocalWallet()
 	if err != nil {
 		log.Fatal(err)
 	}
-	verification, err := BlockChainVerifyMatchingPublicKey(hash, transactor.From.Hex())
+	verification, err := api.BlockChainVerifyMatchingPublicKey(hash, transactor.From.Hex())
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = CreateArtifact(verification, publicKey, filename, hash, fileSize, visibility, status)
+	err = api.CreateArtifact(verification, publicKey, filename, hash, fileSize, visibility, status)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,7 +108,7 @@ func commitHash(hash string, passphrase string, filename string, fileSize int64,
 }
 
 func waitForTx(tx common.Hash, maxRounds uint64, pollInterval time.Duration) (timeout bool, err error) {
-	client, err := ethclient.Dial(MainNetEndpoint())
+	client, err := ethclient.Dial(meta.MainNetEndpoint())
 	if err != nil {
 		return false, err
 	}

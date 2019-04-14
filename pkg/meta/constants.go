@@ -6,17 +6,14 @@
  *
  */
 
-package main
+package meta
 
 import (
 	"log"
-	"sync"
 )
 
 const VcnVersion = "0.3.6"
 const VcnDirectoryPermissions = 0700
-
-var WG sync.WaitGroup
 
 type Level int64
 type Status int64
