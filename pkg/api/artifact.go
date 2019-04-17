@@ -14,7 +14,9 @@ import (
 	"os"
 
 	"github.com/dghubble/sling"
+	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/errors"
+	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -35,19 +37,21 @@ type PagedArtifactResponse struct {
 }
 
 type ArtifactResponse struct {
-	Name               string `json:"name"`
-	Hash               string `json:"hash"`
-	Filename           string `json:"filename"`
-	FileSize           uint64 `json:"fileSize"`
-	Url                string `json:"url"`
-	License            string `json:"license"`
-	Level              int64  `json:"level"`
-	Visibility         string `json:"visibility"`
-	Status             string `json:"status"`
-	Publisher          string `json:"publisher"`
-	CountVerifications uint64 `json:"verificationCount"`
-	CountConflicts     uint64 `json:"publisherCount"`
-	CreatedAt          string `json:"createdAt"`
+	Name                string `json:"name"`
+	Hash                string `json:"hash"`
+	Filename            string `json:"filename"`
+	FileSize            uint64 `json:"fileSize"`
+	Url                 string `json:"url"`
+	License             string `json:"license"`
+	Level               int64  `json:"level"`
+	Visibility          string `json:"visibility"`
+	Status              string `json:"status"`
+	Publisher           string `json:"publisher"`
+	CountVerifications  uint64 `json:"verificationCount"`
+	CountConflicts      uint64 `json:"publisherCount"`
+	CreatedAt           string `json:"createdAt"`
+	PublisherCompany    string `json:"publisherCompany"`
+	PublisherWebsiteUrl string `json:"publisherWebsiteUrl"`
 }
 
 func (a ArtifactResponse) String() string {
@@ -120,18 +124,23 @@ func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error) {
 	response := new(ArtifactResponse)
 	restError := new(Error)
-	r, err := sling.New().
+	token, _ := LoadToken()
+	r, err := newSling(token).
 		Get(meta.ArtifactEndpoint()+"/"+hash+"/"+metahash).
 		Receive(&response, restError)
+	logs.LOG.WithFields(logrus.Fields{
+		"response":  response,
+		"err":       err,
+		"restError": restError,
+	}).Trace("LoadArtifactForHash")
 	if err != nil {
 		return nil, err
 	}
-	if r.StatusCode == 404 {
-		return nil, nil
+	switch r.StatusCode {
+	case 200:
+		return response, nil
+	case 404:
+		return nil, fmt.Errorf("No asset matching hash %s/%s found", hash, metahash)
 	}
-	if r.StatusCode != 200 {
-		return nil, fmt.Errorf("request failed: %s (%d)",
-			restError.Message, restError.Status)
-	}
-	return response, nil
+	return nil, fmt.Errorf("Loading artifact for hash failed: %+v", restError)
 }

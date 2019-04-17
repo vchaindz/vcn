@@ -17,6 +17,7 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/fatih/color"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -42,4 +43,25 @@ func hash(filename string) string {
 	}
 	checksum := h.Sum(nil)
 	return hex.EncodeToString(checksum)
+}
+
+func printColumn(field string, value string, fallback string, p ...color.Attribute) {
+	var spaces string
+	for i := len(field); i < 8; i++ {
+		spaces += " "
+	}
+	fmt.Print(field + ":" + spaces)
+	if p != nil {
+		c := color.New(p...)
+		c.Set()
+	}
+	if value != "" {
+		fmt.Print(value)
+	} else {
+		fmt.Print(fallback)
+	}
+	if p != nil {
+		color.Unset()
+	}
+	fmt.Println()
 }

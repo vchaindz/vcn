@@ -245,6 +245,7 @@ func Sign(filename string, state meta.Status, visibility meta.Visibility, quit b
 
 	wg.Wait()
 	displayProgress = false
+
 	if !quit {
 		if _, err := fmt.Scanln(); err != nil {
 			log.Fatal(err)
@@ -290,65 +291,56 @@ func verify(filename string) (success bool) {
 
 	var artifact *api.ArtifactResponse
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		metaHash := verification.HashAsset()
-		if metaHash != "" {
-			artifact, _ = api.LoadArtifactForHash(artifactHash, metaHash)
-		}
+		artifact, _ = api.LoadArtifactForHash(artifactHash, verification.HashAsset())
 	}
 	if artifact != nil {
-		if artifact.Visibility == "PUBLIC" {
-			fmt.Println("Asset:\t", artifact.Filename)
-			fmt.Println("Hash:\t", artifactHash)
-			fmt.Println("Date:\t", verification.Timestamp)
-			fmt.Println("Signer:\t", artifact.Publisher)
-			fmt.Println("Name:\t", artifact.Name)
-			fmt.Println("Size:\t", humanize.Bytes(artifact.FileSize))
-			fmt.Println("Level:\t", meta.LevelName(verification.Level))
-		}
-		if artifact.Visibility == "PRIVATE" {
-			fmt.Println("Asset:\t", filepath.Base(filename))
-			fmt.Println("Hash:\t", artifactHash)
-			fmt.Println("Date:\t", verification.Timestamp)
-			fmt.Println("Signer:\t", verification.Owner.Hex())
-			if artifact.Name != "" {
-				fmt.Println("Name:\t", artifact.Name)
-			} else {
-				fmt.Println("Name:\t", "NA")
-			}
-			if artifact.FileSize > 0 {
-				fmt.Println("Size:\t", humanize.Bytes(artifact.FileSize))
-			} else {
-				fmt.Println("Size:\t", "NA")
-			}
-			fmt.Println("Level:\t", meta.LevelName(verification.Level))
-		}
-	} else {
-		fmt.Println("Asset:\t", filepath.Base(filename))
-		fmt.Println("Hash:\t", artifactHash)
-		fmt.Println("Signer:\t", "NA")
-		if verification.Timestamp != time.Unix(0, 0) {
-			fmt.Println("Date:\t", verification.Timestamp)
+		printColumn("Asset", artifact.Filename, filepath.Base(filename))
+		printColumn("Hash", artifactHash, "NA")
+		printColumn("Date", verification.Timestamp.String(), "NA")
+		printColumn("Signer", artifact.Publisher, verification.Owner.Hex())
+		printColumn("Name", artifact.Name, "NA")
+		if artifact.FileSize > 0 {
+			printColumn("Size", humanize.Bytes(artifact.FileSize), "NA")
 		} else {
-			fmt.Println("Date:\t", "NA")
+			printColumn("Size", "NA", "NA")
 		}
-		fmt.Println("Level:\t", "NA")
-		fmt.Println("Name:\t", "NA")
-		fmt.Println("Size:\t", "NA")
-	}
-	fmt.Print("Status:\t ")
-	if verification.Status == meta.StatusTrusted {
-		color.Set(meta.StyleSuccess())
-		success = true
-	} else if verification.Status == meta.StatusUnknown {
-		color.Set(meta.StyleWarning())
-		success = false
+		printColumn("Company", artifact.PublisherCompany, "NA")
+		printColumn("Website", artifact.PublisherWebsiteUrl, "NA")
+		printColumn("Level", meta.LevelName(verification.Level), "NA")
 	} else {
-		color.Set(meta.StyleError())
-		success = false
+		printColumn("Asset", filepath.Base(filename), "NA")
+		printColumn("Hash", artifactHash, "NA")
+		if verification.Timestamp != time.Unix(0, 0) {
+			printColumn("Date", verification.Timestamp.String(), "NA")
+		} else {
+			printColumn("Date", "NA", "NA")
+		}
+		if verification.Owner != common.BigToAddress(big.NewInt(0)) {
+			printColumn("Signer", verification.Owner.Hex(), "NA")
+		} else {
+			printColumn("Signer", "NA", "NA")
+		}
+		printColumn("Name", "NA", "NA")
+		printColumn("Company", "NA", "NA")
+		printColumn("Website", "NA", "NA")
+		printColumn("Size", "NA", "NA")
+		printColumn("Level", "NA", "NA")
 	}
-	fmt.Print(meta.StatusName(verification.Status))
-	color.Unset()
-	fmt.Println()
+
+	var c, s color.Attribute
+	switch verification.Status {
+	case meta.StatusTrusted:
+		success = true
+		c, s = meta.StyleSuccess()
+	case meta.StatusUnknown:
+		success = false
+		c, s = meta.StyleWarning()
+	default:
+		success = false
+		c, s = meta.StyleError()
+	}
+	printColumn("Status", meta.StatusName(verification.Status), "NA", c, s)
+
 	return success
 }
 
