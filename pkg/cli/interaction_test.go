@@ -21,7 +21,7 @@ import (
 const testUserEnv = "VCN_TEST_USER"
 const testPassEnv = "VCN_TEST_PASS"
 
-const testPassphrase = "BT>WQX2Gb)gDcZ6{"
+const testPassphrase = "dummy"
 
 // leogr (todo): decouple integration tests
 func TestLoginByEnv(t *testing.T) {
@@ -54,5 +54,5 @@ func TestLoginByEnv(t *testing.T) {
 	os.Setenv(meta.VcnPasswordEnv, password)
 	api.CreateKeystore(testPassphrase)
 
-	Login(nil)
+	Login()
 }

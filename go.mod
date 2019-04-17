@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/allegro/bigcache v1.2.0 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20190409234242-46f4bc7b73ef // indirect
+	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect

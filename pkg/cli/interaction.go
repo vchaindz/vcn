@@ -21,9 +21,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/dustin/go-humanize"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fatih/color"
@@ -36,10 +36,6 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-var displayProgress = true
-
-var wg sync.WaitGroup
-
 func Dashboard() {
 	// open dashboard
 	// we intentionally do not read the customer's token from disk
@@ -51,10 +47,7 @@ func Dashboard() {
 	browser.OpenURL(url)
 }
 
-func Login(in *os.File) {
-	if in == nil {
-		in = os.Stdin
-	}
+func Login() {
 	token, _ := api.LoadToken()
 	tokenValid, err := api.CheckToken(token)
 	if err != nil {
@@ -155,9 +148,6 @@ func Login(in *os.File) {
 	api.SyncKeys()
 
 	fmt.Println("Login successful.")
-
-	wg.Wait()
-
 }
 
 // Commit => "sign"
@@ -230,21 +220,23 @@ func Sign(filename string, state meta.Status, visibility meta.Visibility, quit b
 		log.Fatal(err)
 	}
 
-	go displayLatency()
+	s := spinner.New(spinner.CharSets[1], 500*time.Millisecond)
+
+	s.Prefix = "Signing asset... "
+	s.Start()
 
 	_ = api.TrackPublisher(meta.VcnSignEvent)
 	_ = api.TrackSign(artifactHash, filepath.Base(filename), state)
 
 	// TODO: return and display: block #, trx #
 	_, _ = commitHash(artifactHash, passphrase, filepath.Base(filename), fileSize, state, visibility)
+
+	s.Stop()
 	fmt.Println("")
 	fmt.Println("Asset:\t", filename)
 	fmt.Println("Hash:\t", artifactHash)
 	// fmt.Println("Date:\t\t", time.Now())
 	// fmt.Println("Signer:\t", "<pubKey>")
-
-	wg.Wait()
-	displayProgress = false
 
 	if !quit {
 		if _, err := fmt.Scanln(); err != nil {
@@ -342,14 +334,4 @@ func verify(filename string) (success bool) {
 	printColumn("Status", meta.StatusName(verification.Status), "NA", c, s)
 
 	return success
-}
-
-func displayLatency() {
-	i := 0
-	for displayProgress {
-		i++
-		fmt.Printf("\033[2K\rIn progress %02dsec", i)
-		// fmt.Println(i)
-		time.Sleep(1 * time.Second)
-	}
 }
