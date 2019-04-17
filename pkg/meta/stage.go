@@ -16,9 +16,10 @@ import (
 type Stage int64
 
 const (
-	StageProduction Stage = 0
-	StageStaging    Stage = 1
-	StageTest       Stage = 2
+	StageProduction  Stage = 0
+	StageStaging     Stage = 1
+	StageTest        Stage = 2
+	StageDevelopment Stage = 3
 )
 
 func StageEnvironment() Stage {
@@ -29,6 +30,8 @@ func StageEnvironment() Stage {
 		return StageTest
 	case "PRODUCTION":
 		return StageProduction
+	case "DEVELOPMENT":
+		return StageDevelopment
 	default:
 		return StageProduction
 	}
@@ -42,6 +45,8 @@ func StageName(stage Stage) (name string) {
 		return "STAGING"
 	case StageTest:
 		return "TEST"
+	case StageDevelopment:
+		return "DEVELOPMENT"
 	default:
 		log.Fatal("unsupported stage", name)
 		return ""
