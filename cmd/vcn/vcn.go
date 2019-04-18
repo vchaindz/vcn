@@ -31,7 +31,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "CodeNotary vcn"
 	app.Usage = "code signing in 1 simple step"
-	app.Version = meta.VcnVersion
+	app.Version = meta.Version()
 	app.Commands = []cli.Command{
 		{
 			Category: "Artifact actions",
@@ -165,7 +165,7 @@ func main() {
 		_ = cli.ShowAppHelp(c)
 	}
 	logs.LOG.WithFields(logrus.Fields{
-		"version": meta.VcnVersion,
+		"version": meta.Version(),
 		"stage":   meta.StageName(meta.StageEnvironment()),
 	}).Trace("VCN")
 	if err := app.Run(os.Args); err != nil {

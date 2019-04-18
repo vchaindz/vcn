@@ -12,7 +12,6 @@ import (
 	"log"
 )
 
-const VcnVersion = "0.3.6"
 const VcnDirectoryPermissions = 0700
 
 type Level int64
@@ -56,7 +55,7 @@ const (
 )
 
 func VcnClientName() (name string) {
-	return "VCN:" + VcnVersion
+	return "VCN:" + Version()
 }
 
 func LevelName(level Level) (name string) {
