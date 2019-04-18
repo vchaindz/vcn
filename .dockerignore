@@ -1,0 +1,11 @@
+# Compiled binaries
+vcn
+dist
+
+# Vendor
+vendor
+
+# Unuseful stuff
+build
+docs
+resources

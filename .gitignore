@@ -1,3 +1,6 @@
+# Module's vendor directory
+vendor
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -15,9 +18,8 @@
 .DS_Store
 
 # Compiled binaries
-dist/vcn-*
-/vcn/vcn
-/dist
+vcn
+dist
 
 # IntelliJ
 *.iml
