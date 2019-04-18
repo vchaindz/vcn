@@ -5,11 +5,18 @@
 # The full license information can be found under:
 # https://www.gnu.org/licenses/gpl-3.0.en.html
 
-FROM golang:1.12-stretch
+FROM golang:1.12-stretch as builder
 
-COPY . /vcn
+COPY . /build
 
-WORKDIR /vcn
-RUN make install
+WORKDIR /build
+RUN make vendor
+RUN make vcn
 
-ENTRYPOINT [ "vcn" ]
+FROM alpine:3.9
+
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+COPY --from=builder /build/vcn /bin/vcn
+
+ENTRYPOINT [ "/bin/vcn" ]
