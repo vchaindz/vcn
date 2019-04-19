@@ -9,15 +9,9 @@
 package cli
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
-	"io"
-	"log"
-	"os"
 	"syscall"
 
-	"github.com/fatih/color"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -29,39 +23,4 @@ func readPassword(msg string) (string, error) {
 		return "", err
 	}
 	return string(password), nil
-}
-
-func hash(filename string) string {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	h := sha256.New()
-	if _, err := io.Copy(h, file); err != nil {
-		log.Fatal(err)
-	}
-	checksum := h.Sum(nil)
-	return hex.EncodeToString(checksum)
-}
-
-func printColumn(field string, value string, fallback string, p ...color.Attribute) {
-	var spaces string
-	for i := len(field); i < 8; i++ {
-		spaces += " "
-	}
-	fmt.Print(field + ":" + spaces)
-	if p != nil {
-		c := color.New(p...)
-		c.Set()
-	}
-	if value != "" {
-		fmt.Print(value)
-	} else {
-		fmt.Print(fallback)
-	}
-	if p != nil {
-		color.Unset()
-	}
-	fmt.Println()
 }

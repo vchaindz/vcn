@@ -39,7 +39,7 @@ func NewCmdVerify() *cobra.Command {
 	}
 
 	cmd.SetUsageTemplate(
-		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ...arg(s)", 1),
+		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ...ARG(s)", 1),
 	)
 
 	return cmd

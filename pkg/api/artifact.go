@@ -16,15 +16,20 @@ import (
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/errors"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
+
+type Artifact struct {
+	Name string
+	Hash string
+	Size uint64
+}
 
 type ArtifactRequest struct {
 	Name       string `json:"name"`
 	Hash       string `json:"hash"`
 	Filename   string `json:"filename"`
-	FileSize   int64  `json:"fileSize"`
+	FileSize   uint64 `json:"fileSize"`
 	Url        string `json:"url"`
 	License    string `json:"license"`
 	Visibility string `json:"visibility"`
@@ -61,7 +66,7 @@ func (a ArtifactResponse) String() string {
 }
 
 func CreateArtifact(verification *BlockchainVerification, walletAddress string,
-	name string, hash string, fileSize int64, visibility meta.Visibility, status meta.Status) error {
+	name string, hash string, fileSize uint64, visibility meta.Visibility, status meta.Status) error {
 	restError := new(Error)
 	token, err := LoadToken()
 	if err != nil {
@@ -128,7 +133,7 @@ func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error
 	r, err := newSling(token).
 		Get(meta.ArtifactEndpoint()+"/"+hash+"/"+metahash).
 		Receive(&response, restError)
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"response":  response,
 		"err":       err,
 		"restError": restError,
