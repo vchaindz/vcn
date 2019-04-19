@@ -51,10 +51,9 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.yaml)")
+	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
 
 	//
-	rootCmd.PersistentFlags().BoolP("quit", "q", true, "")
-
 	rootCmd.AddCommand(verify.NewCmdVerify())
 
 }
@@ -87,7 +86,8 @@ func initConfig() {
 
 func preExitHook(cmd *cobra.Command) {
 	if quit, _ := cmd.PersistentFlags().GetBool("quit"); !quit {
-		// fixme(leogr): find a better way to prevent the app from exiting (when win)
+		fmt.Println()
+		fmt.Println("Press 'Enter' to continue")
 		fmt.Scanln()
 	}
 }
