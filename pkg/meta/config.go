@@ -120,6 +120,7 @@ func PollInterval() time.Duration {
 	return 1 * time.Second
 }
 
+// fixme(leogr): refactor vcn directories with config file
 func VcnDirectory() string {
 	return os.Getenv("HOME") + "/.vcn"
 }

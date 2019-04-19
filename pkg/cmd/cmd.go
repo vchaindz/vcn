@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vchain-us/vcn/pkg/cli"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/sign"
 
@@ -95,6 +96,9 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+	// fixme(leogr) refactor vcn dirs and add config file
+	cli.CreateVcnDirectories()
 }
 
 func preExitHook(cmd *cobra.Command) {
