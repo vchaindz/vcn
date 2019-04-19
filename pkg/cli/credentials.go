@@ -5,10 +5,47 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
+
+func PromptKeystorePassphrase() (passphrase string, err error) {
+
+	color.Set(meta.StyleAffordance())
+	fmt.Print("Attention: Please pick a strong passphrase. There is no recovery possible.")
+	color.Unset()
+	fmt.Println()
+
+	var keystorePassphrase string
+	var keystorePassphrase2 string
+
+	match := false
+	counter := 0
+	for match == false {
+
+		counter++
+
+		if counter == 4 {
+			return "", fmt.Errorf("too many failed attemps")
+		}
+
+		keystorePassphrase, _ = readPassword("Keystore passphrase: ")
+		keystorePassphrase2, _ = readPassword("Keystore passphrase (reenter): ")
+		fmt.Println()
+
+		if keystorePassphrase == "" {
+			fmt.Println("Your passphrase must not be empty.")
+		} else if keystorePassphrase != keystorePassphrase2 {
+			fmt.Println("Your two inputs did not match. Please try again.")
+		} else {
+			match = true
+		}
+
+	}
+	return keystorePassphrase, nil
+}
 
 func ProvideKeystorePassword() (passphrase string, err error) {
 	passphrase = os.Getenv(meta.KeyStorePasswordEnv)

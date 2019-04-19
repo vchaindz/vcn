@@ -14,6 +14,7 @@ import (
 
 	"github.com/vchain-us/vcn/pkg/cli"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
+	"github.com/vchain-us/vcn/pkg/cmd/login"
 	"github.com/vchain-us/vcn/pkg/cmd/sign"
 
 	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
@@ -68,6 +69,7 @@ func init() {
 	rootCmd.AddCommand(sign.NewCmdUnsupport())
 
 	// User group
+	rootCmd.AddCommand(login.NewCmdLogin())
 	rootCmd.AddCommand(dashboard.NewCmdDashboard())
 
 }

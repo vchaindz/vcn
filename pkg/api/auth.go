@@ -87,7 +87,7 @@ func CheckToken(token string) (success bool, err error) {
 	return false, fmt.Errorf("check token failed: %+v", restError)
 }
 
-func Authenticate(email string, password string) (err error) { // TODO: rework
+func AuthenticateUser(email string, password string) (err error) {
 	response := new(TokenResponse)
 	restError := new(Error)
 	r, err := sling.New().

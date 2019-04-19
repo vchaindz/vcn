@@ -34,14 +34,15 @@ type PagedWalletResponse struct {
 	Content []Wallet `json:"content"`
 }
 
-func CreateKeystore(password string) (pubKey string, wallet string) {
+func CreateKeystore(password string) (pubKey string, wallet string, err error) {
 	if password == "" {
-		logger().Error("Keystore passphrase cannot be empty")
+		err = makeError("Keystore passphrase cannot be empty", nil)
+		return
 	}
 	ks := keystore.NewKeyStore(meta.WalletDirectory(), keystore.StandardScryptN, keystore.StandardScryptP)
 	account, err := ks.NewAccount(password)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	pubKey = account.Address.Hex()
@@ -49,7 +50,7 @@ func CreateKeystore(password string) (pubKey string, wallet string) {
 
 	_ = TrackPublisher(meta.KeyStoreCreatedEvent)
 
-	return pubKey, wallet
+	return pubKey, wallet, nil
 }
 
 func IsWalletSynced(address string) (result bool, err error) {
