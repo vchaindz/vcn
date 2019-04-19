@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/sign"
 
 	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
@@ -58,6 +59,7 @@ func init() {
 
 	// Verification group
 	rootCmd.AddCommand(verify.NewCmdVerify())
+	rootCmd.AddCommand(list.NewCmdList())
 
 	// Signing group
 	rootCmd.AddCommand(sign.NewCmdSign())
