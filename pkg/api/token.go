@@ -26,3 +26,10 @@ func WriteToken(token string) (err error) {
 	}).Trace("WriteToken")
 	return ioutil.WriteFile(meta.TokenFile(), []byte(token), os.FileMode(0600))
 }
+
+func DeleteToken() (err error) {
+	logger().WithFields(logrus.Fields{
+		"tokenFile": meta.TokenFile(),
+	}).Trace("DeleteToken")
+	return os.Remove(meta.TokenFile())
+}
