@@ -25,7 +25,7 @@ func NewCmdDashboard() *cobra.Command {
 		Short:   "Open " + meta.DashboardURL() + " in browser",
 		Long:    ``,
 		Run:     runDashboard,
-		Args:    cobra.MinimumNArgs(1),
+		Args:    cobra.NoArgs,
 	}
 
 	return cmd
