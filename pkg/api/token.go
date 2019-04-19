@@ -6,12 +6,11 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 func LoadToken() (jwtToken string, err error) {
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"tokenFile": meta.TokenFile(),
 	}).Trace("LoadToken")
 	contents, err := ioutil.ReadFile(meta.TokenFile())
@@ -22,7 +21,7 @@ func LoadToken() (jwtToken string, err error) {
 }
 
 func WriteToken(token string) (err error) {
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"tokenFile": meta.TokenFile(),
 	}).Trace("WriteToken")
 	return ioutil.WriteFile(meta.TokenFile(), []byte(token), os.FileMode(0600))

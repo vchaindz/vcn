@@ -12,7 +12,6 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -35,7 +34,7 @@ type PublisherTrackingEventRequest struct {
 }
 
 func TrackVerify(hash string, filename string) (err error) {
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"hash":     hash,
 		"filename": filename,
 	}).Trace("TrackVerify")
@@ -58,7 +57,7 @@ func TrackVerify(hash string, filename string) (err error) {
 }
 
 func TrackPublisher(event string) (err error) {
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"event": event,
 	}).Trace("TrackPublisher")
 	restError := new(Error)
@@ -81,7 +80,7 @@ func TrackPublisher(event string) (err error) {
 }
 
 func TrackSign(hash string, filename string, status meta.Status) (err error) {
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"hash":     hash,
 		"filename": filename,
 		"status":   status,

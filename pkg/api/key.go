@@ -19,7 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/utils"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -37,7 +36,7 @@ type PagedWalletResponse struct {
 
 func CreateKeystore(password string) (pubKey string, wallet string) {
 	if password == "" {
-		logs.LOG.Error("Keystore passphrase cannot be empty")
+		logger().Error("Keystore passphrase cannot be empty")
 	}
 	ks := keystore.NewKeyStore(meta.WalletDirectory(), keystore.StandardScryptN, keystore.StandardScryptP)
 	account, err := ks.NewAccount(password)
@@ -83,13 +82,13 @@ func IsWalletSynced(address string) (result bool, err error) {
 
 func HasKeystore() (bool, error) {
 
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"keystore": meta.WalletDirectory(),
 	}).Trace("HasKeystore()")
 
 	files, err := ioutil.ReadDir(meta.WalletDirectory())
 	if err != nil {
-		logs.LOG.WithFields(logrus.Fields{
+		logger().WithFields(logrus.Fields{
 			"error": err,
 		}).Error("ReadDir() failed")
 		return false, err

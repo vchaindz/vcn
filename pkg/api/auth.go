@@ -12,7 +12,6 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -48,7 +47,7 @@ func CheckPublisherExists(email string) (success bool, err error) {
 		Get(meta.PublisherEndpoint()+"/exists").
 		QueryStruct(&PublisherExistsParams{Email: email}).
 		Receive(&response, restError)
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"response":  response,
 		"err":       err,
 		"restError": restError,
@@ -67,7 +66,7 @@ func CheckToken(token string) (success bool, err error) {
 	response, err := newSling(token).
 		Get(meta.TokenCheckEndpoint()).
 		Receive(nil, restError)
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"response":  response,
 		"err":       err,
 		"restError": restError,
@@ -95,7 +94,7 @@ func Authenticate(email string, password string) (err error) { // TODO: rework
 		Post(meta.PublisherEndpoint()+"/auth").
 		BodyJSON(AuthRequest{Email: email, Password: password}).
 		Receive(response, restError)
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"email":     email,
 		"response":  response,
 		"err":       err,
