@@ -34,7 +34,9 @@ func NewCmdSign() *cobra.Command {
 		Aliases: []string{"s"},
 		Short:   "Sign digital assets' hashes onto the blockchain",
 		Long:    ``,
-		RunE:    runSign,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runSignWithState(cmd, args, meta.StatusTrusted)
+		},
 
 		Args: cobra.ExactArgs(1),
 	}
@@ -49,7 +51,7 @@ func NewCmdSign() *cobra.Command {
 	return cmd
 }
 
-func runSign(cmd *cobra.Command, args []string) error {
+func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) error {
 
 	public, err := cmd.Flags().GetBool("public")
 	if err != nil {
@@ -61,7 +63,7 @@ func runSign(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return sign(args[0], meta.StatusTrusted, meta.VisibilityForFlag(public), yes)
+	return sign(args[0], state, meta.VisibilityForFlag(public), yes)
 }
 
 func sign(filename string, state meta.Status, visibility meta.Visibility, acknowledge bool) error {

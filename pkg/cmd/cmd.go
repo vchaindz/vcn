@@ -56,9 +56,15 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.yaml)")
 	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
 
-	//
+	// Verification group
 	rootCmd.AddCommand(verify.NewCmdVerify())
+
+	// Signing group
 	rootCmd.AddCommand(sign.NewCmdSign())
+	rootCmd.AddCommand(sign.NewCmdUntrust())
+	rootCmd.AddCommand(sign.NewCmdUnsupport())
+
+	// User group
 	rootCmd.AddCommand(dashboard.NewCmdDashboard())
 
 }
