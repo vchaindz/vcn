@@ -19,6 +19,7 @@ vendor:
 
 .PHONY: test
 test:
+	$(GO) vet ./...
 	$(GO) test -v -race ./...
 
 .PHONY: install

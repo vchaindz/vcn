@@ -7,16 +7,14 @@
 
 FROM golang:1.12-stretch as builder
 
-COPY . /build
-
-WORKDIR /build
-RUN make vendor
-RUN make vcn
+WORKDIR /src
+COPY . .
+RUN make install
 
 FROM alpine:3.9
 
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
-COPY --from=builder /build/vcn /bin/vcn
+COPY --from=builder /go/bin/vcn /bin/vcn
 
 ENTRYPOINT [ "/bin/vcn" ]
