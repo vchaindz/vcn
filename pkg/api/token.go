@@ -38,5 +38,9 @@ func DeleteToken() (err error) {
 	logger().WithFields(logrus.Fields{
 		"tokenFile": meta.TokenFile(),
 	}).Trace("DeleteToken")
-	return os.Remove(meta.TokenFile())
+	f := meta.TokenFile()
+	if _, err := os.Stat(f); err != nil && os.IsNotExist(err) {
+		return nil
+	}
+	return os.Remove(f)
 }
