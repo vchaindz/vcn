@@ -11,13 +11,13 @@ package cli
 import (
 	"os"
 
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func CreateVcnDirectories() {
+func CreateVcnDirectories() error {
 	if err := os.MkdirAll(meta.WalletDirectory(),
 		os.FileMode(meta.VcnDirectoryPermissions)); err != nil {
-		logs.LOG.Fatal(err)
+		return err
 	}
+	return nil
 }

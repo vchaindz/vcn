@@ -32,6 +32,7 @@ func NewCmdList() *cobra.Command {
 func runList(cmd *cobra.Command, args []string) error {
 	artifacts, err := api.LoadArtifactsForCurrentWallet()
 	if err != nil {
+		cmd.SilenceUsage = true
 		return err
 	}
 

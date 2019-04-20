@@ -50,7 +50,6 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	for _, spec := range args {
 		if ok, err := verify(spec); !ok {
 			cmd.SilenceUsage = true
-			cmd.SilenceErrors = true
 			if err != nil {
 				return err
 			}

@@ -86,11 +86,10 @@ func commitHash(
 	transactor.GasPrice = meta.GasPrice()
 	client, err := ethclient.Dial(meta.MainNetEndpoint())
 	if err != nil {
-		logger().WithFields(logrus.Fields{
+		err = makeError("Cannot connect to blockchain", logrus.Fields{
 			"error":   err,
 			"network": meta.MainNetEndpoint(),
-		}).Fatal("Cannot connect to blockchain")
-		err = makeError("Cannot connect to blockchain", nil)
+		})
 		return
 	}
 	address := common.HexToAddress(meta.AssetsRelayContractAddress())

@@ -11,11 +11,12 @@ package sign
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/vchain-us/vcn/pkg/logs"
 
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
@@ -63,6 +64,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		return err
 	}
 
+	cmd.SilenceUsage = true
 	return sign(args[0], state, meta.VisibilityForFlag(public), yes)
 }
 
@@ -94,11 +96,12 @@ func sign(filename string, state meta.Status, visibility meta.Visibility, acknow
 	if strings.HasPrefix(filename, "docker:") {
 		artifactHash, err = docker.GetHash(filename)
 		if err != nil {
-			log.Fatal("failed to get hash for docker image", err)
+			logs.LOG.Error(err)
+			return fmt.Errorf("failed to get hash for docker image")
 		}
 		fileSize, err = docker.GetSize(filename)
 		if err != nil {
-			log.Fatal("failed to get size for docker image", err)
+			return fmt.Errorf("failed to get size for docker image %s", err)
 		}
 	} else {
 		// file mode
@@ -140,7 +143,7 @@ func sign(filename string, state meta.Status, visibility meta.Visibility, acknow
 
 	passphrase, err := cli.ProvideKeystorePassword()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	s := spinner.New(spinner.CharSets[1], 500*time.Millisecond)

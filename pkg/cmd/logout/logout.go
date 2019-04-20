@@ -29,9 +29,12 @@ func NewCmdLogout() *cobra.Command {
 }
 
 func runLogout(cmd *cobra.Command, args []string) error {
-	err := api.DeleteToken()
-	if err == nil {
-		fmt.Println("Logout successful.")
+
+	if err := api.DeleteToken(); err != nil {
+		cmd.SilenceUsage = true
+		return err
 	}
-	return err
+
+	fmt.Println("Logout successful.")
+	return nil
 }

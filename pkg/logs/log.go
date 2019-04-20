@@ -10,6 +10,7 @@ import (
 var LOG = logrus.New()
 
 func init() {
+	LOG.ExitFunc = func(code int) {} // prevent from exiting immediately on fatal
 	ll := os.Getenv("LOG_LEVEL")
 	switch ll {
 	case "TRACE":

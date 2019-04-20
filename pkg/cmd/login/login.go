@@ -99,7 +99,10 @@ func login() error {
 
 	}
 
-	api.SyncKeys()
+	err = api.SyncKeys()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("Login successful.")
 	return nil

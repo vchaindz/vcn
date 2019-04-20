@@ -10,7 +10,6 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/dghubble/sling"
@@ -110,7 +109,7 @@ func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 	restError := new(Error)
 	token, err := LoadToken()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	r, err := sling.New().
 		Get(meta.ArtifactEndpointForWallet(walletAddress)).

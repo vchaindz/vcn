@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"strings"
 
 	"github.com/dghubble/sling"
@@ -58,7 +57,7 @@ func IsWalletSynced(address string) (result bool, err error) {
 	pagedWalletResponse := new(PagedWalletResponse)
 	token, err := LoadToken()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	r, err := sling.New().
 		Add("Authorization", "Bearer "+token).
@@ -102,18 +101,21 @@ func LoadPublicKeys() (addresses []string, err error) {
 	pagedWalletResponse := new(PagedWalletResponse)
 	token, err := LoadToken()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	r, err := sling.New().
 		Add("Authorization", "Bearer "+token).
 		Get(meta.WalletEndpoint()).
 		Receive(pagedWalletResponse, authError)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	if r.StatusCode != 200 {
-		log.Fatalf("request failed: %s (%d)", authError.Message,
-			authError.Status)
+		err = makeError(
+			fmt.Sprint("request failed: %s (%d)", authError.Message, authError.Status),
+			nil,
+		)
+		return
 	}
 	var result []string
 	for _, wallet := range (*pagedWalletResponse).Content {
@@ -122,22 +124,22 @@ func LoadPublicKeys() (addresses []string, err error) {
 	return result, nil
 }
 
-func SyncKeys() {
+func SyncKeys() error {
 	authError := new(Error)
 	token, err := LoadToken()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	addresses, err := LoadPublicKeys()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	localAddress, err := PublicKeyForLocalWallet()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	if contains(addresses, localAddress) {
-		return
+		return nil
 	}
 	r, err := sling.New().
 		Add("Authorization", "Bearer "+token).
@@ -145,14 +147,17 @@ func SyncKeys() {
 		BodyJSON(Wallet{Address: localAddress}).
 		Receive(nil, authError)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	if r.StatusCode != 200 {
-		log.Fatalf("request failed: %s (%d)", authError.Message,
-			authError.Status)
+		return makeFatal(
+			fmt.Sprintf("request failed: %s (%d)", authError.Message, authError.Status),
+			nil,
+		)
 	}
 
 	_ = TrackPublisher(meta.KeyStoreUploadedEvent)
+	return nil
 }
 
 func PublicKeyForLocalWallet() (string, error) {
