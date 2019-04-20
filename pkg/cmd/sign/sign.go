@@ -71,23 +71,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 func sign(filename string, state meta.Status, visibility meta.Visibility, acknowledge bool) error {
 
 	// check for token
-	token, _ := api.LoadToken()
-	checkOk, _ := api.CheckToken(token)
-	if !checkOk {
-		fmt.Println("You need to be logged in to sign.")
-		fmt.Println("Proceed by authenticating yourself using <vcn login>")
-		// errors.PrintErrorURLCustom("token", 428)
-		os.Exit(1)
-	}
+	cli.AssertUserLogin()
 
 	// keystore
-	hasKeystore, _ := api.HasKeystore()
-	if hasKeystore == false {
-		fmt.Printf("You need a keystore to sign.\n")
-		fmt.Println("Proceed by authenticating yourself using <vcn auth>")
-		// errors.PrintErrorURLCustom("keystore", 428)
-		os.Exit(1)
-	}
+	cli.AssertUserKeystore()
 
 	var err error
 	var artifactHash string
