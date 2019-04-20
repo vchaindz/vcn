@@ -112,7 +112,7 @@ func LoadPublicKeys() (addresses []string, err error) {
 	}
 	if r.StatusCode != 200 {
 		err = makeError(
-			fmt.Sprint("request failed: %s (%d)", authError.Message, authError.Status),
+			fmt.Sprintf("request failed: %s (%d)", authError.Message, authError.Status),
 			nil,
 		)
 		return
