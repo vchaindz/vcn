@@ -25,5 +25,8 @@ vendor
 *.iml
 .idea/
 
+# vscode
+.vscode/
+
 # Vim
 *.swp
