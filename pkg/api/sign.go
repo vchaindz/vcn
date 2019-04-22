@@ -10,6 +10,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"time"
 
@@ -22,6 +23,15 @@ import (
 	"github.com/vchain-us/vcn/internal/utils"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
+
+const walletNotSyncMsg = `
+%s cannot be signed with CodeNotary. 
+We are finalizing your account configuration. We will complete the 
+configuration shortly and we will update you as soon as this is done.
+We are sorry for the inconvenience and would like to thank you for 
+your patience.
+It only takes few seconds. Please try again in 1 minute.
+`
 
 func (a *Artifact) Sign(passphrase string, state meta.Status, visibility meta.Visibility) error {
 	if a == nil {
@@ -74,11 +84,7 @@ func commitHash(
 		return
 	}
 	if !walletSynced {
-		logger().Error("\n", name, " cannot be signed with CodeNotary. We are "+
-			"finalizing your account configuration.\nWe will complete the "+
-			"configuration shortly and we will update you as soon as this "+
-			"is done.\nWe are sorry for the inconvenience and would like "+
-			"to thank you for your patience.")
+		logger().Error(fmt.Sprintf(walletNotSyncMsg, name))
 		err = makeError("Wallet not yet synced", nil)
 		return
 	}
