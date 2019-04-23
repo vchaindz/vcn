@@ -13,7 +13,7 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/internal/logs"
 )
 
 func logger() *logrus.Logger {

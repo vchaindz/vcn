@@ -15,7 +15,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/internal/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 

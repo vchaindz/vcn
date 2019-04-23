@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vchain-us/vcn/pkg/logs"
+	"github.com/vchain-us/vcn/internal/logs"
 
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"

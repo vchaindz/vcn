@@ -13,9 +13,9 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/vchain-us/vcn/internal/logs"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cli"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
