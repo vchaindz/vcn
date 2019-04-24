@@ -19,7 +19,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func PromptKeyPassphrase() (passphrase string, err error) {
+func PromptPassphrase() (passphrase string, err error) {
 
 	color.Set(meta.StyleAffordance())
 	fmt.Print("Attention: Please pick a strong passphrase. There is no recovery possible.")
@@ -55,7 +55,7 @@ func PromptKeyPassphrase() (passphrase string, err error) {
 	return keystorePassphrase, nil
 }
 
-func ProvideKeystorePassword() (passphrase string, err error) {
+func ProvidePassphrase() (passphrase string, err error) {
 	passphrase = os.Getenv(meta.KeyStorePasswordEnv)
 	if passphrase != "" {
 		logs.LOG.Trace("Keystore password provided (environment)")

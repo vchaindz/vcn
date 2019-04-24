@@ -73,7 +73,7 @@ func login() error {
 		fmt.Println("You have no keys set up yet.")
 		fmt.Println("<vcn> will now do this for you and upload the public key to the platform.")
 
-		keyPassphrase, err := cli.PromptKeyPassphrase()
+		keyPassphrase, err := cli.PromptPassphrase()
 		if err != nil {
 			return err
 		}

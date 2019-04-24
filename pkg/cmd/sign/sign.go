@@ -130,7 +130,7 @@ func sign(filename string, state meta.Status, visibility meta.Visibility, acknow
 		}
 	}
 
-	passphrase, err := cli.ProvideKeystorePassword()
+	passphrase, err := cli.ProvidePassphrase()
 	if err != nil {
 		return err
 	}
