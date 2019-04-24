@@ -101,7 +101,7 @@ func (u User) SyncKeys() error {
 		}
 
 		// If a wallet is already synced, just skip it
-		if authError.Status == 409 && authError.Message == "WalletAddressAlreadyExistsException" {
+		if authError.Status == 409 {
 			continue
 		}
 		if r.StatusCode != 200 {

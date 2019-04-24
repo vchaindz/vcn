@@ -16,7 +16,6 @@ import (
 const VERIFIED_USER = "mathias@vchain.us"
 
 func TestCheckTokenNoInput(t *testing.T) {
-
 	token := ""
 	ret, _ := checkToken(token)
 
@@ -27,7 +26,6 @@ func TestCheckTokenNoInput(t *testing.T) {
 }
 
 func TestPublisherExists(t *testing.T) {
-
 	ret, err := CheckPublisherExists(VERIFIED_USER)
 
 	if ret == false || err != nil {

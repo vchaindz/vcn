@@ -86,7 +86,7 @@ func verify(filename string, user *api.User) (success bool, err error) {
 
 	var artifact *api.ArtifactResponse
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		artifact, _ = api.LoadArtifactForHash(user, artifactHash, verification.HashAsset())
+		artifact, _ = api.LoadArtifactForHash(user, artifactHash, verification.MetaHash())
 	}
 	if artifact != nil {
 		printColumn("Asset", artifact.Filename, filepath.Base(filename))

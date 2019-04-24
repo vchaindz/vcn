@@ -28,7 +28,7 @@ type BlockchainVerification struct {
 	Timestamp time.Time
 }
 
-func (verification *BlockchainVerification) HashAsset() string {
+func (verification *BlockchainVerification) MetaHash() string {
 	metadata := fmt.Sprintf("%s-%d-%d-%d",
 		verification.Owner.Hex(),
 		int64(verification.Level),

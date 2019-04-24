@@ -109,7 +109,7 @@ func authenticateUser(email string, password string) (token string, err error) {
 	case 400:
 		return "", fmt.Errorf("Your email address was not confirmed. " +
 			"Please confirm it by clicking on the link we sent to " + email + ". " +
-			"If you did not receive the email, please go to dashboard.codenotary.io and click on the link \"Resend email\"")
+			"If you did not receive the email, please go to " + meta.DashboardURL() + " and click on the link \"Resend email\"")
 	case 401:
 		return "", fmt.Errorf("invalid password")
 	}

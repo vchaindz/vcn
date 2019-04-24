@@ -71,7 +71,7 @@ func (u User) CreateArtifact(verification *BlockchainVerification, walletAddress
 		return makeError("authentication required, please login", nil)
 	}
 
-	metaHash := verification.HashAsset()
+	metaHash := verification.MetaHash()
 	restError := new(Error)
 	r, err := newSling(u.token()).
 		Post(meta.ArtifactEndpointForWallet(walletAddress)).
@@ -92,14 +92,6 @@ func (u User) CreateArtifact(verification *BlockchainVerification, walletAddress
 			restError.Status)
 	}
 	return nil
-}
-
-func (u *User) LoadArtifactsForCurrentWallet() ([]ArtifactResponse, error) {
-	publicKey := u.cfg.LastPubKey()
-	if publicKey == "" {
-		return nil, nil
-	}
-	return u.LoadArtifacts(publicKey)
 }
 
 func (u *User) LoadAllArtifacts() ([]ArtifactResponse, error) {
