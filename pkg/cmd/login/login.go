@@ -33,6 +33,7 @@ func NewCmdLogin() *cobra.Command {
 }
 
 func runLogin(cmd *cobra.Command, args []string) error {
+	cmd.SilenceUsage = true
 	return login()
 }
 
