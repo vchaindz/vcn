@@ -45,11 +45,12 @@ func TestSaveConfig(t *testing.T) {
 	email := "example@example.net"
 
 	cfg = &config{
-		Users: []User{
-			User{
+		CurrentContext: email,
+		Users: []*User{
+			&User{
 				Email: email,
-				Keystores: []Keystore{
-					Keystore{
+				Keystores: []*Keystore{
+					&Keystore{
 						Path: filepath.Join(tdir, "u", email, "keystore"),
 					},
 				},
@@ -59,4 +60,7 @@ func TestSaveConfig(t *testing.T) {
 
 	err := SaveConfig()
 	assert.NoError(t, err)
+
+	LoadConfig()
+	assert.Equal(t, email, Config().CurrentContext)
 }

@@ -35,7 +35,7 @@ func TestUserAddKeystore(t *testing.T) {
 	}
 
 	assert.Len(t, u.Keystores, 1)
-	assert.Equal(t, k, u.Keystores[0])
+	assert.Equal(t, k, &u.Keystores[0])
 	assert.Equal(t, keydir, k.Path)
 }
 
@@ -66,7 +66,7 @@ func TestKeystoreCreateKey(t *testing.T) {
 	assert.NotEqual(t, p, pp)
 
 	u := User{
-		Keystores: []Keystore{k},
+		Keystores: []*Keystore{&k},
 	}
 
 	pks := u.PubKeys()

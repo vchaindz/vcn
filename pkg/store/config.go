@@ -21,13 +21,14 @@ type Keystore struct {
 
 // User holds user configuration
 type User struct {
-	Email     string     `json:"email"`
-	Token     string     `json:"token"`
-	Keystores []Keystore `json:"keystores"`
+	Email     string      `json:"email"`
+	Token     string      `json:"token"`
+	Keystores []*Keystore `json:"keystores"`
 }
 
 type config struct {
-	Users []User `json:"users"`
+	Users          []*User `json:"users"`
+	CurrentContext string  `json:"currentContext"`
 }
 
 var cfg *config
@@ -94,6 +95,7 @@ func SaveConfig() error {
 	}
 
 	v.Set("users", cfg.Users)
+	v.Set("currentContext", cfg.CurrentContext)
 	return v.WriteConfig()
 }
 
@@ -105,7 +107,7 @@ func (c *config) User(email string) *User {
 
 	for _, u := range c.Users {
 		if u.Email == email {
-			return &u
+			return u
 		}
 	}
 
@@ -113,7 +115,7 @@ func (c *config) User(email string) *User {
 		Email: email,
 	}
 
-	c.Users = append(c.Users, u)
+	c.Users = append(c.Users, &u)
 	return &u
 }
 
