@@ -62,7 +62,7 @@ func (u User) OpenKey(pubKey string) (io.Reader, error) {
 	for _, ks := range u.Keystores {
 		ksi := ksInstance(ks.Path)
 		for _, a := range ksi.Accounts() {
-			if a.Address.Hex() == pubKey {
+			if strings.ToLower(a.Address.Hex()) == pubKey {
 				return os.Open(a.URL.Path)
 			}
 		}
@@ -70,8 +70,8 @@ func (u User) OpenKey(pubKey string) (io.Reader, error) {
 	return nil, fmt.Errorf("no key found matching %s", pubKey)
 }
 
-// HasKey returns true if the User has at least one public key
-func (u User) HasKey() bool {
+// HasPubKey returns true if the User has at least one public key
+func (u User) HasPubKey() bool {
 	for _, ks := range u.Keystores {
 		ksi := ksInstance(ks.Path)
 		if len(ksi.Accounts()) > 0 {
