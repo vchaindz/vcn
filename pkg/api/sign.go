@@ -64,8 +64,6 @@ func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state me
 		return makeError(fmt.Sprintf(walletNotSyncMsg, artifact.Name), nil)
 	}
 
-	_ = TrackPublisher(&u, meta.VcnSignEvent)
-	_ = TrackSign(&u, artifact.Hash, artifact.Name, state)
 	return u.commitHash(keyin, passphrase, artifact.Hash, artifact.Name, artifact.Size, state, visibility)
 }
 
@@ -150,6 +148,9 @@ func (u User) commitHash(
 		return
 	}
 
+	// todo(ameingast): redundant tracking events?
+	_ = TrackPublisher(&u, meta.VcnSignEvent)
+	_ = TrackSign(&u, hash, name, status)
 	return
 }
 

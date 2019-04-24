@@ -91,12 +91,12 @@ func login() error {
 			return err
 		}
 
-		_ = api.TrackPublisher(user, meta.KeyCreatedEvent)
-
 		fmt.Println("Keystore successfully created. We are updating your user profile.\n" +
 			"You will be able to sign your first asset in one minute")
 		fmt.Println("Keystore:\t", keystore.Path)
 		fmt.Println("Public key:\t", pubKey)
+
+		_ = api.TrackPublisher(user, meta.KeyCreatedEvent)
 	}
 
 	err = user.SyncKeys()

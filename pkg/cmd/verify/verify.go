@@ -49,7 +49,6 @@ func NewCmdVerify() *cobra.Command {
 
 func runVerify(cmd *cobra.Command, args []string) error {
 	user := api.NewUser(store.Config().CurrentContext)
-	_ = api.TrackPublisher(user, meta.VcnVerifyEvent)
 	for _, spec := range args {
 		if ok, err := verify(spec, user); !ok {
 			cmd.SilenceUsage = true
@@ -78,7 +77,6 @@ func verify(filename string, user *api.User) (success bool, err error) {
 		}
 		artifactHash = strings.TrimSpace(hash)
 	}
-	_ = api.TrackVerify(user, artifactHash, filepath.Base(filename))
 	verification, err := api.BlockChainVerify(artifactHash)
 	if err != nil {
 		return false, fmt.Errorf("unable to verify hash: %s", err)
@@ -135,6 +133,10 @@ func verify(filename string, user *api.User) (success bool, err error) {
 		c, s = meta.StyleError()
 	}
 	printColumn("Status", meta.StatusName(verification.Status), "NA", c, s)
+
+	// todo(ameingast): redundant tracking events?
+	_ = api.TrackPublisher(user, meta.VcnVerifyEvent)
+	_ = api.TrackVerify(user, artifactHash, filepath.Base(filename))
 	return
 }
 
