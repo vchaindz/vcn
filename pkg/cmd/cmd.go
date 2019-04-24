@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vchain-us/vcn/pkg/cli"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/login"
 	"github.com/vchain-us/vcn/pkg/cmd/logout"
@@ -23,9 +22,7 @@ import (
 
 	"github.com/vchain-us/vcn/pkg/meta"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -56,7 +53,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.json)")
 	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
 
 	// Verification group
@@ -73,38 +70,6 @@ func init() {
 	rootCmd.AddCommand(logout.NewCmdLogout())
 	rootCmd.AddCommand(dashboard.NewCmdDashboard())
 
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// Search config in home + "/.vcn" directory with name "config.yaml".
-		viper.AddConfigPath(home + "/.vcn")
-		viper.SetConfigName("config.yaml")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
-
-	// fixme(leogr) refactor vcn dirs and add config file
-	if err := cli.CreateVcnDirectories(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
 }
 
 func preExitHook(cmd *cobra.Command) {

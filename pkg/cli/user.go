@@ -13,13 +13,18 @@ import (
 	"os"
 
 	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/store"
 )
 
 func AssertUserLogin() {
 	// check for token
-	token, _ := api.LoadToken()
-	checkOk, _ := api.CheckToken(token)
-	if !checkOk {
+	hasAuth, err := api.NewUser(store.Config().CurrentContext).IsAuthenticated()
+
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+
+	if !hasAuth {
 		fmt.Println("You need to be logged in.")
 		fmt.Println("Proceed by authenticating yourself using <vcn login>")
 		// errors.PrintErrorURLCustom("token", 428)
@@ -28,10 +33,10 @@ func AssertUserLogin() {
 }
 
 func AssertUserKeystore() {
-	hasKeystore, _ := api.HasKeystore()
-	if hasKeystore == false {
+	u := api.NewUser(store.Config().CurrentContext)
+	if !u.HasKey() {
 		fmt.Println("You need a keystore to sign.")
-		fmt.Println("Proceed by authenticating yourself using <vcn auth>")
+		fmt.Println("Proceed by authenticating yourself using <vcn login>")
 		// errors.PrintErrorURLCustom("keystore", 428)
 		os.Exit(1)
 	}

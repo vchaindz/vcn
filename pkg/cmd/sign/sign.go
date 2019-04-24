@@ -26,6 +26,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cli"
 	"github.com/vchain-us/vcn/pkg/meta"
+	"github.com/vchain-us/vcn/pkg/store"
 )
 
 // NewCmdSign returns the cobra command for `vcn sign`
@@ -72,6 +73,7 @@ func sign(filename string, state meta.Status, visibility meta.Visibility, acknow
 
 	// check for token
 	cli.AssertUserLogin()
+	u := api.NewUser(store.Config().CurrentContext)
 
 	// keystore
 	cli.AssertUserKeystore()
@@ -146,7 +148,7 @@ func sign(filename string, state meta.Status, visibility meta.Visibility, acknow
 	}
 
 	// TODO: return and display: block #, trx #
-	err = a.Sign(passphrase, state, visibility)
+	err = u.Sign(a, u.DefaultKey(), passphrase, state, visibility)
 
 	s.Stop()
 	if err != nil {

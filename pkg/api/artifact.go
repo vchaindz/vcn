@@ -10,11 +10,8 @@ package api
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/internal/errors"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -59,24 +56,25 @@ type ArtifactResponse struct {
 }
 
 func (a ArtifactResponse) String() string {
-
 	return fmt.Sprintf("File:\t%s\nHash:\t%s\nStatus:\t%s\n\n",
 		a.Name, a.Hash, a.Status)
 }
 
-func CreateArtifact(verification *BlockchainVerification, walletAddress string,
+func (u User) CreateArtifact(verification *BlockchainVerification, walletAddress string,
 	name string, hash string, fileSize uint64, visibility meta.Visibility, status meta.Status) error {
-	restError := new(Error)
-	token, err := LoadToken()
+
+	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
-		fmt.Printf("\n%s\n", err.Error())
-		errors.PrintErrorURLCustom("sign", 404)
-		os.Exit(1)
+		return err
 	}
+	if !hasAuth {
+		return makeError("authentication required, please login", nil)
+	}
+
 	metaHash := verification.HashAsset()
-	r, err := sling.New().
+	restError := new(Error)
+	r, err := newSling(u.token()).
 		Post(meta.ArtifactEndpointForWallet(walletAddress)).
-		Add("Authorization", "Bearer "+token).
 		BodyJSON(ArtifactRequest{
 			Name:       name,
 			Hash:       hash,
@@ -96,24 +94,31 @@ func CreateArtifact(verification *BlockchainVerification, walletAddress string,
 	return nil
 }
 
-func LoadArtifactsForCurrentWallet() ([]ArtifactResponse, error) {
-	publicKey, err := PublicKeyForLocalWallet()
-	if err != nil {
-		return nil, err
+func (u *User) LoadArtifactsForCurrentWallet() ([]ArtifactResponse, error) {
+	publicKey := u.cfg.LastPubKey()
+	if publicKey == "" {
+		return nil, nil
 	}
-	return LoadArtifacts(publicKey)
+	return u.LoadArtifacts(publicKey)
 }
 
-func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
+func (u *User) LoadAllArtifacts() ([]ArtifactResponse, error) {
+	ret := []ArtifactResponse{}
+	for _, pubKey := range u.cfg.PubKeys() {
+		chunk, err := u.LoadArtifacts(pubKey)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, chunk...)
+	}
+	return ret, nil
+}
+
+func (u *User) LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 	response := new(PagedArtifactResponse)
 	restError := new(Error)
-	token, err := LoadToken()
-	if err != nil {
-		return nil, err
-	}
-	r, err := sling.New().
+	r, err := newSling(u.token()).
 		Get(meta.ArtifactEndpointForWallet(walletAddress)).
-		Add("Authorization", "Bearer "+token).
 		Receive(&response, restError)
 	if err != nil {
 		return nil, err
@@ -125,11 +130,10 @@ func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 	return response.Content, nil
 }
 
-func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error) {
+func LoadArtifactForHash(user *User, hash string, metahash string) (*ArtifactResponse, error) {
 	response := new(ArtifactResponse)
 	restError := new(Error)
-	token, _ := LoadToken()
-	r, err := newSling(token).
+	r, err := newSling(user.token()).
 		Get(meta.ArtifactEndpoint()+"/"+hash+"/"+metahash).
 		Receive(&response, restError)
 	logger().WithFields(logrus.Fields{
@@ -144,7 +148,7 @@ func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error
 	case 200:
 		return response, nil
 	case 404:
-		return nil, fmt.Errorf("No asset matching hash %s/%s found", hash, metahash)
+		return nil, fmt.Errorf("no asset matching hash %s/%s found", hash, metahash)
 	}
-	return nil, fmt.Errorf("Loading artifact for hash failed: %+v", restError)
+	return nil, fmt.Errorf("loading artifact for hash failed: %+v", restError)
 }

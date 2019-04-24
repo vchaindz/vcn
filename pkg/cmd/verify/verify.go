@@ -15,6 +15,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vchain-us/vcn/pkg/store"
+
 	"github.com/dustin/go-humanize"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fatih/color"
@@ -46,9 +48,10 @@ func NewCmdVerify() *cobra.Command {
 }
 
 func runVerify(cmd *cobra.Command, args []string) error {
-	_ = api.TrackPublisher(meta.VcnVerifyEvent)
+	user := api.NewUser(store.Config().CurrentContext)
+	_ = api.TrackPublisher(user, meta.VcnVerifyEvent)
 	for _, spec := range args {
-		if ok, err := verify(spec); !ok {
+		if ok, err := verify(spec, user); !ok {
 			cmd.SilenceUsage = true
 			if err != nil {
 				return err
@@ -60,7 +63,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func verify(filename string) (success bool, err error) {
+func verify(filename string, user *api.User) (success bool, err error) {
 	var artifactHash string
 	// fixme(leogr): refactor to spec
 	if strings.HasPrefix(filename, "docker:") {
@@ -75,7 +78,7 @@ func verify(filename string) (success bool, err error) {
 		}
 		artifactHash = strings.TrimSpace(hash)
 	}
-	_ = api.TrackVerify(artifactHash, filepath.Base(filename))
+	_ = api.TrackVerify(user, artifactHash, filepath.Base(filename))
 	verification, err := api.BlockChainVerify(artifactHash)
 	if err != nil {
 		return false, fmt.Errorf("unable to verify hash: %s", err)
@@ -83,7 +86,7 @@ func verify(filename string) (success bool, err error) {
 
 	var artifact *api.ArtifactResponse
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		artifact, _ = api.LoadArtifactForHash(artifactHash, verification.HashAsset())
+		artifact, _ = api.LoadArtifactForHash(user, artifactHash, verification.HashAsset())
 	}
 	if artifact != nil {
 		printColumn("Asset", artifact.Filename, filepath.Base(filename))

@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cli"
+	"github.com/vchain-us/vcn/pkg/store"
 )
 
 // NewCmdList returns the cobra command for `vcn list`
@@ -33,8 +34,9 @@ func NewCmdList() *cobra.Command {
 func runList(cmd *cobra.Command, args []string) error {
 
 	cli.AssertUserLogin()
+	u := api.NewUser(store.Config().CurrentContext)
 
-	artifacts, err := api.LoadArtifactsForCurrentWallet()
+	artifacts, err := u.LoadAllArtifacts()
 	if err != nil {
 		cmd.SilenceUsage = true
 		return err

@@ -33,14 +33,13 @@ type PublisherTrackingEventRequest struct {
 	Name string `json:"name"`
 }
 
-func TrackVerify(hash string, filename string) (err error) {
+func TrackVerify(user *User, hash string, filename string) (err error) {
 	logger().WithFields(logrus.Fields{
 		"hash":     hash,
 		"filename": filename,
 	}).Trace("TrackVerify")
 	restError := new(Error)
-	token, _ := LoadToken()
-	r, err := newSling(token).
+	r, err := newSling(user.token()).
 		Post(meta.TrackingEvent()+"/verify").
 		BodyJSON(VerifyArtifactTrackingEventRequest{
 			Client:   meta.VcnClientName(),
@@ -56,16 +55,12 @@ func TrackVerify(hash string, filename string) (err error) {
 	return nil
 }
 
-func TrackPublisher(event string) (err error) {
+func TrackPublisher(user *User, event string) (err error) {
 	logger().WithFields(logrus.Fields{
 		"event": event,
 	}).Trace("TrackPublisher")
 	restError := new(Error)
-	token, err := LoadToken()
-	if err != nil {
-		return err
-	}
-	r, err := newSling(token).
+	r, err := newSling(user.token()).
 		Post(meta.TrackingEvent()+"/publisher").
 		BodyJSON(PublisherTrackingEventRequest{
 			Name: event,
@@ -79,18 +74,14 @@ func TrackPublisher(event string) (err error) {
 	return nil
 }
 
-func TrackSign(hash string, filename string, status meta.Status) (err error) {
+func TrackSign(user *User, hash string, filename string, status meta.Status) (err error) {
 	logger().WithFields(logrus.Fields{
 		"hash":     hash,
 		"filename": filename,
 		"status":   status,
 	}).Trace("TrackSign")
 	restError := new(Error)
-	token, err := LoadToken()
-	if err != nil {
-		return err
-	}
-	r, err := newSling(token).
+	r, err := newSling(user.token()).
 		Post(meta.TrackingEvent()+"/sign").
 		BodyJSON(SignArtifactTrackingEventRequest{
 			Name:     meta.StatusName(status),

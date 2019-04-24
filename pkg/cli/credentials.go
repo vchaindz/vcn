@@ -19,7 +19,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func PromptKeystorePassphrase() (passphrase string, err error) {
+func PromptKeyPassphrase() (passphrase string, err error) {
 
 	color.Set(meta.StyleAffordance())
 	fmt.Print("Attention: Please pick a strong passphrase. There is no recovery possible.")

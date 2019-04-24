@@ -10,7 +10,6 @@ package meta
 
 import (
 	"math/big"
-	"os"
 	"time"
 
 	"github.com/fatih/color"
@@ -118,19 +117,6 @@ func TxVerificationRounds() uint64 {
 
 func PollInterval() time.Duration {
 	return 1 * time.Second
-}
-
-// fixme(leogr): refactor vcn directories with config file
-func VcnDirectory() string {
-	return os.Getenv("HOME") + "/.vcn"
-}
-
-func WalletDirectory() string {
-	return VcnDirectory() + "/wallets"
-}
-
-func TokenFile() string {
-	return VcnDirectory() + "/t"
 }
 
 func GasPrice() *big.Int {

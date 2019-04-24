@@ -11,7 +11,9 @@ package api
 import (
 	"context"
 	"fmt"
+	"io"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -20,7 +22,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/blockchain"
 	"github.com/vchain-us/vcn/internal/errors"
-	"github.com/vchain-us/vcn/internal/utils"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -33,23 +34,44 @@ your patience.
 It only takes few seconds. Please try again in 1 minute.
 `
 
-func (a *Artifact) Sign(passphrase string, state meta.Status, visibility meta.Visibility) error {
-	if a == nil {
-		return makeFatal("nil artifact", nil)
+func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state meta.Status, visibility meta.Visibility) error {
+
+	hasAuth, err := u.IsAuthenticated()
+	if err != nil {
+		return err
 	}
-	if a.Hash == "" {
+	if !hasAuth {
+		return makeError("authentication required, please login", nil)
+	}
+
+	if artifact.Hash == "" {
 		return makeError("asset's hash is missing", nil)
 	}
-	if a.Name == "" {
+	if artifact.Name == "" {
 		return makeError("asset's name is missing", nil)
 	}
-	_ = TrackPublisher(meta.VcnSignEvent)
-	_ = TrackSign(a.Hash, a.Name, state)
-	return commitHash(passphrase, a.Hash, a.Name, a.Size, state, visibility)
+
+	keyin, err := u.cfg.OpenKey(pubKey)
+	if err != nil {
+		return err
+	}
+
+	synced, err := u.isWalletSynced(pubKey)
+	if err != nil {
+		return err
+	}
+	if !synced {
+		return makeError(fmt.Sprintf(walletNotSyncMsg, artifact.Name), nil)
+	}
+
+	_ = TrackPublisher(&u, meta.VcnSignEvent)
+	_ = TrackSign(&u, artifact.Hash, artifact.Name, state)
+	return u.commitHash(keyin, passphrase, artifact.Hash, artifact.Name, artifact.Size, state, visibility)
 }
 
 // todo(leogr): refactor
-func commitHash(
+func (u User) commitHash(
+	keyin io.Reader,
 	passphrase string,
 	hash string,
 	name string,
@@ -57,37 +79,11 @@ func commitHash(
 	status meta.Status,
 	visibility meta.Visibility,
 ) (err error) {
-	reader, err := utils.FirstFile(meta.WalletDirectory())
-	if err != nil {
-		err = makeFatal(
-			"Could not load keystore",
-			logrus.Fields{
-				"error": err,
-			},
-		)
-		return
-	}
-	transactor, err := bind.NewTransactor(reader, passphrase)
+	transactor, err := bind.NewTransactor(keyin, passphrase)
 	if err != nil {
 		return
 	}
-	walletSynced, err := IsWalletSynced(transactor.From.Hex())
-	if err != nil {
-		// fixme(leogr): logging, and avoid to output directly
-		errors.PrintErrorURLCustom("wallet", 400)
-		err = makeError(
-			"Could not load wallets",
-			logrus.Fields{
-				"error": err,
-			},
-		)
-		return
-	}
-	if !walletSynced {
-		logger().Error(fmt.Sprintf(walletNotSyncMsg, name))
-		err = makeError("Wallet not yet synced", nil)
-		return
-	}
+
 	transactor.GasLimit = meta.GasLimit()
 	transactor.GasPrice = meta.GasPrice()
 	client, err := ethclient.Dial(meta.MainNetEndpoint())
@@ -142,15 +138,14 @@ func commitHash(
 		)
 		return
 	}
-	publicKey, err := PublicKeyForLocalWallet()
+
+	pubKey := transactor.From.Hex()
+	verification, err := BlockChainVerifyMatchingPublicKey(hash, pubKey)
 	if err != nil {
 		return
 	}
-	verification, err := BlockChainVerifyMatchingPublicKey(hash, transactor.From.Hex())
-	if err != nil {
-		return
-	}
-	err = CreateArtifact(verification, publicKey, name, hash, fileSize, visibility, status)
+
+	err = u.CreateArtifact(verification, strings.ToLower(pubKey), name, hash, fileSize, visibility, status)
 	if err != nil {
 		return
 	}

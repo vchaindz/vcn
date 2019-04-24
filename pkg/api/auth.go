@@ -61,7 +61,7 @@ func CheckPublisherExists(email string) (success bool, err error) {
 	return false, fmt.Errorf("check publisher failed: %+v", restError)
 }
 
-func CheckToken(token string) (success bool, err error) {
+func checkToken(token string) (success bool, err error) {
 	restError := new(Error)
 	response, err := newSling(token).
 		Get(meta.TokenCheckEndpoint()).
@@ -70,7 +70,7 @@ func CheckToken(token string) (success bool, err error) {
 		"response":  response,
 		"err":       err,
 		"restError": restError,
-	}).Trace("CheckToken")
+	}).Trace("checkToken")
 	if err != nil {
 		return false, err
 	}
@@ -87,7 +87,7 @@ func CheckToken(token string) (success bool, err error) {
 	return false, fmt.Errorf("check token failed: %+v", restError)
 }
 
-func AuthenticateUser(email string, password string) (err error) {
+func authenticateUser(email string, password string) (token string, err error) {
 	response := new(TokenResponse)
 	restError := new(Error)
 	r, err := sling.New().
@@ -99,19 +99,19 @@ func AuthenticateUser(email string, password string) (err error) {
 		"response":  response,
 		"err":       err,
 		"restError": restError,
-	}).Trace("Authenticate")
+	}).Trace("authenticateUser")
 	if err != nil {
-		return err
+		return "", err
 	}
 	switch r.StatusCode {
 	case 200:
-		return WriteToken(response.Token)
+		return response.Token, nil
 	case 400:
-		return fmt.Errorf("Your email address was not confirmed. " +
+		return "", fmt.Errorf("Your email address was not confirmed. " +
 			"Please confirm it by clicking on the link we sent to " + email + ". " +
 			"If you did not receive the email, please go to dashboard.codenotary.io and click on the link \"Resend email\"")
 	case 401:
-		return fmt.Errorf("invalid password")
+		return "", fmt.Errorf("invalid password")
 	}
-	return fmt.Errorf("authentication failed: %+v", restError)
+	return "", fmt.Errorf("authentication failed: %+v", restError)
 }

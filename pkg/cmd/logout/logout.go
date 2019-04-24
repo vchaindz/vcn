@@ -11,8 +11,9 @@ package logout
 import (
 	"fmt"
 
+	"github.com/vchain-us/vcn/pkg/store"
+
 	"github.com/spf13/cobra"
-	"github.com/vchain-us/vcn/pkg/api"
 )
 
 // NewCmdLogout returns the cobra command for `vcn logout`
@@ -29,8 +30,10 @@ func NewCmdLogout() *cobra.Command {
 }
 
 func runLogout(cmd *cobra.Command, args []string) error {
-
-	if err := api.DeleteToken(); err != nil {
+	for _, u := range store.Config().Users {
+		u.Token = ""
+	}
+	if err := store.SaveConfig(); err != nil {
 		cmd.SilenceUsage = true
 		return err
 	}
