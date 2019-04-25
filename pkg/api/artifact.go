@@ -68,7 +68,7 @@ func (u User) CreateArtifact(verification *BlockchainVerification, walletAddress
 		return err
 	}
 	if !hasAuth {
-		return makeError("authentication required, please login", nil)
+		return makeAuthRequiredError()
 	}
 
 	metaHash := verification.MetaHash()

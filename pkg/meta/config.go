@@ -11,8 +11,6 @@ package meta
 import (
 	"math/big"
 	"time"
-
-	"github.com/fatih/color"
 )
 
 func DashboardURL() string {
@@ -65,26 +63,6 @@ func AssetsRelayContractAddress() string {
 	default:
 		return "0x495021fe1a48a5b0c85ef1abd68c42cdfc7cda08"
 	}
-}
-
-func StyleAffordance() (color.Attribute, color.Attribute) {
-	return color.FgHiBlue, color.Bold
-}
-
-func StyleError() (color.Attribute, color.Attribute) {
-	return color.FgRed, color.Bold
-}
-
-func StyleWarning() (color.Attribute, color.Attribute) {
-	return color.FgYellow, color.Bold
-}
-
-func StyleSuccess() (color.Attribute, color.Attribute) {
-	return color.FgGreen, color.Bold
-}
-
-func ErrorWikiURL() string {
-	return "https://github.com/vchain-us/vcn/wiki/Errors#"
 }
 
 func TrackingEvent() string {

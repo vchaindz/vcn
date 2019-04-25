@@ -12,6 +12,7 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/internal/errors"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -107,9 +108,7 @@ func authenticateUser(email string, password string) (token string, err error) {
 	case 200:
 		return response.Token, nil
 	case 400:
-		return "", fmt.Errorf("Your email address was not confirmed. " +
-			"Please confirm it by clicking on the link we sent to " + email + ". " +
-			"If you did not receive the email, please go to " + meta.DashboardURL() + " and click on the link \"Resend email\"")
+		return "", fmt.Errorf(errors.UnconfirmedEmail, email, meta.DashboardURL())
 	case 401:
 		return "", fmt.Errorf("invalid password")
 	}

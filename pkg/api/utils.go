@@ -13,6 +13,7 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/internal/errors"
 	"github.com/vchain-us/vcn/internal/logs"
 )
 
@@ -30,6 +31,10 @@ func makeFatal(msg string, fields logrus.Fields) error {
 	err := fmt.Errorf(msg)
 	logger().WithFields(fields).Fatal(err)
 	return err
+}
+
+func makeAuthRequiredError() error {
+	return makeError(errors.AuthRequired, nil)
 }
 
 func contains(xs []string, x string) bool {

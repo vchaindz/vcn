@@ -41,7 +41,7 @@ func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state me
 		return err
 	}
 	if !hasAuth {
-		return makeError("authentication required, please login", nil)
+		return makeAuthRequiredError()
 	}
 
 	if artifact.Hash == "" {
@@ -86,17 +86,19 @@ func (u User) commitHash(
 	transactor.GasPrice = meta.GasPrice()
 	client, err := ethclient.Dial(meta.MainNetEndpoint())
 	if err != nil {
-		err = makeError("Cannot connect to blockchain", logrus.Fields{
-			"error":   err,
-			"network": meta.MainNetEndpoint(),
-		})
+		err = makeError(
+			errors.BlockchainCannotConnect,
+			logrus.Fields{
+				"error":   err,
+				"network": meta.MainNetEndpoint(),
+			})
 		return
 	}
 	address := common.HexToAddress(meta.AssetsRelayContractAddress())
 	instance, err := blockchain.NewAssetsRelay(address, client)
 	if err != nil {
 		err = makeFatal(
-			"Cannot instantiate contract",
+			errors.BlockchainContractErr,
 			logrus.Fields{
 				"error":    err,
 				"contract": meta.AssetsRelayContractAddress(),
@@ -107,7 +109,7 @@ func (u User) commitHash(
 	tx, err := instance.Sign(transactor, hash, big.NewInt(int64(status)))
 	if err != nil {
 		err = makeFatal(
-			"method <sign> failed",
+			errors.SignFailed,
 			logrus.Fields{
 				"error": err,
 				"hash":  hash,
@@ -117,10 +119,8 @@ func (u User) commitHash(
 	}
 	timeout, err := waitForTx(tx.Hash(), meta.TxVerificationRounds(), meta.PollInterval())
 	if err != nil {
-		// fixme(leogr): logging, and avoid to output directly
-		errors.PrintErrorURLCustom("blockchain-permission", 403)
 		err = makeFatal(
-			"Could not write to blockchain",
+			errors.BlockchainPermission,
 			logrus.Fields{
 				"error": err,
 			},
@@ -129,7 +129,7 @@ func (u User) commitHash(
 	}
 	if timeout {
 		err = makeFatal(
-			"Writing to blockchain timed out",
+			errors.BlockchainTimeout,
 			logrus.Fields{
 				"error": err,
 			},

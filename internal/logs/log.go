@@ -35,6 +35,6 @@ func init() {
 	case "PANIC":
 		LOG.SetLevel(logrus.PanicLevel)
 	default:
-		LOG.SetLevel(logrus.WarnLevel)
+		LOG.SetLevel(logrus.FatalLevel)
 	}
 }

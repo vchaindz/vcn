@@ -80,7 +80,7 @@ func (u User) SyncKeys() error {
 		return err
 	}
 	if !hasAuth {
-		return makeError("user not authenticated, please login", nil)
+		return makeAuthRequiredError()
 	}
 	addresses, err := u.loadPublicKeys()
 	if err != nil {
