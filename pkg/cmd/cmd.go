@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vchain-us/vcn/internal/migrate"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/login"
 	"github.com/vchain-us/vcn/pkg/cmd/logout"
@@ -48,6 +49,10 @@ func Execute() {
 }
 
 func init() {
+
+	// Migrate old profile dirs, if any
+	migrate.From03x()
+
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
