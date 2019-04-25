@@ -71,12 +71,15 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 
 func sign(filename string, state meta.Status, visibility meta.Visibility, acknowledge bool) error {
 
-	// check for token
-	cli.AssertUserLogin()
+	if err := cli.AssertUserLogin(); err != nil {
+		return err
+	}
 	u := api.NewUser(store.Config().CurrentContext)
 
 	// keystore
-	cli.AssertUserKeystore()
+	if err := cli.AssertUserKeystore(); err != nil {
+		return err
+	}
 
 	var err error
 	var artifactHash string

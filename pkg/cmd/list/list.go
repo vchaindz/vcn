@@ -33,12 +33,14 @@ func NewCmdList() *cobra.Command {
 
 func runList(cmd *cobra.Command, args []string) error {
 
-	cli.AssertUserLogin()
+	cmd.SilenceUsage = true
+	if err := cli.AssertUserLogin(); err != nil {
+		return err
+	}
 	u := api.NewUser(store.Config().CurrentContext)
 
 	artifacts, err := u.LoadAllArtifacts()
 	if err != nil {
-		cmd.SilenceUsage = true
 		return err
 	}
 
