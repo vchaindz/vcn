@@ -10,10 +10,7 @@ package meta
 
 import (
 	"math/big"
-	"os"
 	"time"
-
-	"github.com/fatih/color"
 )
 
 func DashboardURL() string {
@@ -68,26 +65,6 @@ func AssetsRelayContractAddress() string {
 	}
 }
 
-func StyleAffordance() (color.Attribute, color.Attribute) {
-	return color.FgHiBlue, color.Bold
-}
-
-func StyleError() (color.Attribute, color.Attribute) {
-	return color.FgRed, color.Bold
-}
-
-func StyleWarning() (color.Attribute, color.Attribute) {
-	return color.FgYellow, color.Bold
-}
-
-func StyleSuccess() (color.Attribute, color.Attribute) {
-	return color.FgGreen, color.Bold
-}
-
-func ErrorWikiURL() string {
-	return "https://github.com/vchain-us/vcn/wiki/Errors#"
-}
-
 func TrackingEvent() string {
 	return FoundationEndpoint() + "/v1/tracking-event"
 }
@@ -118,18 +95,6 @@ func TxVerificationRounds() uint64 {
 
 func PollInterval() time.Duration {
 	return 1 * time.Second
-}
-
-func VcnDirectory() string {
-	return os.Getenv("HOME") + "/.vcn"
-}
-
-func WalletDirectory() string {
-	return VcnDirectory() + "/wallets"
-}
-
-func TokenFile() string {
-	return VcnDirectory() + "/t"
 }
 
 func GasPrice() *big.Int {

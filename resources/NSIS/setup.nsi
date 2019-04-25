@@ -73,7 +73,7 @@ Section "CodeNotary vcn cli tool" installation
 ;create context menu  
   WriteRegStr HKCR "*\shell" "" "CodeNotary verify"
   WriteRegStr HKCR "*\shell\CodeNotary verify" "Icon" "$INSTDIR\vcn.ico,0" 
-  WriteRegStr HKCR "*\shell\CodeNotary verify\command" ""  '"$INSTDIR\vcn.exe" verify -q=false "%1"' 
+  WriteRegStr HKCR "*\shell\CodeNotary verify\command" ""  '"$INSTDIR\vcn.exe" verify "%1"' 
   
   WriteRegStr HKCR "*\shell" "" "CodeNotary sign"
   WriteRegStr HKCR "*\shell\CodeNotary sign" "Icon" "$INSTDIR\vcn.ico,0" 

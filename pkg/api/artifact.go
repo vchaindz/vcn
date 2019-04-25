@@ -10,21 +10,22 @@ package api
 
 import (
 	"fmt"
-	"log"
-	"os"
 
-	"github.com/dghubble/sling"
 	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/internal/errors"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
+
+type Artifact struct {
+	Name string
+	Hash string
+	Size uint64
+}
 
 type ArtifactRequest struct {
 	Name       string `json:"name"`
 	Hash       string `json:"hash"`
 	Filename   string `json:"filename"`
-	FileSize   int64  `json:"fileSize"`
+	FileSize   uint64 `json:"fileSize"`
 	Url        string `json:"url"`
 	License    string `json:"license"`
 	Visibility string `json:"visibility"`
@@ -55,24 +56,25 @@ type ArtifactResponse struct {
 }
 
 func (a ArtifactResponse) String() string {
-
 	return fmt.Sprintf("File:\t%s\nHash:\t%s\nStatus:\t%s\n\n",
 		a.Name, a.Hash, a.Status)
 }
 
-func CreateArtifact(verification *BlockchainVerification, walletAddress string,
-	name string, hash string, fileSize int64, visibility meta.Visibility, status meta.Status) error {
-	restError := new(Error)
-	token, err := LoadToken()
+func (u User) CreateArtifact(verification *BlockchainVerification, walletAddress string,
+	name string, hash string, fileSize uint64, visibility meta.Visibility, status meta.Status) error {
+
+	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
-		fmt.Printf("\n%s\n", err.Error())
-		errors.PrintErrorURLCustom("sign", 404)
-		os.Exit(1)
+		return err
 	}
-	metaHash := verification.HashAsset()
-	r, err := sling.New().
+	if !hasAuth {
+		return makeAuthRequiredError()
+	}
+
+	metaHash := verification.MetaHash()
+	restError := new(Error)
+	r, err := newSling(u.token()).
 		Post(meta.ArtifactEndpointForWallet(walletAddress)).
-		Add("Authorization", "Bearer "+token).
 		BodyJSON(ArtifactRequest{
 			Name:       name,
 			Hash:       hash,
@@ -92,24 +94,23 @@ func CreateArtifact(verification *BlockchainVerification, walletAddress string,
 	return nil
 }
 
-func LoadArtifactsForCurrentWallet() ([]ArtifactResponse, error) {
-	publicKey, err := PublicKeyForLocalWallet()
-	if err != nil {
-		return nil, err
+func (u *User) LoadAllArtifacts() ([]ArtifactResponse, error) {
+	ret := []ArtifactResponse{}
+	for _, pubKey := range u.cfg.PubKeys() {
+		chunk, err := u.LoadArtifacts(pubKey)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, chunk...)
 	}
-	return LoadArtifacts(publicKey)
+	return ret, nil
 }
 
-func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
+func (u *User) LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 	response := new(PagedArtifactResponse)
 	restError := new(Error)
-	token, err := LoadToken()
-	if err != nil {
-		log.Fatal(err)
-	}
-	r, err := sling.New().
+	r, err := newSling(u.token()).
 		Get(meta.ArtifactEndpointForWallet(walletAddress)).
-		Add("Authorization", "Bearer "+token).
 		Receive(&response, restError)
 	if err != nil {
 		return nil, err
@@ -121,14 +122,13 @@ func LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 	return response.Content, nil
 }
 
-func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error) {
+func LoadArtifactForHash(user *User, hash string, metahash string) (*ArtifactResponse, error) {
 	response := new(ArtifactResponse)
 	restError := new(Error)
-	token, _ := LoadToken()
-	r, err := newSling(token).
+	r, err := newSling(user.token()).
 		Get(meta.ArtifactEndpoint()+"/"+hash+"/"+metahash).
 		Receive(&response, restError)
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"response":  response,
 		"err":       err,
 		"restError": restError,
@@ -140,7 +140,7 @@ func LoadArtifactForHash(hash string, metahash string) (*ArtifactResponse, error
 	case 200:
 		return response, nil
 	case 404:
-		return nil, fmt.Errorf("No asset matching hash %s/%s found", hash, metahash)
+		return nil, fmt.Errorf("no asset matching hash %s/%s found", hash, metahash)
 	}
-	return nil, fmt.Errorf("Loading artifact for hash failed: %+v", restError)
+	return nil, fmt.Errorf("loading artifact for hash failed: %+v", restError)
 }

@@ -6,7 +6,7 @@
  *
  */
 
-package cli
+package login
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/meta"
+	"github.com/vchain-us/vcn/pkg/store"
 )
 
 const testUserEnv = "VCN_TEST_USER"
@@ -47,12 +47,10 @@ func TestLoginByEnv(t *testing.T) {
 	defer os.RemoveAll(tdir) // clean up
 
 	// Setup temporary env
-	os.Setenv("HOME", tdir)
-	CreateVcnDirectories()
+	store.SetDir(tdir)
 
 	os.Setenv(meta.VcnUserEnv, user)
 	os.Setenv(meta.VcnPasswordEnv, password)
-	api.CreateKeystore(testPassphrase)
 
-	Login()
+	login()
 }

@@ -18,7 +18,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/blockchain"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -29,21 +28,21 @@ type BlockchainVerification struct {
 	Timestamp time.Time
 }
 
-func (verification *BlockchainVerification) HashAsset() string {
+func (verification *BlockchainVerification) MetaHash() string {
 	metadata := fmt.Sprintf("%s-%d-%d-%d",
 		verification.Owner.Hex(),
 		int64(verification.Level),
 		int64(verification.Status),
 		int64(verification.Timestamp.Unix()))
 	metadataHashAsBytes := sha256.Sum256([]byte(metadata))
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"metahash": metadata,
 	}).Trace("Generated metahash")
 	return fmt.Sprintf("%x", metadataHashAsBytes)
 }
 
 func BlockChainVerify(hash string) (verification *BlockchainVerification, err error) {
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"hash": hash,
 	}).Trace("BlockChainVerify")
 	client, err := ethclient.Dial(meta.MainNetEndpoint())
@@ -64,14 +63,14 @@ func BlockChainVerify(hash string) (verification *BlockchainVerification, err er
 	verification.Level = meta.Level(level.Int64())
 	verification.Status = meta.Status(status.Int64())
 	verification.Timestamp = time.Unix(timestamp.Int64(), 0)
-	logs.LOG.
+	logger().
 		WithField("verification", verification).
 		Trace("Received blockchain verification")
 	return verification, nil
 }
 
 func BlockChainVerifyMatchingPublicKey(hash string, publicKey string) (verification *BlockchainVerification, err error) {
-	logs.LOG.WithFields(logrus.Fields{
+	logger().WithFields(logrus.Fields{
 		"hash": hash,
 	}).Trace("BlockChainVerifyMatchingPublicKey")
 	client, err := ethclient.Dial(meta.MainNetEndpoint())

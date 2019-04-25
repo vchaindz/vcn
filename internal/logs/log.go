@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2018-2019 vChain, Inc. All Rights Reserved.
+ * This software is released under GPL3.
+ * The full license information can be found under:
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ */
 package logs
 
 import (
@@ -10,6 +17,7 @@ import (
 var LOG = logrus.New()
 
 func init() {
+	LOG.ExitFunc = func(code int) {} // prevent from exiting immediately on fatal
 	ll := os.Getenv("LOG_LEVEL")
 	switch ll {
 	case "TRACE":
@@ -27,6 +35,6 @@ func init() {
 	case "PANIC":
 		LOG.SetLevel(logrus.PanicLevel)
 	default:
-		LOG.SetLevel(logrus.WarnLevel)
+		LOG.SetLevel(logrus.FatalLevel)
 	}
 }

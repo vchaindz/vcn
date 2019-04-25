@@ -18,12 +18,15 @@ vendor
 .DS_Store
 
 # Compiled binaries
-vcn
-dist
+/vcn
+/dist
 
 # IntelliJ
 *.iml
 .idea/
+
+# vscode
+.vscode/
 
 # Vim
 *.swp

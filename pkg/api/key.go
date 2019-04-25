@@ -9,17 +9,9 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"strings"
 
-	"github.com/dghubble/sling"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/sirupsen/logrus"
-	"github.com/vchain-us/vcn/internal/utils"
-	"github.com/vchain-us/vcn/pkg/logs"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -35,33 +27,10 @@ type PagedWalletResponse struct {
 	Content []Wallet `json:"content"`
 }
 
-func CreateKeystore(password string) (pubKey string, wallet string) {
-	if password == "" {
-		logs.LOG.Error("Keystore passphrase cannot be empty")
-	}
-	ks := keystore.NewKeyStore(meta.WalletDirectory(), keystore.StandardScryptN, keystore.StandardScryptP)
-	account, err := ks.NewAccount(password)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pubKey = account.Address.Hex()
-	wallet = meta.WalletDirectory()
-
-	_ = TrackPublisher(meta.KeyStoreCreatedEvent)
-
-	return pubKey, wallet
-}
-
-func IsWalletSynced(address string) (result bool, err error) {
+func (u User) isWalletSynced(address string) (result bool, err error) {
 	authError := new(Error)
 	pagedWalletResponse := new(PagedWalletResponse)
-	token, err := LoadToken()
-	if err != nil {
-		log.Fatal(err)
-	}
-	r, err := sling.New().
-		Add("Authorization", "Bearer "+token).
+	r, err := newSling(u.token()).
 		Get(meta.WalletEndpoint()).
 		Receive(pagedWalletResponse, authError)
 	if err != nil {
@@ -81,39 +50,21 @@ func IsWalletSynced(address string) (result bool, err error) {
 	return false, fmt.Errorf("no such wallet: %s", address)
 }
 
-func HasKeystore() (bool, error) {
-
-	logs.LOG.WithFields(logrus.Fields{
-		"keystore": meta.WalletDirectory(),
-	}).Trace("HasKeystore()")
-
-	files, err := ioutil.ReadDir(meta.WalletDirectory())
-	if err != nil {
-		logs.LOG.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("ReadDir() failed")
-		return false, err
-	}
-	return len(files) > 0, nil
-}
-
-func LoadPublicKeys() (addresses []string, err error) {
+func (u User) loadPublicKeys() (addresses []string, err error) {
 	authError := new(Error)
 	pagedWalletResponse := new(PagedWalletResponse)
-	token, err := LoadToken()
-	if err != nil {
-		log.Fatal(err)
-	}
-	r, err := sling.New().
-		Add("Authorization", "Bearer "+token).
+	r, err := newSling(u.token()).
 		Get(meta.WalletEndpoint()).
 		Receive(pagedWalletResponse, authError)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	if r.StatusCode != 200 {
-		log.Fatalf("request failed: %s (%d)", authError.Message,
-			authError.Status)
+		err = makeError(
+			fmt.Sprintf("request failed: %s (%d)", authError.Message, authError.Status),
+			nil,
+		)
+		return
 	}
 	var result []string
 	for _, wallet := range (*pagedWalletResponse).Content {
@@ -122,57 +73,46 @@ func LoadPublicKeys() (addresses []string, err error) {
 	return result, nil
 }
 
-func SyncKeys() {
-	authError := new(Error)
-	token, err := LoadToken()
+func (u User) SyncKeys() error {
+
+	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	addresses, err := LoadPublicKeys()
+	if !hasAuth {
+		return makeAuthRequiredError()
+	}
+	addresses, err := u.loadPublicKeys()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	localAddress, err := PublicKeyForLocalWallet()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if contains(addresses, localAddress) {
-		return
-	}
-	r, err := sling.New().
-		Add("Authorization", "Bearer "+token).
-		Post(meta.WalletEndpoint()).
-		BodyJSON(Wallet{Address: localAddress}).
-		Receive(nil, authError)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if r.StatusCode != 200 {
-		log.Fatalf("request failed: %s (%d)", authError.Message,
-			authError.Status)
+	for _, localAddress := range u.cfg.PubKeys() {
+		if contains(addresses, localAddress) {
+			continue
+		}
+
+		authError := new(Error)
+		r, err := newSling(u.token()).
+			Post(meta.WalletEndpoint()).
+			BodyJSON(Wallet{Address: localAddress}).
+			Receive(nil, authError)
+		if err != nil {
+			return err
+		}
+
+		// If a wallet is already synced, just skip it
+		if authError.Status == 409 {
+			continue
+		}
+		if r.StatusCode != 200 {
+			return makeFatal(
+				fmt.Sprintf("request failed: %s (%d)", authError.Message, authError.Status),
+				nil,
+			)
+		}
+
+		_ = TrackPublisher(&u, meta.KeyUploadedEvent)
 	}
 
-	_ = TrackPublisher(meta.KeyStoreUploadedEvent)
-}
-
-func PublicKeyForLocalWallet() (string, error) {
-	reader, err := utils.FirstFile(meta.WalletDirectory())
-	if err != nil {
-		return "", err
-	}
-	contents, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return "", err
-	}
-	var keyfile map[string]*json.RawMessage
-	err = json.Unmarshal(contents, &keyfile)
-	if err != nil {
-		return "", err
-	}
-	var localAddress string
-	err = json.Unmarshal(*keyfile["address"], &localAddress)
-	if err != nil {
-		return "", err
-	}
-	return "0x" + localAddress, nil
+	return nil
 }

@@ -16,9 +16,8 @@ import (
 const VERIFIED_USER = "mathias@vchain.us"
 
 func TestCheckTokenNoInput(t *testing.T) {
-
 	token := ""
-	ret, _ := CheckToken(token)
+	ret, _ := checkToken(token)
 
 	if ret != false {
 		t.Error(fmt.Sprintf(`CheckToken() with empty string input must return false`))
@@ -27,7 +26,6 @@ func TestCheckTokenNoInput(t *testing.T) {
 }
 
 func TestPublisherExists(t *testing.T) {
-
 	ret, err := CheckPublisherExists(VERIFIED_USER)
 
 	if ret == false || err != nil {

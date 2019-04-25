@@ -6,7 +6,7 @@
  *
  */
 
-package cli
+package utils
 
 import (
 	"io/ioutil"
@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-func TestHash(t *testing.T) {
+func TestHashFile(t *testing.T) {
 	file, err := ioutil.TempFile("", "example")
 	if err != nil {
 		log.Fatal(err)
@@ -25,8 +25,12 @@ func TestHash(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	hash := hash(file.Name())
+	hash, retErr := HashFile(file.Name())
 	if hash != "181210f8f9c779c26da1d9b2075bde0127302ee0e3fca38c9a83f5b1dd8e5d3b" {
 		t.Error("hash does not match:", hash)
+	}
+
+	if retErr != nil {
+		t.Error("unexpected error returned:", err)
 	}
 }

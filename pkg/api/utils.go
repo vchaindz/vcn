@@ -9,8 +9,33 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/dghubble/sling"
+	"github.com/sirupsen/logrus"
+	"github.com/vchain-us/vcn/internal/errors"
+	"github.com/vchain-us/vcn/internal/logs"
 )
+
+func logger() *logrus.Logger {
+	return logs.LOG
+}
+
+func makeError(msg string, fields logrus.Fields) error {
+	err := fmt.Errorf(msg)
+	logger().WithFields(fields).Error(err)
+	return err
+}
+
+func makeFatal(msg string, fields logrus.Fields) error {
+	err := fmt.Errorf(msg)
+	logger().WithFields(fields).Fatal(err)
+	return err
+}
+
+func makeAuthRequiredError() error {
+	return makeError(errors.AuthRequired, nil)
+}
 
 func contains(xs []string, x string) bool {
 	for _, a := range xs {

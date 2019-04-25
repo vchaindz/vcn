@@ -12,8 +12,6 @@ import (
 	"log"
 )
 
-const VcnDirectoryPermissions = 0700
-
 type Level int64
 type Status int64
 type Visibility int64
@@ -41,11 +39,12 @@ const (
 )
 
 const (
-	VcnLoginEvent         string = "VCN_LOGIN"
-	VcnSignEvent          string = "VCN_SIGN"
-	VcnVerifyEvent        string = "VCN_VERIFY"
-	KeyStoreCreatedEvent  string = "KEYSTORE_CREATED"
-	KeyStoreUploadedEvent string = "KEYSTORE_UPLOADED"
+	VcnLoginEvent  string = "VCN_LOGIN"
+	VcnSignEvent   string = "VCN_SIGN"
+	VcnVerifyEvent string = "VCN_VERIFY"
+	// todo(leogr): backend needs to be update prior to fix event strings
+	KeyCreatedEvent  string = "KEYSTORE_CREATED"
+	KeyUploadedEvent string = "KEYSTORE_UPLOADED"
 )
 
 const (
