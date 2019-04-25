@@ -20,7 +20,7 @@ require (
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/huin/goupnp v1.0.0 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0
 	github.com/jackpal/go-nat-pmp v1.0.1 // indirect
 	github.com/karalabe/hid v0.0.0-20181128192157-d815e0c1a2e2 // indirect
 	github.com/kr/pretty v0.1.0 // indirect

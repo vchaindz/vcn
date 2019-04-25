@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/inconshreveable/mousetrap"
 	"github.com/vchain-us/vcn/internal/migrate"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/login"
@@ -53,6 +54,9 @@ func init() {
 	// Migrate old profile dirs, if any
 	migrate.From03x()
 
+	// Disable default behavior when started through explorer.exe
+	cobra.MousetrapHelpText = ""
+
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
@@ -60,6 +64,7 @@ func init() {
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.json)")
 	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
+	rootCmd.PersistentFlags().MarkHidden("quit")
 
 	// Verification group
 	rootCmd.AddCommand(verify.NewCmdVerify())
@@ -78,9 +83,9 @@ func init() {
 }
 
 func preExitHook(cmd *cobra.Command) {
-	if quit, _ := cmd.PersistentFlags().GetBool("quit"); !quit {
+	if quit, _ := cmd.PersistentFlags().GetBool("quit"); !quit || mousetrap.StartedByExplorer() {
 		fmt.Println()
-		fmt.Println("Press 'Enter' to continue")
+		fmt.Println("Press 'Enter' to continue...")
 		fmt.Scanln()
 	}
 }
