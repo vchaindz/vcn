@@ -7,11 +7,11 @@ GO ?= go
 DOCKER ?= docker
 
 PWD=$(shell pwd)
-LDFLAGS := -X github.com/vchain-us/vcn/pkg/meta.version=v${VERSION}
+LDFLAGS := -s -X github.com/vchain-us/vcn/pkg/meta.version=v${VERSION}
 
 .PHONY: vcn
 vcn:
-	$(GO) build -ldflags '${LDFLAGS}' ./cmd/vcn
+	$(GO) build ./cmd/vcn
 
 .PHONY: vendor
 vendor:
