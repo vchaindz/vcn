@@ -8,6 +8,7 @@ DOCKER ?= docker
 
 PWD=$(shell pwd)
 LDFLAGS := -s -X github.com/vchain-us/vcn/pkg/meta.version=v${VERSION}
+TEST_FLAGS ?= -v -race
 
 .PHONY: vcn
 vcn:
@@ -20,9 +21,10 @@ vendor:
 .PHONY: test
 test:
 	$(GO) vet ./...
-	$(GO) test -v -race ./...
+	$(GO) test ${TEST_FLAGS} ./...
 
 .PHONY: install
+install: TEST_FLAGS=-v
 install: vendor test
 	$(GO) install -ldflags '${LDFLAGS}' ./cmd/vcn
 
