@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/dghubble/sling"
+	"github.com/mitchellh/go-homedir"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
@@ -23,9 +24,13 @@ const vcn03x = ".vcn"
 const wallets03x = "wallets"
 const token03x = "t"
 
-// From03x silently migrates v0.3.x profile directory to v0.4.x store.
+// From03x silently migrates v0.3.x vcn's profile data to v0.4.x store.
 func From03x() {
-	dir := filepath.Join(os.Getenv("HOME"), vcn03x)
+	home, err := homedir.Dir()
+	if err != nil {
+		return
+	}
+	dir := filepath.Join(home, vcn03x)
 	tokenFile := filepath.Join(dir, token03x)
 	walletsDir := filepath.Join(dir, wallets03x)
 
