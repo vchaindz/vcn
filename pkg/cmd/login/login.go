@@ -14,8 +14,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 
 	"github.com/spf13/cobra"
+	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
-	"github.com/vchain-us/vcn/pkg/cli"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 

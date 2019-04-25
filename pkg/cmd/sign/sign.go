@@ -16,15 +16,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vchain-us/vcn/internal/logs"
-
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/internal/docker"
+	"github.com/vchain-us/vcn/internal/logs"
 	"github.com/vchain-us/vcn/internal/utils"
 	"github.com/vchain-us/vcn/pkg/api"
-	"github.com/vchain-us/vcn/pkg/cli"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
 )
