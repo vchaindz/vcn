@@ -64,6 +64,7 @@ func login() error {
 
 	_ = api.TrackPublisher(user, meta.VcnLoginEvent)
 
+	user.DefaultKeystore() // ensure default keystore
 	store.Config().CurrentContext = user.Email()
 	if err := store.SaveConfig(); err != nil {
 		return err
