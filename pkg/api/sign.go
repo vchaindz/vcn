@@ -64,16 +64,14 @@ func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state me
 		return nil, makeError(fmt.Sprintf(walletNotSyncMsg, artifact.Name), nil)
 	}
 
-	return u.commitHash(keyin, passphrase, artifact.Hash, artifact.Name, artifact.Size, state, visibility)
+	return u.commitHash(keyin, passphrase, artifact, state, visibility)
 }
 
 // todo(leogr): refactor
 func (u User) commitHash(
 	keyin io.Reader,
 	passphrase string,
-	hash string,
-	name string,
-	fileSize uint64,
+	artifact Artifact,
 	status meta.Status,
 	visibility meta.Visibility,
 ) (verification *BlockchainVerification, err error) {
@@ -106,13 +104,13 @@ func (u User) commitHash(
 		)
 		return
 	}
-	tx, err := instance.Sign(transactor, hash, big.NewInt(int64(status)))
+	tx, err := instance.Sign(transactor, artifact.Hash, big.NewInt(int64(status)))
 	if err != nil {
 		err = makeFatal(
 			errors.SignFailed,
 			logrus.Fields{
 				"error": err,
-				"hash":  hash,
+				"hash":  artifact.Hash,
 			},
 		)
 		return
@@ -138,19 +136,19 @@ func (u User) commitHash(
 	}
 
 	pubKey := transactor.From.Hex()
-	verification, err = BlockChainVerifyMatchingPublicKey(hash, pubKey)
+	verification, err = BlockChainVerifyMatchingPublicKey(artifact.Hash, pubKey)
 	if err != nil {
 		return
 	}
 
-	err = u.CreateArtifact(verification, strings.ToLower(pubKey), name, hash, fileSize, visibility, status)
+	err = u.createArtifact(verification, strings.ToLower(pubKey), artifact, visibility, status)
 	if err != nil {
 		return
 	}
 
 	// todo(ameingast): redundant tracking events?
 	_ = TrackPublisher(&u, meta.VcnSignEvent)
-	_ = TrackSign(&u, hash, name, status)
+	_ = TrackSign(&u, artifact.Hash, artifact.Name, status)
 	return
 }
 

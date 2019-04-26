@@ -60,8 +60,8 @@ func (a ArtifactResponse) String() string {
 		a.Name, a.Hash, a.Status)
 }
 
-func (u User) CreateArtifact(verification *BlockchainVerification, walletAddress string,
-	name string, hash string, fileSize uint64, visibility meta.Visibility, status meta.Status) error {
+func (u User) createArtifact(verification *BlockchainVerification, walletAddress string,
+	artifact Artifact, visibility meta.Visibility, status meta.Status) error {
 
 	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
@@ -76,10 +76,10 @@ func (u User) CreateArtifact(verification *BlockchainVerification, walletAddress
 	r, err := newSling(u.token()).
 		Post(meta.ArtifactEndpointForWallet(walletAddress)).
 		BodyJSON(ArtifactRequest{
-			Name:       name,
-			Hash:       hash,
-			Filename:   name,
-			FileSize:   fileSize,
+			Name:       artifact.Name,
+			Hash:       artifact.Hash,
+			Filename:   artifact.Name,
+			FileSize:   artifact.Size,
 			Visibility: meta.VisibilityName(visibility),
 			Status:     meta.StatusName(status),
 			MetaHash:   metaHash,
