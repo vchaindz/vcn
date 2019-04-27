@@ -53,21 +53,21 @@ You're good to use `verify` without the above registration.
 
 ```
 $> vcn verify <asset>
-$> vcn verify docker:<imageId>
+$> vcn verify docker://<imageId>
 ```
 
 Once your public key is known on the blockchain you can sign assets:
 
 ```
 $> vcn sign <asset>
-$> vcn sign docker:<image>
+$> vcn sign docker://<image>
 ```
 
 By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the --public switch.
 
 ```
 $> vcn sign --public <asset>
-$> vcn sign --public docker:<image>
+$> vcn sign --public docker://<image>
 ```
 
 Change the asset's status
@@ -95,7 +95,7 @@ You're good to start doing really cool things, e.g.
 
 ```
 # run a Docker image only when it can be successfully verified
-$> vcn verify docker:hello-world && docker run hello-world
+$> vcn verify docker://hello-world && docker run hello-world
 ```
 
 ```

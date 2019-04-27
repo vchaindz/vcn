@@ -73,18 +73,21 @@ func runVerify(cmd *cobra.Command, args []string) error {
 
 func verify(filename string, pubKey string, user *api.User) (success bool, err error) {
 	var artifactHash string
+	var name string
 	// fixme(leogr): refactor to spec
-	if strings.HasPrefix(filename, "docker:") {
+	if strings.HasPrefix(filename, "docker://") {
 		artifactHash, err = docker.GetHash(filename)
 		if err != nil {
 			return false, fmt.Errorf("failed to get hash for docker image: %s", err)
 		}
+		name = "docker://" + artifactHash
 	} else {
 		hash, err := utils.HashFile(filename)
 		if err != nil {
 			return false, err
 		}
 		artifactHash = strings.TrimSpace(hash)
+		name = filepath.Base(filename)
 	}
 
 	var verification *api.BlockchainVerification
@@ -102,7 +105,7 @@ func verify(filename string, pubKey string, user *api.User) (success bool, err e
 		artifact, _ = api.LoadArtifactForHash(user, artifactHash, verification.MetaHash())
 	}
 	if artifact != nil {
-		cli.PrintColumn("Asset", artifact.Filename, filepath.Base(filename))
+		cli.PrintColumn("Asset", artifact.Filename, name)
 		cli.PrintColumn("Hash", artifactHash, "NA")
 		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
 		cli.PrintColumn("Signer", artifact.Publisher, "NA")
@@ -117,7 +120,7 @@ func verify(filename string, pubKey string, user *api.User) (success bool, err e
 		cli.PrintColumn("Website", artifact.PublisherWebsiteUrl, "NA")
 		cli.PrintColumn("Level", meta.LevelName(verification.Level), "NA")
 	} else {
-		cli.PrintColumn("Asset", filepath.Base(filename), "NA")
+		cli.PrintColumn("Asset", name, "NA")
 		cli.PrintColumn("Hash", artifactHash, "NA")
 		if verification.Timestamp != time.Unix(0, 0) {
 			cli.PrintColumn("Date", verification.Timestamp.String(), "NA")

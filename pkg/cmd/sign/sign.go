@@ -89,8 +89,9 @@ func sign(pubKey string, filename string, state meta.Status, visibility meta.Vis
 	var err error
 	var artifactHash string
 	var fileSize int64
+	var name string
 
-	if strings.HasPrefix(filename, "docker:") {
+	if strings.HasPrefix(filename, "docker://") {
 		artifactHash, err = docker.GetHash(filename)
 		if err != nil {
 			logs.LOG.Error(err)
@@ -100,6 +101,7 @@ func sign(pubKey string, filename string, state meta.Status, visibility meta.Vis
 		if err != nil {
 			return fmt.Errorf("failed to get size for docker image %s", err)
 		}
+		name = "docker://" + artifactHash
 	} else {
 		// file mode
 		artifactHash, err = utils.HashFile(filename)
@@ -111,6 +113,7 @@ func sign(pubKey string, filename string, state meta.Status, visibility meta.Vis
 			return err
 		}
 		fileSize = fi.Size()
+		name = filepath.Base(filename)
 	}
 
 	if fileSize < 0 {
@@ -154,7 +157,6 @@ func sign(pubKey string, filename string, state meta.Status, visibility meta.Vis
 	s.Prefix = "Signing asset... "
 	s.Start()
 
-	name := filepath.Base(filename)
 	a := api.Artifact{
 		Name: name,
 		Hash: artifactHash,
@@ -170,7 +172,7 @@ func sign(pubKey string, filename string, state meta.Status, visibility meta.Vis
 	}
 
 	fmt.Println()
-	cli.PrintColumn("Asset", filename, "NA")
+	cli.PrintColumn("Asset", name, "NA")
 	cli.PrintColumn("Hash", artifactHash, "NA")
 	if verification.Timestamp != time.Unix(0, 0) {
 		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
