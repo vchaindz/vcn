@@ -13,7 +13,6 @@ import (
 	"os"
 
 	"github.com/inconshreveable/mousetrap"
-	"github.com/vchain-us/vcn/internal/migrate"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/login"
 	"github.com/vchain-us/vcn/pkg/cmd/logout"
@@ -50,9 +49,6 @@ func Execute() {
 }
 
 func init() {
-
-	// Migrate old profile dirs, if any
-	migrate.From03x()
 
 	// Disable default behavior when started through explorer.exe
 	cobra.MousetrapHelpText = ""

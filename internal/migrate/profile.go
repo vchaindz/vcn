@@ -8,15 +8,14 @@
 package migrate
 
 import (
-	"io/ioutil"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/dghubble/sling"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/mitchellh/go-homedir"
 	"github.com/vchain-us/vcn/pkg/api"
-	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
 )
 
@@ -24,37 +23,56 @@ const vcn03x = ".vcn"
 const wallets03x = "wallets"
 const token03x = "t"
 
+func ksInstance(keydir string) *keystore.KeyStore {
+	return keystore.NewKeyStore(keydir, keystore.StandardScryptN, keystore.StandardScryptP)
+}
+
+func contains(xs []string, x string) bool {
+	for _, a := range xs {
+		if a == x {
+			return true
+		}
+	}
+	return false
+}
+
 // From03x silently migrates v0.3.x vcn's profile data to v0.4.x store.
-func From03x() {
+func From03x(user *api.User) {
 	home, err := homedir.Dir()
 	if err != nil {
 		return
 	}
 	dir := filepath.Join(home, vcn03x)
-	tokenFile := filepath.Join(dir, token03x)
-	walletsDir := filepath.Join(dir, wallets03x)
 
-	defer os.Remove(tokenFile)
-	t, err := ioutil.ReadFile(tokenFile)
+	// Cleanup old token
+	tokenFile := filepath.Join(dir, token03x)
+	os.Remove(tokenFile)
+
+	// Find keys
+	walletsDir := filepath.Join(dir, wallets03x)
+	accs := ksInstance(walletsDir).Accounts()
+	if len(accs) < 1 {
+		return // nothing to migrate
+	}
+
+	// new user keystore dir
+	newKeyStore, err := user.DefaultKeystore()
 	if err != nil {
 		return
 	}
+	os.MkdirAll(newKeyStore.Path, store.DirPerm)
 
-	restError := new(api.Error)
-	response := struct {
-		Email string `json:"email"`
-	}{}
-	sling.New().Add("Authorization", "Bearer "+strings.TrimSpace(string(t))).
-		Get(meta.PublisherEndpoint()).
-		Receive(&response, restError)
-
-	if response.Email != "" {
-		// ensure v0.4.x user dir
-		uDir := filepath.Join(dir, "u", response.Email)
-		os.MkdirAll(uDir, store.DirPerm)
-
-		// move wallets to user dir
-		toDir := filepath.Join(uDir, "keystore")
-		os.Rename(walletsDir, toDir)
+	if wallets, err := user.Wallets(); err == nil {
+		for _, w := range wallets {
+			for _, a := range accs {
+				if strings.ToLower(a.Address.Hex()) == w {
+					oldPath := a.URL.Path
+					newPath := filepath.Join(newKeyStore.Path, filepath.Base(a.URL.Path))
+					if err := os.Rename(oldPath, newPath); err == nil {
+						fmt.Printf("Pub key '%s' has been migrated to new profile dir.", w)
+					}
+				}
+			}
+		}
 	}
 }

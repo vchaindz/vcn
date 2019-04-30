@@ -50,7 +50,8 @@ func (u User) isWalletSynced(address string) (result bool, err error) {
 	return false, fmt.Errorf("no such wallet: %s", address)
 }
 
-func (u User) loadPublicKeys() (addresses []string, err error) {
+// Wallets returns addresses (pub keys) of user's wallets on the blockchain
+func (u User) Wallets() (addresses []string, err error) {
 	authError := new(Error)
 	pagedWalletResponse := new(PagedWalletResponse)
 	r, err := newSling(u.token()).
@@ -73,6 +74,7 @@ func (u User) loadPublicKeys() (addresses []string, err error) {
 	return result, nil
 }
 
+// SyncKeys synces local pub keys to the blockchain
 func (u User) SyncKeys() error {
 
 	hasAuth, err := u.IsAuthenticated()
@@ -82,7 +84,7 @@ func (u User) SyncKeys() error {
 	if !hasAuth {
 		return makeAuthRequiredError()
 	}
-	addresses, err := u.loadPublicKeys()
+	addresses, err := u.Wallets()
 	if err != nil {
 		return err
 	}
