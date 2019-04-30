@@ -13,6 +13,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/vchain-us/vcn/pkg/extractor"
+	"github.com/vchain-us/vcn/pkg/extractor/docker"
+	"github.com/vchain-us/vcn/pkg/extractor/file"
+
 	"github.com/vchain-us/vcn/pkg/store"
 
 	"github.com/mitchellh/go-homedir"
@@ -21,6 +25,11 @@ import (
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+
+	// Register metadata extractors
+	extractor.Register("", file.Artifact)
+	extractor.Register(file.Scheme, file.Artifact)
+	extractor.Register(docker.Scheme, docker.Artifact)
 
 	// Find home directory
 	home, err := homedir.Dir()

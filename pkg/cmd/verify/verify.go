@@ -11,17 +11,16 @@ package verify
 import (
 	"fmt"
 	"math/big"
-	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/vchain-us/vcn/pkg/extractor"
 
 	"github.com/vchain-us/vcn/pkg/store"
 
 	"github.com/dustin/go-humanize"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/vchain-us/vcn/internal/cli"
-	"github.com/vchain-us/vcn/internal/docker"
-	"github.com/vchain-us/vcn/internal/utils"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/meta"
 
@@ -71,30 +70,18 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func verify(filename string, pubKey string, user *api.User) (success bool, err error) {
-	var artifactHash string
-	var name string
-	// fixme(leogr): refactor to spec
-	if strings.HasPrefix(filename, "docker://") {
-		artifactHash, err = docker.GetHash(filename)
-		if err != nil {
-			return false, fmt.Errorf("failed to get hash for docker image: %s", err)
-		}
-		name = "docker://" + artifactHash
-	} else {
-		hash, err := utils.HashFile(filename)
-		if err != nil {
-			return false, err
-		}
-		artifactHash = strings.TrimSpace(hash)
-		name = filepath.Base(filename)
+func verify(arg string, pubKey string, user *api.User) (success bool, err error) {
+
+	a, err := extractor.Extract(arg)
+	if err != nil {
+		return
 	}
 
 	var verification *api.BlockchainVerification
 	if pubKey == "" {
-		verification, err = api.BlockChainVerify(artifactHash)
+		verification, err = api.BlockChainVerify(a.Hash)
 	} else {
-		verification, err = api.BlockChainVerifyMatchingPublicKey(artifactHash, pubKey)
+		verification, err = api.BlockChainVerifyMatchingPublicKey(a.Hash, pubKey)
 	}
 	if err != nil {
 		return false, fmt.Errorf("unable to verify hash: %s", err)
@@ -102,11 +89,11 @@ func verify(filename string, pubKey string, user *api.User) (success bool, err e
 
 	var artifact *api.ArtifactResponse
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-		artifact, _ = api.LoadArtifactForHash(user, artifactHash, verification.MetaHash())
+		artifact, _ = api.LoadArtifactForHash(user, a.Hash, verification.MetaHash())
 	}
 	if artifact != nil {
-		cli.PrintColumn("Asset", artifact.Filename, name)
-		cli.PrintColumn("Hash", artifactHash, "NA")
+		cli.PrintColumn("Asset", artifact.Filename, a.Name)
+		cli.PrintColumn("Hash", a.Hash, "NA")
 		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
 		cli.PrintColumn("Signer", artifact.Publisher, "NA")
 		cli.PrintColumn("Key", strings.ToLower(verification.Owner.Hex()), "NA")
@@ -120,8 +107,8 @@ func verify(filename string, pubKey string, user *api.User) (success bool, err e
 		cli.PrintColumn("Website", artifact.PublisherWebsiteUrl, "NA")
 		cli.PrintColumn("Level", meta.LevelName(verification.Level), "NA")
 	} else {
-		cli.PrintColumn("Asset", name, "NA")
-		cli.PrintColumn("Hash", artifactHash, "NA")
+		cli.PrintColumn("Asset", a.Name, "NA")
+		cli.PrintColumn("Hash", a.Hash, "NA")
 		if verification.Timestamp != time.Unix(0, 0) {
 			cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
 		} else {
@@ -146,6 +133,6 @@ func verify(filename string, pubKey string, user *api.User) (success bool, err e
 
 	// todo(ameingast): redundant tracking events?
 	_ = api.TrackPublisher(user, meta.VcnVerifyEvent)
-	_ = api.TrackVerify(user, artifactHash, filepath.Base(filename))
+	_ = api.TrackVerify(user, a.Hash, a.Name)
 	return
 }
