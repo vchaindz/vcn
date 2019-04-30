@@ -35,13 +35,16 @@ builder:
 			-t vcn-xgo \
 			./build
 
-.PHONY: clean
-clean: 
-	rm -f ./vcn
+.PHONY: clean/dist
+clean/dist: 
 	rm -Rf ./dist
 
+.PHONY: clean
+clean: clean/dist
+	rm -f ./vcn
+
 .PHONY: dist
-dist: clean builder
+dist: clean/dist builder
 	mkdir -p dist
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist:/dist \
@@ -52,3 +55,18 @@ dist: clean builder
 			-e PACK=cmd/vcn \
 			-e OUT=vcn-v${VERSION} \
 			vcn-xgo .
+
+.PHONY: dist/NSIS
+dist/NSIS:
+	mkdir -p dist/NSIS
+	cp ./dist/vcn-v${VERSION}-windows-4.0-amd64.exe ./dist/NSIS/vcn.exe
+	cp ./resources/NSIS/* ./dist/NSIS/
+	$(DOCKER) run --rm \
+			-v ${PWD}/dist/NSIS/:/app \
+			wheatstalk/makensis /app/setup.nsi
+	mv ./dist/NSIS/*_setup.exe ./dist/
+	rm -Rf ./dist/NSIS
+
+.PHONY: dist/sign
+dist/sign: vcn
+	ls ./dist/* | xargs ./vcn sign -y
