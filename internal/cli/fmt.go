@@ -16,7 +16,7 @@ import (
 
 func PrintColumn(field string, value string, fallback string, p ...color.Attribute) {
 	var spaces string
-	for i := len(field); i < 8; i++ {
+	for i := len(field); i < 9; i++ {
 		spaces += " "
 	}
 	fmt.Print(field + ":" + spaces)

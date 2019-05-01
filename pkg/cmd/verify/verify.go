@@ -9,6 +9,7 @@
 package verify
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"strings"
@@ -105,11 +106,21 @@ func verify(arg string, pubKey string, user *api.User) (success bool, err error)
 			cli.PrintColumn("Size", "NA", "NA")
 		}
 		cli.PrintColumn("MimeType", artifact.MimeType, "NA")
+		cli.PrintColumn("Url", artifact.Url, "NA")
+		cli.PrintColumn("License", artifact.License, "NA")
+		metadata := ""
+		for k, v := range artifact.Metadata {
+			if vv, err := json.Marshal(v); err == nil {
+				metadata += fmt.Sprintf("%s=%s\t", k, string(vv))
+			}
+		}
+		cli.PrintColumn("Metadata", metadata, "NA")
 		cli.PrintColumn("Company", artifact.PublisherCompany, "NA")
 		cli.PrintColumn("Website", artifact.PublisherWebsiteUrl, "NA")
 		cli.PrintColumn("Level", meta.LevelName(verification.Level), "NA")
 	} else {
 		cli.PrintColumn("Asset", a.Name, "NA")
+		cli.PrintColumn("Kind", a.Kind, "NA")
 		cli.PrintColumn("Hash", a.Hash, "NA")
 		if verification.Timestamp != time.Unix(0, 0) {
 			cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
@@ -122,11 +133,6 @@ func verify(arg string, pubKey string, user *api.User) (success bool, err error)
 		} else {
 			cli.PrintColumn("Key", "NA", "NA")
 		}
-		cli.PrintColumn("Name", "NA", "NA")
-		cli.PrintColumn("Company", "NA", "NA")
-		cli.PrintColumn("Website", "NA", "NA")
-		cli.PrintColumn("Size", "NA", "NA")
-		cli.PrintColumn("Level", "NA", "NA")
 	}
 
 	c, s := meta.StatusColor(verification.Status)

@@ -40,6 +40,7 @@ func NewCmdSign() *cobra.Command {
 		Args: cobra.ExactArgs(1),
 	}
 
+	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (format: --attr key=value)")
 	cmd.Flags().StringP("key", "k", "", "specify the public key <vcn> should use, if not set the last available is used")
 	cmd.Flags().BoolP("public", "p", false, "when signed as public, the asset name and the signer's identity will be visible to everyone")
 	cmd.Flags().BoolP("yes", "y", false, "when used, you automatically confirm the ownership of this asset")
@@ -68,26 +69,31 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		return err
 	}
 
+	metadata := cmd.Flags().Lookup("attr").Value.(mapOpts).StringToInterface()
+
 	cmd.SilenceUsage = true
-	return sign(args[0], pubKey, state, meta.VisibilityForFlag(public), yes)
+	return sign(args[0], pubKey, state, meta.VisibilityForFlag(public), metadata, yes)
 }
 
-func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibility, acknowledge bool) error {
+func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibility, metadata api.Metadata, acknowledge bool) error {
 
 	if err := cli.AssertUserLogin(); err != nil {
 		return err
 	}
 	u := api.NewUser(store.Config().CurrentContext)
 
-	// keystore
 	if err := cli.AssertUserKeystore(); err != nil {
 		return err
 	}
 
+	// Extract artifact from arg
 	a, err := extractor.Extract(arg)
 	if err != nil {
 		return err
 	}
+
+	// Copy user provided custom attributes
+	a.Metadata.SetValues(metadata)
 
 	if a.Size < 0 {
 		return fmt.Errorf("invalid size")
