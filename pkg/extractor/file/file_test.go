@@ -11,6 +11,7 @@ package file
 import (
 	"io/ioutil"
 	"log"
+	"path/filepath"
 
 	"github.com/stretchr/testify/assert"
 
@@ -31,8 +32,25 @@ func TestFile(t *testing.T) {
 		log.Fatal(err)
 	}
 	u, _ := uri.Parse("file://" + file.Name())
+
 	a, err := Artifact(u)
 	assert.NoError(t, err)
 	assert.NotNil(t, a)
+	assert.Equal(t, Scheme, a.Kind)
+	assert.Equal(t, filepath.Base(file.Name()), a.Name)
 	assert.Equal(t, "181210f8f9c779c26da1d9b2075bde0127302ee0e3fca38c9a83f5b1dd8e5d3b", a.Hash)
+
+	u, _ = uri.Parse(file.Name())
+	a, err = Artifact(u)
+	assert.NoError(t, err)
+	assert.NotNil(t, a)
+	assert.Equal(t, Scheme, a.Kind)
+	assert.Equal(t, filepath.Base(file.Name()), a.Name)
+	assert.Equal(t, "181210f8f9c779c26da1d9b2075bde0127302ee0e3fca38c9a83f5b1dd8e5d3b", a.Hash)
+
+	u, _ = uri.Parse("../../../docs/vcncheatsheet.pdf")
+	a, err = Artifact(u)
+	assert.NoError(t, err)
+	assert.NotNil(t, a)
+	assert.Equal(t, a.MimeType, "application/pdf")
 }

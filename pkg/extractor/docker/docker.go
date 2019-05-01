@@ -39,6 +39,7 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 
 	i := images[0]
 	return &api.Artifact{
+		Kind: Scheme,
 		Name: Scheme + "://" + i.name(),
 		Hash: i.hash(),
 		Size: i.Size,

@@ -16,16 +16,21 @@ import (
 )
 
 type Artifact struct {
-	Name string
-	Hash string
-	Size uint64
+	Kind     string
+	Name     string
+	Hash     string
+	Size     uint64
+	MimeType string
 }
 
 type ArtifactRequest struct {
-	Name       string `json:"name"`
-	Hash       string `json:"hash"`
-	Filename   string `json:"filename"`
+	Kind     string `json:"kind"`
+	Name     string `json:"name"`
+	Hash     string `json:"hash"`
+	MimeType string `json:"mimeType"`
+
 	FileSize   uint64 `json:"fileSize"`
+	Filename   string `json:"filename"`
 	Url        string `json:"url"`
 	License    string `json:"license"`
 	Visibility string `json:"visibility"`
@@ -38,8 +43,11 @@ type PagedArtifactResponse struct {
 }
 
 type ArtifactResponse struct {
-	Name                string `json:"name"`
-	Hash                string `json:"hash"`
+	Kind     string `json:"kind"`
+	Name     string `json:"name"`
+	Hash     string `json:"hash"`
+	MimeType string `json:"mimeType"`
+
 	Filename            string `json:"filename"`
 	FileSize            uint64 `json:"fileSize"`
 	Url                 string `json:"url"`
@@ -76,8 +84,11 @@ func (u User) createArtifact(verification *BlockchainVerification, walletAddress
 	r, err := newSling(u.token()).
 		Post(meta.ArtifactEndpointForWallet(walletAddress)).
 		BodyJSON(ArtifactRequest{
-			Name:       artifact.Name,
-			Hash:       artifact.Hash,
+			Kind:     artifact.Kind,
+			Name:     artifact.Name,
+			Hash:     artifact.Hash,
+			MimeType: artifact.MimeType,
+
 			Filename:   artifact.Name,
 			FileSize:   artifact.Size,
 			Visibility: meta.VisibilityName(visibility),

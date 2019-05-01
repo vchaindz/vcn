@@ -93,6 +93,7 @@ func verify(arg string, pubKey string, user *api.User) (success bool, err error)
 	}
 	if artifact != nil {
 		cli.PrintColumn("Asset", artifact.Filename, a.Name)
+		cli.PrintColumn("Kind", artifact.Kind, "NA")
 		cli.PrintColumn("Hash", a.Hash, "NA")
 		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
 		cli.PrintColumn("Signer", artifact.Publisher, "NA")
@@ -103,6 +104,7 @@ func verify(arg string, pubKey string, user *api.User) (success bool, err error)
 		} else {
 			cli.PrintColumn("Size", "NA", "NA")
 		}
+		cli.PrintColumn("MimeType", artifact.MimeType, "NA")
 		cli.PrintColumn("Company", artifact.PublisherCompany, "NA")
 		cli.PrintColumn("Website", artifact.PublisherWebsiteUrl, "NA")
 		cli.PrintColumn("Level", meta.LevelName(verification.Level), "NA")
