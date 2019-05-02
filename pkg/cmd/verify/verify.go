@@ -106,6 +106,8 @@ func verify(arg string, pubKey string, user *api.User) (success bool, err error)
 			cli.PrintColumn("Size", "NA", "NA")
 		}
 		cli.PrintColumn("MimeType", artifact.MimeType, "NA")
+		cli.PrintColumn("Platform", artifact.Platform, "NA")
+		cli.PrintColumn("Arch", artifact.Architecture, "NA")
 		cli.PrintColumn("Url", artifact.Url, "NA")
 		cli.PrintColumn("License", artifact.License, "NA")
 		metadata := ""

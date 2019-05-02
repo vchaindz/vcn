@@ -43,6 +43,8 @@ func (a Artifact) toRequest() *ArtifactRequest {
 	// promote some custom metadata to root
 	aR.Url = a.Metadata.swipeString("url")
 	aR.License = a.Metadata.swipeString("license")
+	aR.Platform = a.Metadata.swipeString("platform")
+	aR.Architecture = a.Metadata.swipeString("architecture")
 
 	return aR
 }
@@ -54,11 +56,13 @@ type ArtifactRequest struct {
 	Hash string `json:"hash"`
 
 	// root metadata
-	MimeType string `json:"mimeType"`
-	FileSize uint64 `json:"fileSize"`
-	Filename string `json:"filename"`
-	Url      string `json:"url"`
-	License  string `json:"license"`
+	MimeType     string `json:"mimeType"`
+	FileSize     uint64 `json:"fileSize"`
+	Filename     string `json:"filename"`
+	Url          string `json:"url"`
+	License      string `json:"license"`
+	Platform     string `json:"platform"`
+	Architecture string `json:"architecture"`
 
 	// custom metadata
 	Metadata Metadata `json:"metadata"`
@@ -80,11 +84,13 @@ type ArtifactResponse struct {
 	Hash string `json:"hash"`
 
 	// root metadata
-	MimeType string `json:"mimeType"`
-	FileSize uint64 `json:"fileSize"`
-	Filename string `json:"filename"`
-	Url      string `json:"url"`
-	License  string `json:"license"`
+	MimeType     string `json:"mimeType"`
+	FileSize     uint64 `json:"fileSize"`
+	Filename     string `json:"filename"`
+	Url          string `json:"url"`
+	License      string `json:"license"`
+	Platform     string `json:"platform"`
+	Architecture string `json:"architecture"`
 
 	// custom metadata
 	Metadata Metadata `json:"metadata"`
