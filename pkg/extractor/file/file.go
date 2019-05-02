@@ -12,7 +12,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
-	"net/http"
 	"os"
 	"strings"
 
@@ -38,6 +37,9 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 	}
 	defer f.Close()
 
+	// Metadata container
+	m := api.Metadata{}
+
 	// Hash
 	h := sha256.New()
 	if _, err := io.Copy(h, f); err != nil {
@@ -52,10 +54,14 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 	}
 
 	// MimeType
-	f.Seek(0, 0)
 	mime, err := contentType(f)
 	if err != nil {
 		return nil, err
+	}
+
+	// Sniff executable info, if any
+	if ok, data, _ := xInfo(f, &mime); ok {
+		m.SetValues(data)
 	}
 
 	return &api.Artifact{
@@ -64,22 +70,6 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 		Hash:     hex.EncodeToString(checksum),
 		Size:     uint64(stat.Size()),
 		MimeType: mime,
+		Metadata: m,
 	}, nil
-}
-
-func contentType(out *os.File) (string, error) {
-
-	// Only the first 512 bytes are used to sniff the content type.
-	buffer := make([]byte, 512)
-
-	_, err := out.Read(buffer)
-	if err != nil {
-		return "", err
-	}
-
-	// Use the net/http package's handy DectectContentType function. Always returns a valid
-	// content-type by returning "application/octet-stream" if no others seemed to match.
-	contentType := http.DetectContentType(buffer)
-
-	return contentType, nil
 }
