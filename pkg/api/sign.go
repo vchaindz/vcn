@@ -56,14 +56,6 @@ func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state me
 		return nil, err
 	}
 
-	synced, err := u.isWalletSynced(pubKey)
-	if err != nil {
-		return nil, err
-	}
-	if !synced {
-		return nil, makeError(fmt.Sprintf(walletNotSyncMsg, artifact.Name), nil)
-	}
-
 	opsLeft, err := u.RemainingSignOps()
 	if err != nil {
 		return nil, err
@@ -71,6 +63,14 @@ func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state me
 
 	if opsLeft < 1 {
 		return nil, fmt.Errorf(errors.NoRemainingSignOps)
+	}
+
+	synced, err := u.isWalletSynced(pubKey)
+	if err != nil {
+		return nil, err
+	}
+	if !synced {
+		return nil, makeError(fmt.Sprintf(walletNotSyncMsg, artifact.Name), nil)
 	}
 
 	return u.commitHash(keyin, passphrase, artifact, state, visibility)
