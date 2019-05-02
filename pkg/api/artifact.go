@@ -16,18 +16,58 @@ import (
 )
 
 type Artifact struct {
-	Name string
-	Hash string
-	Size uint64
+	Kind     string
+	Name     string
+	Hash     string
+	Size     uint64
+	MimeType string
+	Metadata
+}
+
+func (a Artifact) toRequest() *ArtifactRequest {
+	aR := &ArtifactRequest{
+		// root fields
+		Kind: a.Kind,
+		Name: a.Name,
+		Hash: a.Hash,
+
+		// root metadata
+		MimeType: a.MimeType,
+		Filename: a.Name,
+		FileSize: a.Size,
+
+		// custom metadata
+		Metadata: a.Metadata,
+	}
+
+	// promote some custom metadata to root
+	aR.Url = a.Metadata.swipeString("url")
+	aR.License = a.Metadata.swipeString("license")
+	aR.Platform = a.Metadata.swipeString("platform")
+	aR.Architecture = a.Metadata.swipeString("architecture")
+
+	return aR
 }
 
 type ArtifactRequest struct {
-	Name       string `json:"name"`
-	Hash       string `json:"hash"`
-	Filename   string `json:"filename"`
-	FileSize   uint64 `json:"fileSize"`
-	Url        string `json:"url"`
-	License    string `json:"license"`
+	// root fields
+	Kind string `json:"kind"`
+	Name string `json:"name"`
+	Hash string `json:"hash"`
+
+	// root metadata
+	MimeType     string `json:"mimeType"`
+	FileSize     uint64 `json:"fileSize"`
+	Filename     string `json:"filename"`
+	Url          string `json:"url"`
+	License      string `json:"license"`
+	Platform     string `json:"platform"`
+	Architecture string `json:"architecture"`
+
+	// custom metadata
+	Metadata Metadata `json:"metadata"`
+
+	// ArtifactRequest specific
 	Visibility string `json:"visibility"`
 	Status     string `json:"status"`
 	MetaHash   string `json:"metaHash"`
@@ -38,12 +78,24 @@ type PagedArtifactResponse struct {
 }
 
 type ArtifactResponse struct {
-	Name                string `json:"name"`
-	Hash                string `json:"hash"`
-	Filename            string `json:"filename"`
-	FileSize            uint64 `json:"fileSize"`
-	Url                 string `json:"url"`
-	License             string `json:"license"`
+	// root fields
+	Kind string `json:"kind"`
+	Name string `json:"name"`
+	Hash string `json:"hash"`
+
+	// root metadata
+	MimeType     string `json:"mimeType"`
+	FileSize     uint64 `json:"fileSize"`
+	Filename     string `json:"filename"`
+	Url          string `json:"url"`
+	License      string `json:"license"`
+	Platform     string `json:"platform"`
+	Architecture string `json:"architecture"`
+
+	// custom metadata
+	Metadata Metadata `json:"metadata"`
+
+	// ArtifactResponse specific
 	Level               int64  `json:"level"`
 	Visibility          string `json:"visibility"`
 	Status              string `json:"status"`
@@ -71,19 +123,15 @@ func (u User) createArtifact(verification *BlockchainVerification, walletAddress
 		return makeAuthRequiredError()
 	}
 
-	metaHash := verification.MetaHash()
+	aR := artifact.toRequest()
+	aR.Visibility = meta.VisibilityName(visibility)
+	aR.Status = meta.StatusName(status)
+	aR.MetaHash = verification.MetaHash()
+
 	restError := new(Error)
 	r, err := newSling(u.token()).
 		Post(meta.ArtifactEndpointForWallet(walletAddress)).
-		BodyJSON(ArtifactRequest{
-			Name:       artifact.Name,
-			Hash:       artifact.Hash,
-			Filename:   artifact.Name,
-			FileSize:   artifact.Size,
-			Visibility: meta.VisibilityName(visibility),
-			Status:     meta.StatusName(status),
-			MetaHash:   metaHash,
-		}).Receive(nil, restError)
+		BodyJSON(aR).Receive(nil, restError)
 	if err != nil {
 		return err
 	}
