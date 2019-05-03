@@ -1,9 +1,8 @@
 # vcn - vChain CodeNotary
 > Global, de-centralized signing of code and other digital assets
 
-## License
-
-This software is released under [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+## How it works
+![vcn How it works](https://github.com/vchain-us/vcn/blob/master/docs/vcn_hiwb.png "How it works")
 
 ## Installation
 
@@ -134,3 +133,7 @@ $> make test
 The C libraries of [go-ethereum](https://github.com/ethereum/go-ethereum) make a more sophisticated cross-compilation
 necessary. 
 The `make dist` target takes care of all steps by using [xgo](https://github.com/techknowlogick/xgo) and `docker`. 
+
+## License
+
+This software is released under [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html).
