@@ -89,6 +89,12 @@ Fetch all assets you've signed:
 $> vcn list
 ```
 
+### Integrations
+
+Check out our list of integrations
+
+* [Docker](https://github.com/vchain-us/vcn/blob/master/docs/DOCKERINTEGRATION.md)
+
 ### Advanced usage 
 
 You're good to start doing really cool things, e.g.
