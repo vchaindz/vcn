@@ -38,18 +38,34 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 	}
 
 	i := images[0]
+
+	m := api.Metadata{
+		"architecture": i.Architecture,
+		"platform":     i.Os,
+	}
+	m[Scheme] = i
 	return &api.Artifact{
-		Kind: Scheme,
-		Name: Scheme + "://" + i.name(),
-		Hash: i.hash(),
-		Size: i.Size,
+		Kind:     Scheme,
+		Name:     Scheme + "://" + i.name(),
+		Hash:     i.hash(),
+		Size:     i.Size,
+		Metadata: m,
 	}, nil
 }
 
 type image struct {
-	ID       string   `json:"Id"`
-	RepoTags []string `json:"RepoTags"`
-	Size     uint64   `json:"Size"`
+	ID            string      `json:"Id"`
+	RepoTags      []string    `json:"RepoTags"`
+	RepoDigests   []string    `json:"RepoDigests"`
+	Comment       string      `json:"Comment"`
+	Created       string      `json:"Created"`
+	DockerVersion string      `json:"DockerVersion"`
+	Author        string      `json:"Author"`
+	Architecture  string      `json:"Architecture"`
+	Os            string      `json:"Os"`
+	VirtualSize   uint64      `json:"VirtualSize"`
+	Size          uint64      `json:"Size"`
+	Metadata      interface{} `json:"Metadata"`
 }
 
 func (i image) hash() string {
