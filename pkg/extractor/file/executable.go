@@ -26,7 +26,7 @@ func xInfo(file *os.File, contentType *string) (bool, api.Metadata, error) {
 		return true, api.Metadata{
 			"architecture": strings.ToLower(d.Arch),
 			"platform":     d.Platform,
-			"execInfo":     d,
+			"file":         d,
 		}, nil
 	}
 	return false, nil, nil
