@@ -2,7 +2,7 @@
 > Global, de-centralized signing of code and other digital assets
 
 ## How it works
-![vcn How it works](https://github.com/vchain-us/vcn/blob/master/docs/vcn_hiwb.png "How it works")
+![vcn How it works](https://raw.githubusercontent.com/vchain-us/vcn/master/docs/vcn_hiwb.png "How it works")
 
 ## Installation
 
@@ -20,12 +20,12 @@ repository into your working directory.
 You can build `vcn` in the working directory using the provided `Makefile`.
 
 ```
-$> make vcn
+make vcn
 ```
 
 Then run
 ```
-$> ./vcn
+./vcn
 ```
 
 ### System-wide installation
@@ -34,7 +34,7 @@ This will put the `vcn` executable into `GOBIN` which is
 accessible throughout the system.
 
 ```
-$> make install
+make install
 ```
 
 ## Usage
@@ -44,48 +44,48 @@ Register an account with [codernotary.io](https://codenotary.io) first.
 Then start with the `login` verb; the cli will walk you through login
 and setting up your local keystore upon initial use.
 ```
-$> vcn --help
-$> vcn login
+vcn --help
+vcn login
 ```
 
 You're good to use `verify` without the above registration.
 
 ```
-$> vcn verify <asset>
-$> vcn verify docker://<imageId>
+vcn verify <asset>
+vcn verify docker://<imageId>
 ```
 
 Once your public key is known on the blockchain you can sign assets:
 
 ```
-$> vcn sign <asset>
-$> vcn sign docker://<image>
+vcn sign <asset>
+vcn sign docker://<image>
 ```
 
 By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the --public switch.
 
 ```
-$> vcn sign --public <asset>
-$> vcn sign --public docker://<image>
+vcn sign --public <asset>
+vcn sign --public docker://<image>
 ```
 
 Change the asset's status
 
 ```
-$> vcn unsupport <asset>
-$> vcn untrust <asset>
+vcn unsupport <asset>
+vcn untrust <asset>
 ```
 
 Have a look at analytics and extended functionality on the dashboard (browser needed):
 
 ```
-$> vcn dashboard
+vcn dashboard
 ```
 
 Fetch all assets you've signed:
 
 ```
-$> vcn list
+vcn list
 ```
 
 ### Integrations
@@ -100,21 +100,21 @@ You're good to start doing really cool things, e.g.
 
 ```
 # run a Docker image only when it can be successfully verified
-$> vcn verify docker://hello-world && docker run hello-world
+vcn verify docker://hello-world && docker run hello-world
 ```
 
 ```
 # verify multiple assets by piping other commands' outputs into vcn
-$> ls | xargs vcn verify
+ls | xargs vcn verify
 ```
 
 ```
 # work with environment
 # get logs (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC)
-$> LOG_LEVEL=TRACE vcn login
+LOG_LEVEL=TRACE vcn login
 
 # or with a proxy
-$> HTTP_PROXY=http://localhost:3128 vcn verify <asset>
+HTTP_PROXY=http://localhost:3128 vcn verify <asset>
 ```
 
 ## Development
@@ -123,7 +123,7 @@ $> HTTP_PROXY=http://localhost:3128 vcn verify <asset>
 Simply run
 
 ```
-$> make test
+make test
 ```
 
 ## Distribution
@@ -132,7 +132,7 @@ $> make test
 
 The C libraries of [go-ethereum](https://github.com/ethereum/go-ethereum) make a more sophisticated cross-compilation
 necessary. 
-The `make dist` target takes care of all steps by using [xgo](https://github.com/techknowlogick/xgo) and `docker`. 
+The `make dist` target takes care of all steps by using [xgo](https://github.com/techknowlogick/xgo) and [docker](https://github.com/docker). 
 
 ## License
 

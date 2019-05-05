@@ -1,10 +1,10 @@
 # Default Docker Integration
 
-vcn support local docker installations out of the box using docker:// as a location. You just need to point to the correct container image name or the container image id.
+`vcn` support local docker installations out of the box using `docker://` as a location. You just need to point to the correct container image name or the container image id.
 
 ### Sign a local docker image
 
-vcn uses docker default schmemes, so the latest tag is automatically used, if no tag is given
+`vcn` uses docker default schemes, so the latest tag is automatically used, if no tag is given
 
 ```
 vcn sign docker://hello-world
@@ -37,12 +37,12 @@ vcn also offers a sidecar project, you can use to automatically verify used cont
 Check out (https://github.com/vchain-us/vcn-watchdog) on your server. The tool continuously verifies the integrity of your containers:
 
 ```
- git clone https://github.com/vchain-us/vcn-watchdog.git 
+git clone https://github.com/vchain-us/vcn-watchdog.git 
 ```
 
 Edit the verify file and set the alerting/monitoring tool you are using (see the following instructions), if you want to change the alerting
 
-Make sure /var/run/docker.sock is accessible and run the following command on your server within the vcn-watchdog directory.
+Make sure `/var/run/docker.sock` is accessible and run the following command on your server within the [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog.git) directory.
 ``` 
 docker-compose build && docker-compose up 
 ```
