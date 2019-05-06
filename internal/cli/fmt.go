@@ -16,10 +16,10 @@ import (
 
 func PrintColumn(field string, value string, fallback string, p ...color.Attribute) {
 	var spaces string
-	for i := len(field); i < 9; i++ {
+	for i := len(field); i < 11; i++ {
 		spaces += " "
 	}
-	fmt.Print(field + ":" + spaces)
+	fmt.Print(field + ": " + spaces)
 	if p != nil {
 		c := color.New(p...)
 		c.Set()

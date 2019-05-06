@@ -114,35 +114,29 @@ func verify(a *api.Artifact, pubKey string, user *api.User) (err error) {
 		artifact, _ = api.LoadArtifactForHash(user, a.Hash, verification.MetaHash())
 	}
 	if artifact != nil {
-		cli.PrintColumn("Asset", artifact.Filename, a.Name)
+		cli.PrintColumn("Name", artifact.Name, a.Name)
 		cli.PrintColumn("Kind", artifact.Kind, "NA")
 		cli.PrintColumn("Hash", a.Hash, "NA")
 		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
 		cli.PrintColumn("Signer", artifact.Publisher, "NA")
 		cli.PrintColumn("Key", strings.ToLower(verification.Owner.Hex()), "NA")
-		cli.PrintColumn("Name", artifact.Name, "NA")
-		if artifact.FileSize > 0 {
-			cli.PrintColumn("Size", humanize.Bytes(artifact.FileSize), "NA")
+		if artifact.Size > 0 {
+			cli.PrintColumn("Size", humanize.Bytes(artifact.Size), "NA")
 		} else {
 			cli.PrintColumn("Size", "NA", "NA")
 		}
-		cli.PrintColumn("MimeType", artifact.MimeType, "NA")
-		cli.PrintColumn("Platform", artifact.Platform, "NA")
-		cli.PrintColumn("Arch", artifact.Architecture, "NA")
+		cli.PrintColumn("ContentType", artifact.ContentType, "NA")
 		cli.PrintColumn("Url", artifact.Url, "NA")
-		cli.PrintColumn("License", artifact.License, "NA")
-		metadata := ""
 		for k, v := range artifact.Metadata {
 			if vv, err := json.Marshal(v); err == nil {
-				metadata += fmt.Sprintf("%s=%s\t", k, string(vv))
+				cli.PrintColumn("Metadata", fmt.Sprintf("%s=%s\t", k, string(vv)), "")
 			}
 		}
-		cli.PrintColumn("Metadata", metadata, "NA")
 		cli.PrintColumn("Company", artifact.PublisherCompany, "NA")
 		cli.PrintColumn("Website", artifact.PublisherWebsiteUrl, "NA")
 		cli.PrintColumn("Level", meta.LevelName(verification.Level), "NA")
 	} else {
-		cli.PrintColumn("Asset", a.Name, "NA")
+		cli.PrintColumn("Name", a.Name, "NA")
 		cli.PrintColumn("Kind", a.Kind, "NA")
 		cli.PrintColumn("Hash", a.Hash, "NA")
 		if verification.Timestamp != time.Unix(0, 0) {

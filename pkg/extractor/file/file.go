@@ -53,8 +53,8 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 		return nil, err
 	}
 
-	// MimeType
-	mime, err := contentType(f)
+	// ContentType
+	ct, err := contentType(f)
 	if err != nil {
 		return nil, err
 	}
@@ -63,16 +63,16 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 	m["version"] = inferVer(stat.Name())
 
 	// Sniff executable info, if any
-	if ok, data, _ := xInfo(f, &mime); ok {
+	if ok, data, _ := xInfo(f, &ct); ok {
 		m.SetValues(data)
 	}
 
 	return &api.Artifact{
-		Kind:     Scheme,
-		Name:     stat.Name(),
-		Hash:     hex.EncodeToString(checksum),
-		Size:     uint64(stat.Size()),
-		MimeType: mime,
-		Metadata: m,
+		Kind:        Scheme,
+		Name:        stat.Name(),
+		Hash:        hex.EncodeToString(checksum),
+		Size:        uint64(stat.Size()),
+		ContentType: ct,
+		Metadata:    m,
 	}, nil
 }

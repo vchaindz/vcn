@@ -52,5 +52,5 @@ func TestFile(t *testing.T) {
 	a, err = Artifact(u)
 	assert.NoError(t, err)
 	assert.NotNil(t, a)
-	assert.Equal(t, a.MimeType, "application/pdf")
+	assert.Equal(t, a.ContentType, "application/pdf")
 }
