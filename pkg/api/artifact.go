@@ -16,53 +16,41 @@ import (
 )
 
 type Artifact struct {
-	Kind     string
-	Name     string
-	Hash     string
-	Size     uint64
-	MimeType string
+	Kind        string
+	Name        string
+	Hash        string
+	Size        uint64
+	ContentType string
 	Metadata
 }
 
 func (a Artifact) toRequest() *ArtifactRequest {
 	aR := &ArtifactRequest{
 		// root fields
-		Kind: a.Kind,
-		Name: a.Name,
-		Hash: a.Hash,
-
-		// root metadata
-		MimeType: a.MimeType,
-		Filename: a.Name,
-		FileSize: a.Size,
+		Kind:        a.Kind,
+		Name:        a.Name,
+		Hash:        a.Hash,
+		Size:        a.Size,
+		ContentType: a.ContentType,
 
 		// custom metadata
 		Metadata: a.Metadata,
 	}
 
-	// promote some custom metadata to root
+	// promote url from custom metadata to root
 	aR.Url = a.Metadata.swipeString("url")
-	aR.License = a.Metadata.swipeString("license")
-	aR.Platform = a.Metadata.swipeString("platform")
-	aR.Architecture = a.Metadata.swipeString("architecture")
 
 	return aR
 }
 
 type ArtifactRequest struct {
 	// root fields
-	Kind string `json:"kind"`
-	Name string `json:"name"`
-	Hash string `json:"hash"`
-
-	// root metadata
-	MimeType     string `json:"mimeType"`
-	FileSize     uint64 `json:"fileSize"`
-	Filename     string `json:"filename"`
-	Url          string `json:"url"`
-	License      string `json:"license"`
-	Platform     string `json:"platform"`
-	Architecture string `json:"architecture"`
+	Kind        string `json:"kind"`
+	Name        string `json:"name"`
+	Hash        string `json:"hash"`
+	Size        uint64 `json:"size"`
+	ContentType string `json:"contentType"`
+	Url         string `json:"url"`
 
 	// custom metadata
 	Metadata Metadata `json:"metadata"`
@@ -79,18 +67,12 @@ type PagedArtifactResponse struct {
 
 type ArtifactResponse struct {
 	// root fields
-	Kind string `json:"kind"`
-	Name string `json:"name"`
-	Hash string `json:"hash"`
-
-	// root metadata
-	MimeType     string `json:"mimeType"`
-	FileSize     uint64 `json:"fileSize"`
-	Filename     string `json:"filename"`
-	Url          string `json:"url"`
-	License      string `json:"license"`
-	Platform     string `json:"platform"`
-	Architecture string `json:"architecture"`
+	Kind        string `json:"kind"`
+	Name        string `json:"name"`
+	Hash        string `json:"hash"`
+	Size        uint64 `json:"size"`
+	ContentType string `json:"contentType"`
+	Url         string `json:"url"`
 
 	// custom metadata
 	Metadata Metadata `json:"metadata"`
@@ -100,11 +82,11 @@ type ArtifactResponse struct {
 	Visibility          string `json:"visibility"`
 	Status              string `json:"status"`
 	Publisher           string `json:"publisher"`
-	CountVerifications  uint64 `json:"verificationCount"`
-	CountConflicts      uint64 `json:"publisherCount"`
-	CreatedAt           string `json:"createdAt"`
+	VerificationCount   uint64 `json:"verificationCount"`
+	PublisherCount      uint64 `json:"publisherCount"`
 	PublisherCompany    string `json:"publisherCompany"`
 	PublisherWebsiteUrl string `json:"publisherWebsiteUrl"`
+	CreatedAt           string `json:"createdAt"`
 }
 
 func (a ArtifactResponse) String() string {
