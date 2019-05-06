@@ -64,3 +64,24 @@ func TestSaveConfig(t *testing.T) {
 	LoadConfig()
 	assert.Equal(t, email, Config().CurrentContext)
 }
+
+func TestConfigClearContext(t *testing.T) {
+	email := "example@example.net"
+
+	cfg = &config{
+		CurrentContext: email,
+		Users: []*User{
+			&User{
+				Email: email,
+				Token: "dummy",
+			},
+		},
+	}
+
+	cfg.ClearContext()
+	assert.Empty(t, cfg.CurrentContext)
+
+	for _, u := range cfg.Users {
+		assert.Empty(t, u.Token)
+	}
+}

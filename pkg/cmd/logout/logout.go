@@ -20,7 +20,7 @@ import (
 func NewCmdLogout() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "logout",
-		Short: "Logout current user",
+		Short: "Logout the current user",
 		Long:  ``,
 		RunE:  runLogout,
 		Args:  cobra.NoArgs,
@@ -30,9 +30,7 @@ func NewCmdLogout() *cobra.Command {
 }
 
 func runLogout(cmd *cobra.Command, args []string) error {
-	for _, u := range store.Config().Users {
-		u.Token = ""
-	}
+	store.Config().ClearContext()
 	if err := store.SaveConfig(); err != nil {
 		cmd.SilenceUsage = true
 		return err

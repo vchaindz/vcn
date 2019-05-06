@@ -133,3 +133,13 @@ func (c *config) RemoveUser(email string) bool {
 	}
 	return false
 }
+
+func (c *config) ClearContext() {
+	if c == nil {
+		return
+	}
+	for _, u := range c.Users {
+		u.Token = ""
+	}
+	c.CurrentContext = ""
+}
