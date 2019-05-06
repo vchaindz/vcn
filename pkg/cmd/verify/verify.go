@@ -99,11 +99,18 @@ func runVerify(cmd *cobra.Command, args []string) error {
 func verify(a *api.Artifact, pubKey string, user *api.User) (err error) {
 	var verification *api.BlockchainVerification
 	if pubKey != "" {
+		// if a key has been passed, check for a verification matching that key
 		verification, err = api.BlockChainVerifyMatchingPublicKey(a.Hash, pubKey)
-	} else if pubKeys := user.Keys(); len(pubKeys) > 0 {
-		verification, err = api.BlockChainVerifyMatchingPublicKeys(a.Hash, pubKeys)
 	} else {
-		verification, err = api.BlockChainVerify(a.Hash)
+		if pubKeys := user.Keys(); len(pubKeys) > 0 {
+			// if we have an user, check for verification matching user's keys first
+			verification, err = api.BlockChainVerifyMatchingPublicKeys(a.Hash, pubKeys)
+		}
+		// if no user nor verification matching the user has found,
+		// fallback to the last with highest level avaiable verification
+		if verification == nil {
+			verification, err = api.BlockChainVerify(a.Hash)
+		}
 	}
 	if err != nil {
 		return fmt.Errorf("unable to verify hash: %s", err)
