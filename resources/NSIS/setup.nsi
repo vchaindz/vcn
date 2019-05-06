@@ -7,8 +7,8 @@
 ;General
 
   ;Name and file
-  Name "CodeNotary vcn 0.4.0"
-  OutFile "codenotary_vcn_0.4.0_setup.exe"
+  Name "CodeNotary vcn 0.4.1"
+  OutFile "codenotary_vcn_0.4.1_setup.exe"
   Icon "vcn.ico"
   LicenseData "gpl3license.txt"
   
