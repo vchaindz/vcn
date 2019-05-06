@@ -98,7 +98,7 @@ func TxVerificationRounds() uint64 {
 }
 
 func PollInterval() time.Duration {
-	return 1 * time.Second
+	return 2 * time.Second
 }
 
 func GasPrice() *big.Int {
