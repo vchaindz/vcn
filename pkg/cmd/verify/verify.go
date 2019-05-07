@@ -9,19 +9,15 @@
 package verify
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 	"strings"
-	"time"
 
 	"github.com/vchain-us/vcn/pkg/extractor"
 
 	"github.com/vchain-us/vcn/pkg/store"
 
-	"github.com/dustin/go-humanize"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/meta"
 
@@ -54,6 +50,7 @@ func NewCmdVerify() *cobra.Command {
 
 	cmd.Flags().StringP("key", "k", "", "specify the public key <vcn> should use, if not set the last available is used")
 	cmd.Flags().String("hash", "", "specify a hash to verify, if set no arg(s) can be used")
+	cmd.Flags().StringP("output", "o", "", "output format, one of: --output=json|--output=''")
 
 	return cmd
 }
@@ -67,6 +64,10 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	output, err := cmd.Flags().GetString("output")
+	if err != nil {
+		return err
+	}
 	cmd.SilenceUsage = true
 
 	user := api.NewUser(store.Config().CurrentContext)
@@ -76,7 +77,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		a := &api.Artifact{
 			Hash: hash,
 		}
-		if err := verify(a, pubKey, user); err != nil {
+		if err := verify(a, pubKey, user, output); err != nil {
 			return err
 		}
 		return nil
@@ -88,7 +89,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		if err := verify(a, pubKey, user); err != nil {
+		if err := verify(a, pubKey, user, output); err != nil {
 			return err
 		}
 	}
@@ -96,7 +97,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func verify(a *api.Artifact, pubKey string, user *api.User) (err error) {
+func verify(a *api.Artifact, pubKey string, user *api.User, output string) (err error) {
 	var verification *api.BlockchainVerification
 	if pubKey != "" {
 		// if a key has been passed, check for a verification matching that key
@@ -120,47 +121,10 @@ func verify(a *api.Artifact, pubKey string, user *api.User) (err error) {
 	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
 		artifact, _ = api.LoadArtifactForHash(user, a.Hash, verification.MetaHash())
 	}
-	if artifact != nil {
-		cli.PrintColumn("Name", artifact.Name, a.Name)
-		cli.PrintColumn("Kind", artifact.Kind, "NA")
-		cli.PrintColumn("Hash", a.Hash, "NA")
-		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
-		cli.PrintColumn("Signer", artifact.Publisher, "NA")
-		cli.PrintColumn("Key", strings.ToLower(verification.Owner.Hex()), "NA")
-		if artifact.Size > 0 {
-			cli.PrintColumn("Size", humanize.Bytes(artifact.Size), "NA")
-		} else {
-			cli.PrintColumn("Size", "NA", "NA")
-		}
-		cli.PrintColumn("ContentType", artifact.ContentType, "NA")
-		cli.PrintColumn("Url", artifact.Url, "NA")
-		for k, v := range artifact.Metadata {
-			if vv, err := json.Marshal(v); err == nil {
-				cli.PrintColumn("Metadata", fmt.Sprintf("%s=%s\t", k, string(vv)), "")
-			}
-		}
-		cli.PrintColumn("Company", artifact.PublisherCompany, "NA")
-		cli.PrintColumn("Website", artifact.PublisherWebsiteUrl, "NA")
-		cli.PrintColumn("Level", meta.LevelName(verification.Level), "NA")
-	} else {
-		cli.PrintColumn("Name", a.Name, "NA")
-		cli.PrintColumn("Kind", a.Kind, "NA")
-		cli.PrintColumn("Hash", a.Hash, "NA")
-		if verification.Timestamp != time.Unix(0, 0) {
-			cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
-		} else {
-			cli.PrintColumn("Date", "NA", "NA")
-		}
-		cli.PrintColumn("Signer", "NA", "NA")
-		if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-			cli.PrintColumn("Key", strings.ToLower(verification.Owner.Hex()), "NA")
-		} else {
-			cli.PrintColumn("Key", "NA", "NA")
-		}
-	}
 
-	c, s := meta.StatusColor(verification.Status)
-	cli.PrintColumn("Status", meta.StatusName(verification.Status), "NA", c, s)
+	if err = print(output, a, artifact, verification); err != nil {
+		return err
+	}
 
 	// todo(ameingast): redundant tracking events?
 	_ = api.TrackPublisher(user, meta.VcnVerifyEvent)
