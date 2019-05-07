@@ -28,12 +28,12 @@ install: TEST_FLAGS=-v
 install: vendor test
 	$(GO) install -ldflags '${LDFLAGS}' ./cmd/vcn
 
-.PHONY: builder
-builder: 
+.PHONY: build/xgo
+build/xgo: 
 	$(DOCKER) build \
-			-f ./build/Dockerfile.builder \
+			-f ./build/xgo/Dockerfile \
 			-t vcn-xgo \
-			./build
+			./build/xgo
 
 .PHONY: clean/dist
 clean/dist: 
@@ -44,7 +44,7 @@ clean: clean/dist
 	rm -f ./vcn
 
 .PHONY: dist
-dist: clean/dist builder
+dist: clean/dist build/xgo
 	mkdir -p dist
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist:/dist \
@@ -63,7 +63,7 @@ dist/NSIS:
 	cp ./resources/NSIS/* ./dist/NSIS/
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist/NSIS/:/app \
-			wheatstalk/makensis /app/setup.nsi
+			wheatstalk/makensis:3 /app/setup.nsi
 	mv ./dist/NSIS/*_setup.exe ./dist/
 	rm -Rf ./dist/NSIS
 
