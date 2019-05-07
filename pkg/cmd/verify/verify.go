@@ -77,7 +77,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		a := &api.Artifact{
 			Hash: hash,
 		}
-		if err := verify(a, pubKey, user, output); err != nil {
+		if err := verify(cmd, a, pubKey, user, output); err != nil {
 			return err
 		}
 		return nil
@@ -89,7 +89,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		if err := verify(a, pubKey, user, output); err != nil {
+		if err := verify(cmd, a, pubKey, user, output); err != nil {
 			return err
 		}
 	}
@@ -97,7 +97,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func verify(a *api.Artifact, pubKey string, user *api.User, output string) (err error) {
+func verify(cmd *cobra.Command, a *api.Artifact, pubKey string, user *api.User, output string) (err error) {
 	var verification *api.BlockchainVerification
 	if pubKey != "" {
 		// if a key has been passed, check for a verification matching that key
@@ -138,6 +138,10 @@ func verify(a *api.Artifact, pubKey string, user *api.User, output string) (err 
 		} else {
 			err = fmt.Errorf("%s is not verified", a.Hash)
 		}
+	}
+
+	if output != "" {
+		cmd.SilenceErrors = true
 	}
 
 	return
