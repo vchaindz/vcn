@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/golang:1.12
+    environment:
+      GO111MODULE: "on"
+    steps:
+      - checkout
+      - run: make TEST_FLAGS="-timeout 60s -coverprofile cover.out -race -v" test
+workflows:
+  version: 2
+  testing:
+    jobs:
+      - test
