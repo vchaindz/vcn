@@ -94,7 +94,7 @@ func ArtifactEndpointForWallet(walletAddress string) string {
 }
 
 func TxVerificationRounds() uint64 {
-	return 10
+	return 30
 }
 
 func PollInterval() time.Duration {
