@@ -10,6 +10,7 @@ package api
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"strings"
@@ -23,10 +24,31 @@ import (
 )
 
 type BlockchainVerification struct {
-	Owner     common.Address
-	Level     meta.Level
-	Status    meta.Status
-	Timestamp time.Time
+	Owner     common.Address `json:"owner"`
+	Level     meta.Level     `json:"level"`
+	Status    meta.Status    `json:"status"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
+	// todo(leogr): hacky, to be refactored
+	data := map[string]interface{}{
+		"owner":     "",
+		"level":     v.Level,
+		"status":    v.Status,
+		"timestamp": "",
+	}
+
+	if v.Owner != common.BigToAddress(big.NewInt(0)) {
+		data["owner"] = strings.ToLower(v.Owner.Hex())
+	}
+
+	if v.Timestamp != time.Unix(0, 0) {
+		data["timestamp"] = v.Timestamp.UTC().Format(time.RFC3339)
+	}
+
+	return json.Marshal(data)
+
 }
 
 func (verification *BlockchainVerification) MetaHash() string {
