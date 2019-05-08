@@ -72,9 +72,6 @@ func checkToken(token string) (success bool, err error) {
 		"err":       err,
 		"restError": restError,
 	}).Trace("checkToken")
-	if err != nil {
-		return false, err
-	}
 	switch response.StatusCode {
 	case 200:
 		return true, nil
@@ -85,7 +82,10 @@ func checkToken(token string) (success bool, err error) {
 	case 419:
 		return false, nil
 	}
-	return false, fmt.Errorf("check token failed: %+v", restError)
+	if restError.Error != "" {
+		err = fmt.Errorf("%+v", restError)
+	}
+	return false, fmt.Errorf("check token failed: %s", err)
 }
 
 func authenticateUser(email string, password string) (token string, err error) {
@@ -112,5 +112,8 @@ func authenticateUser(email string, password string) (token string, err error) {
 	case 401:
 		return "", fmt.Errorf("invalid password")
 	}
-	return "", fmt.Errorf("authentication failed: %+v", restError)
+	if restError.Error != "" {
+		err = fmt.Errorf("%+v", restError)
+	}
+	return "", fmt.Errorf("authentication failed: %s", err)
 }
