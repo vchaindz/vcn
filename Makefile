@@ -9,6 +9,8 @@ DOCKER ?= docker
 PWD=$(shell pwd)
 LDFLAGS := -s -X github.com/vchain-us/vcn/pkg/meta.version=v${VERSION}
 TEST_FLAGS ?= -v -race
+VCNEXE=vcn-v${VERSION}-windows-4.0-amd64.exe
+SETUPEXE=codenotary_vcn_v${VERSION}_setup.exe
 
 .PHONY: vcn
 vcn:
@@ -35,6 +37,13 @@ build/xgo:
 			-t vcn-xgo \
 			./build/xgo
 
+.PHONY: build/makensis
+build/makensis:
+	$(DOCKER) build \
+		-f ./build/makensis/Dockerfile \
+		-t vcn-makensis \
+		./build/makensis
+
 .PHONY: clean/dist
 clean/dist: 
 	rm -Rf ./dist
@@ -56,17 +65,36 @@ dist: clean/dist build/xgo
 			-e OUT=vcn-v${VERSION} \
 			vcn-xgo .
 
+.PHONY: dist/${VCNEXE} dist/${SETUPEXE}
+dist/${VCNEXE} dist/${SETUPEXE}:
+	echo ${SIGNCODE_PVK_PASSWORD} | $(DOCKER) run --rm -i \
+		-v ${PWD}/dist:/dist \
+		-v ${SIGNCODE_SPC}:/certs/f.spc:ro \
+		-v ${SIGNCODE_PVK}:/certs/f.pvk:ro \
+		mono:5.20 signcode \
+		-spc /certs/f.spc -v /certs/f.pvk \
+		-a sha1 -$ commercial \
+		-n "CodeNotary vcn" \
+		-i https://codenotary.io/ \
+		-t http://timestamp.comodoca.com -tr 10 \
+		$@
+	rm -Rf $@.bak
+
 .PHONY: dist/NSIS
-dist/NSIS:
+dist/NSIS: build/makensis
 	mkdir -p dist/NSIS
-	cp ./dist/vcn-v${VERSION}-windows-4.0-amd64.exe ./dist/NSIS/vcn.exe
-	cp ./resources/NSIS/* ./dist/NSIS/
+	cp -f ./dist/${VCNEXE} ./dist/NSIS/vcn.exe
+	cp -f ./build/NSIS/* ./dist/NSIS/
+	sed -e "s/{VCN_VERSION}/v${VERSION}/g" ./build/NSIS/setup.nsi > ./dist/NSIS/setup.nsi
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist/NSIS/:/app \
-			wheatstalk/makensis:3 /app/setup.nsi
-	mv ./dist/NSIS/*_setup.exe ./dist/
+			vcn-makensis /app/setup.nsi
+	mv -f ./dist/NSIS/*_setup.exe ./dist/
 	rm -Rf ./dist/NSIS
 
 .PHONY: dist/sign
 dist/sign: vcn
 	ls ./dist/* | xargs ./vcn sign -y
+
+.PHONY: dist/all
+dist/all: dist dist/${VCNEXE} dist/NSIS dist/${SETUPEXE}

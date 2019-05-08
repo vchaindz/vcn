@@ -7,8 +7,8 @@
 ;General
 
   ;Name and file
-  Name "CodeNotary vcn 0.4.1"
-  OutFile "codenotary_vcn_0.4.1_setup.exe"
+  Name "CodeNotary vcn {VCN_VERSION}"
+  OutFile "codenotary_vcn_{VCN_VERSION}_setup.exe"
   Icon "vcn.ico"
   LicenseData "gpl3license.txt"
   
@@ -63,7 +63,7 @@ Section "CodeNotary vcn cli tool" installation
  
 ;create desktop shortcut
   SetOutPath "$INSTDIR"
-  CreateShortCut "$DESKTOP\vcn.lnk" "cmd.exe" ""
+  CreateShortCut "$DESKTOP\vcn.lnk" "cmd.exe" "" "$INSTDIR\vcn.ico"
  
 ;create start-menu items
   CreateDirectory "$INSTDIR"
