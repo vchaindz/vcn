@@ -10,6 +10,8 @@ package meta
 
 import (
 	"log"
+
+	"github.com/fatih/color"
 )
 
 type Level int64
@@ -93,6 +95,11 @@ func StatusName(status Status) (name string) {
 		log.Fatal("unsupported status", name)
 		return ""
 	}
+}
+
+func StatusNameStyled(status Status) string {
+	c, s := StatusColor(status)
+	return color.New(c, s).Sprintf(StatusName(status))
 }
 
 func VisibilityName(visibility Visibility) (name string) {

@@ -11,13 +11,16 @@ package verify
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
+	"io"
+	"os"
+	"reflect"
 	"strings"
+	"text/tabwriter"
 	"time"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/dustin/go-humanize"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
@@ -27,76 +30,96 @@ type result struct {
 	Verification *api.BlockchainVerification `json:"verification"`
 }
 
-func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
+func (r result) WriterTo(out io.Writer) {
+	w := new(tabwriter.Writer)
+	w.Init(out, 0, 8, 0, '\t', 0)
 
-	if output == "json" {
+	if a := r.Artifact; a != nil {
 
-		r := result{
-			Verification: verification,
-		}
-		if artifact != nil {
-			r.Artifact = artifact
-		} else if a != nil {
-			r.Artifact = &api.ArtifactResponse{
-				Name: a.Name,
-				Kind: a.Kind,
-				Hash: a.Hash,
-				Size: a.Size,
+		s := reflect.ValueOf(a).Elem()
+		typeOfT := s.Type()
+
+		for i, l := 0, s.NumField(); i < l; i++ {
+			f := s.Field(i)
+			if key, ok := typeOfT.Field(i).Tag.Lookup("vcn"); ok {
+				var value string
+				switch true {
+				case key == "Size":
+					if size, ok := f.Interface().(uint64); ok {
+						value = humanize.Bytes(size)
+					}
+				case key == "Metadata":
+					if metadata, ok := f.Interface().(api.Metadata); ok {
+						for k, v := range metadata {
+							if v == "" {
+								continue
+							}
+							if vv, err := json.MarshalIndent(v, "\t", "    "); err == nil {
+								value += fmt.Sprintf("\n\t\t%s=%s", k, string(vv))
+							}
+						}
+						value = strings.TrimPrefix(value, "\n")
+					}
+				default:
+					value = fmt.Sprintf("%s", f.Interface())
+				}
+				if value != "" {
+					fmt.Fprintf(w, "%s:\t%s\n", key, value)
+				}
 			}
 		}
+	}
 
+	if bv := r.Verification; bv != nil {
+		if key := bv.Key(); key != "" {
+			fmt.Fprintf(w, "Key:\t%s\n", bv.Key())
+		}
+		if bv.Level > 0 {
+			fmt.Fprintf(w, "Level:\t%s\n", bv.LevelName())
+		}
+		if bv.Timestamp != time.Unix(0, 0) {
+			fmt.Fprintf(w, "Date:\t%s\n", bv.Timestamp.String())
+		}
+	}
+
+	fmt.Fprintf(w, "Status:\t%s\n", meta.StatusNameStyled(r.Verification.Status))
+
+	w.Flush()
+}
+
+func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
+
+	r := result{
+		Verification: verification,
+	}
+	if artifact != nil {
+		r.Artifact = artifact
+	} else if a != nil {
+		r.Artifact = &api.ArtifactResponse{
+			Name: a.Name,
+			Kind: a.Kind,
+			Hash: a.Hash,
+			Size: a.Size,
+		}
+	}
+
+	switch output {
+	case "":
+		r.WriterTo(os.Stdout)
+	case "yaml":
+		b, err := yaml.Marshal(r)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
 		b, err := json.MarshalIndent(r, "", "  ")
 		if err != nil {
 			return err
 		}
 		fmt.Println(string(b))
-		return nil
-	}
-
-	if output != "" {
+	default:
 		return fmt.Errorf("output format not supported: %s", output)
 	}
-
-	if artifact != nil {
-		cli.PrintColumn("Name", artifact.Name, a.Name)
-		cli.PrintColumn("Kind", artifact.Kind, "NA")
-		cli.PrintColumn("Hash", a.Hash, "NA")
-		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
-		cli.PrintColumn("Signer", artifact.Publisher, "NA")
-		cli.PrintColumn("Key", strings.ToLower(verification.Owner.Hex()), "NA")
-		if artifact.Size > 0 {
-			cli.PrintColumn("Size", humanize.Bytes(artifact.Size), "NA")
-		} else {
-			cli.PrintColumn("Size", "NA", "NA")
-		}
-		cli.PrintColumn("ContentType", artifact.ContentType, "NA")
-		cli.PrintColumn("Url", artifact.Url, "NA")
-		for k, v := range artifact.Metadata {
-			if vv, err := json.Marshal(v); err == nil {
-				cli.PrintColumn("Metadata", fmt.Sprintf("%s=%s\t", k, string(vv)), "")
-			}
-		}
-		cli.PrintColumn("Company", artifact.PublisherCompany, "NA")
-		cli.PrintColumn("Website", artifact.PublisherWebsiteUrl, "NA")
-		cli.PrintColumn("Level", meta.LevelName(verification.Level), "NA")
-	} else {
-		cli.PrintColumn("Name", a.Name, "NA")
-		cli.PrintColumn("Kind", a.Kind, "NA")
-		cli.PrintColumn("Hash", a.Hash, "NA")
-		if verification.Timestamp != time.Unix(0, 0) {
-			cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
-		} else {
-			cli.PrintColumn("Date", "NA", "NA")
-		}
-		cli.PrintColumn("Signer", "NA", "NA")
-		if verification.Owner != common.BigToAddress(big.NewInt(0)) {
-			cli.PrintColumn("Key", strings.ToLower(verification.Owner.Hex()), "NA")
-		} else {
-			cli.PrintColumn("Key", "NA", "NA")
-		}
-	}
-
-	c, s := meta.StatusColor(verification.Status)
-	cli.PrintColumn("Status", meta.StatusName(verification.Status), "NA", c, s)
 	return nil
 }

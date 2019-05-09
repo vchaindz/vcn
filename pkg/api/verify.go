@@ -21,6 +21,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/blockchain"
 	"github.com/vchain-us/vcn/pkg/meta"
+	"gopkg.in/yaml.v2"
 )
 
 type BlockchainVerification struct {
@@ -30,8 +31,7 @@ type BlockchainVerification struct {
 	Timestamp time.Time      `json:"timestamp"`
 }
 
-func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
-	// todo(leogr): hacky, to be refactored
+func (v *BlockchainVerification) toMap() map[string]interface{} {
 	data := map[string]interface{}{
 		"owner":     "",
 		"level":     v.Level,
@@ -46,22 +46,39 @@ func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
 	if v.Timestamp != time.Unix(0, 0) {
 		data["timestamp"] = v.Timestamp.UTC().Format(time.RFC3339)
 	}
-
-	return json.Marshal(data)
-
+	return data
 }
 
-func (verification *BlockchainVerification) MetaHash() string {
+func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.toMap())
+}
+
+func (v *BlockchainVerification) MarshalYAML() ([]byte, error) {
+	return yaml.Marshal(v.toMap())
+}
+
+func (v *BlockchainVerification) MetaHash() string {
 	metadata := fmt.Sprintf("%s-%d-%d-%d",
-		verification.Owner.Hex(),
-		int64(verification.Level),
-		int64(verification.Status),
-		int64(verification.Timestamp.Unix()))
+		v.Owner.Hex(),
+		int64(v.Level),
+		int64(v.Status),
+		int64(v.Timestamp.Unix()))
 	metadataHashAsBytes := sha256.Sum256([]byte(metadata))
 	logger().WithFields(logrus.Fields{
 		"metahash": metadata,
 	}).Trace("Generated metahash")
 	return fmt.Sprintf("%x", metadataHashAsBytes)
+}
+
+func (v *BlockchainVerification) Key() string {
+	if v != nil && v.Owner != common.BigToAddress(big.NewInt(0)) {
+		return strings.ToLower(v.Owner.Hex())
+	}
+	return ""
+}
+
+func (v *BlockchainVerification) LevelName() string {
+	return meta.LevelName(v.Level)
 }
 
 func BlockChainVerify(hash string) (verification *BlockchainVerification, err error) {

@@ -67,25 +67,25 @@ type PagedArtifactResponse struct {
 
 type ArtifactResponse struct {
 	// root fields
-	Kind        string `json:"kind"`
-	Name        string `json:"name"`
-	Hash        string `json:"hash"`
-	Size        uint64 `json:"size"`
-	ContentType string `json:"contentType"`
-	Url         string `json:"url"`
+	Kind        string `json:"kind" vcn:"Kind"`
+	Name        string `json:"name" vcn:"Name"`
+	Hash        string `json:"hash" vcn:"Hash"`
+	Size        uint64 `json:"size" vcn:"Size"`
+	ContentType string `json:"contentType" vcn:"ContentType"`
+	Url         string `json:"url" vcn:"URL"`
 
 	// custom metadata
-	Metadata Metadata `json:"metadata"`
+	Metadata Metadata `json:"metadata" vcn:"Metadata"`
 
 	// ArtifactResponse specific
 	Level               int64  `json:"level"`
 	Visibility          string `json:"visibility"`
 	Status              string `json:"status"`
-	Publisher           string `json:"publisher"`
+	Publisher           string `json:"publisher" vcn:"Signer"`
 	VerificationCount   uint64 `json:"verificationCount"`
 	PublisherCount      uint64 `json:"publisherCount"`
-	PublisherCompany    string `json:"publisherCompany"`
-	PublisherWebsiteUrl string `json:"publisherWebsiteUrl"`
+	PublisherCompany    string `json:"publisherCompany" vcn:"Company"`
+	PublisherWebsiteUrl string `json:"publisherWebsiteUrl" vcn:"Company URL"`
 	CreatedAt           string `json:"createdAt"`
 }
 

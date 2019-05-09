@@ -50,7 +50,7 @@ func NewCmdVerify() *cobra.Command {
 
 	cmd.Flags().StringP("key", "k", "", "specify the public key <vcn> should use, if not set the last available is used")
 	cmd.Flags().String("hash", "", "specify a hash to verify, if set no arg(s) can be used")
-	cmd.Flags().StringP("output", "o", "", "output format, one of: --output=json|--output=''")
+	cmd.Flags().StringP("output", "o", "", "output format, one of: --output=json|--output=yaml|--output=''")
 
 	return cmd
 }
