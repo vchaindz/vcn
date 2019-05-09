@@ -31,8 +31,12 @@ install: TEST_FLAGS=-v
 install: vendor test
 	$(GO) install -ldflags '${LDFLAGS}' ./cmd/vcn
 
+.PHONY: static
+static:
+	$(GO) build -a -tags netgo -ldflags '${LDFLAGS} -extldflags "-static"' ./cmd/vcn
+
 .PHONY: build/xgo
-build/xgo: 
+build/xgo:
 	$(DOCKER) build \
 			-f ./build/xgo/Dockerfile \
 			-t vcn-xgo \
