@@ -10,7 +10,7 @@ WORKDIR /src
 COPY . .
 RUN GOOS=linux GOARCH=amd64 make static
 
-FROM scratch
+FROM docker
 COPY --from=builder /src/vcn /bin/vcn
 COPY --from=alpine /etc/ssl/certs /etc/ssl/certs
 
