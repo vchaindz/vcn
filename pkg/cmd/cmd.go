@@ -59,8 +59,13 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.json)")
+
 	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
 	rootCmd.PersistentFlags().MarkHidden("quit")
+
+	// todo(leogr): clean up deprecated -y flag, kept for backward compatibility
+	rootCmd.PersistentFlags().BoolP("yes", "y", false, "")
+	rootCmd.PersistentFlags().MarkHidden("yes")
 
 	// Verification group
 	rootCmd.AddCommand(verify.NewCmdVerify())

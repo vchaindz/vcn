@@ -99,7 +99,7 @@ dist/NSIS: build/makensis
 
 .PHONY: dist/sign
 dist/sign: vendor vcn
-	for f in ./dist/*; do ./vcn sign -y $$f; done
+	for f in ./dist/*; do ./vcn sign $$f; done
 
 .PHONY: dist/all
 dist/all: dist dist/${VCNEXE} dist/NSIS dist/${SETUPEXE}

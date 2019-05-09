@@ -9,16 +9,13 @@
 package sign
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/vchain-us/vcn/pkg/extractor"
 
 	"github.com/briandowns/spinner"
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
@@ -43,7 +40,6 @@ func NewCmdSign() *cobra.Command {
 	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (format: --attr key=value)")
 	cmd.Flags().StringP("key", "k", "", "specify the public key <vcn> should use, if not set the last available is used")
 	cmd.Flags().BoolP("public", "p", false, "when signed as public, the asset name and the signer's identity will be visible to everyone")
-	cmd.Flags().BoolP("yes", "y", false, "when used, you automatically confirm the ownership of this asset")
 
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
@@ -59,11 +55,6 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		return err
 	}
 
-	yes, err := cmd.Flags().GetBool("yes")
-	if err != nil {
-		return err
-	}
-
 	pubKey, err := cmd.Flags().GetString("key")
 	if err != nil {
 		return err
@@ -72,10 +63,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	metadata := cmd.Flags().Lookup("attr").Value.(mapOpts).StringToInterface()
 
 	cmd.SilenceUsage = true
-	return sign(args[0], pubKey, state, meta.VisibilityForFlag(public), metadata, yes)
+	return sign(args[0], pubKey, state, meta.VisibilityForFlag(public), metadata)
 }
 
-func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibility, metadata api.Metadata, acknowledge bool) error {
+func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibility, metadata api.Metadata) error {
 
 	if err := cli.AssertUserLogin(); err != nil {
 		return err
@@ -99,30 +90,9 @@ func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibili
 		return fmt.Errorf("invalid size")
 	}
 
-	reader := bufio.NewReader(os.Stdin)
-
-	if !acknowledge {
-		fmt.Println("CodeNotary - code signing in 1 simple step:")
-		fmt.Println()
-		fmt.Println("Attention, by signing this asset with CodeNotary you implicitly claim its ownership.")
-		fmt.Println("Doing this can potentially infringe other publisher's intellectual property under the laws of your country of residence.")
-		fmt.Println("vChain and the Zero Trust Consortium cannot be held responsible for legal ramifications.")
-		color.Set(color.FgGreen)
-		fmt.Println()
-		fmt.Println("If you are the owner of the asset (e.g. author, creator, publisher) you can continue")
-		color.Unset()
-		fmt.Println()
-		fmt.Print("I understand and want to continue. (y/n)")
-		question, _ := reader.ReadString('\n')
-		if strings.ToLower(strings.TrimSpace(question)) != "y" {
-			os.Exit(1)
-		}
-	}
-
 	if pubKey == "" {
 		pubKey = u.DefaultKey()
 	}
-	fmt.Println()
 	fmt.Println("Signer:", u.Email())
 	fmt.Println("Key:", pubKey)
 	passphrase, err := cli.ProvidePassphrase()
