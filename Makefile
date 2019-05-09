@@ -6,6 +6,7 @@ TARGETS=linux/amd64 windows/amd64 darwin/amd64
 GO ?= go
 DOCKER ?= docker
 
+export GO111MODULE=on
 PWD=$(shell pwd)
 LDFLAGS := -s -X github.com/vchain-us/vcn/pkg/meta.version=v${VERSION}
 TEST_FLAGS ?= -v -race
@@ -93,8 +94,8 @@ dist/NSIS: build/makensis
 	rm -Rf ./dist/NSIS
 
 .PHONY: dist/sign
-dist/sign: vcn
-	ls ./dist/* | xargs ./vcn sign -y
+dist/sign: vendor vcn
+	for f in ./dist/*; do ./vcn sign -y $$f; done
 
 .PHONY: dist/all
 dist/all: dist dist/${VCNEXE} dist/NSIS dist/${SETUPEXE}
