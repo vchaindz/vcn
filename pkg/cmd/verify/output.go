@@ -16,7 +16,6 @@ import (
 	"reflect"
 	"strings"
 	"text/tabwriter"
-	"time"
 
 	"gopkg.in/yaml.v2"
 
@@ -30,7 +29,7 @@ type result struct {
 	Verification *api.BlockchainVerification `json:"verification"`
 }
 
-func (r result) WriterTo(out io.Writer) {
+func (r result) WriteTo(out io.Writer) (err error) {
 	w := new(tabwriter.Writer)
 	w.Init(out, 0, 8, 0, '\t', 0)
 
@@ -43,12 +42,12 @@ func (r result) WriterTo(out io.Writer) {
 			f := s.Field(i)
 			if key, ok := typeOfT.Field(i).Tag.Lookup("vcn"); ok {
 				var value string
-				switch true {
-				case key == "Size":
+				switch key {
+				case "Size":
 					if size, ok := f.Interface().(uint64); ok {
 						value = humanize.Bytes(size)
 					}
-				case key == "Metadata":
+				case "Metadata":
 					if metadata, ok := f.Interface().(api.Metadata); ok {
 						for k, v := range metadata {
 							if v == "" {
@@ -59,6 +58,10 @@ func (r result) WriterTo(out io.Writer) {
 							}
 						}
 						value = strings.TrimPrefix(value, "\n")
+					}
+				case "Signer":
+					if f.Interface() != r.Verification.Key() {
+						value = fmt.Sprintf("%s", f.Interface())
 					}
 				default:
 					value = fmt.Sprintf("%s", f.Interface())
@@ -77,14 +80,14 @@ func (r result) WriterTo(out io.Writer) {
 		if bv.Level > 0 {
 			fmt.Fprintf(w, "Level:\t%s\n", bv.LevelName())
 		}
-		if bv.Timestamp != time.Unix(0, 0) {
-			fmt.Fprintf(w, "Date:\t%s\n", bv.Timestamp.String())
+		if date := bv.Date(); date != "" {
+			fmt.Fprintf(w, "Date:\t%s\n", date)
 		}
 	}
 
 	fmt.Fprintf(w, "Status:\t%s\n", meta.StatusNameStyled(r.Verification.Status))
 
-	w.Flush()
+	return w.Flush()
 }
 
 func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
@@ -105,7 +108,7 @@ func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verif
 
 	switch output {
 	case "":
-		r.WriterTo(os.Stdout)
+		r.WriteTo(os.Stdout)
 	case "yaml":
 		b, err := yaml.Marshal(r)
 		if err != nil {

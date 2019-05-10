@@ -32,21 +32,12 @@ type BlockchainVerification struct {
 }
 
 func (v *BlockchainVerification) toMap() map[string]interface{} {
-	data := map[string]interface{}{
-		"owner":     "",
+	return map[string]interface{}{
+		"owner":     v.Key(),
 		"level":     v.Level,
 		"status":    v.Status,
-		"timestamp": "",
+		"timestamp": v.Date(),
 	}
-
-	if v.Owner != common.BigToAddress(big.NewInt(0)) {
-		data["owner"] = strings.ToLower(v.Owner.Hex())
-	}
-
-	if v.Timestamp != time.Unix(0, 0) {
-		data["timestamp"] = v.Timestamp.UTC().Format(time.RFC3339)
-	}
-	return data
 }
 
 func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
@@ -70,6 +61,7 @@ func (v *BlockchainVerification) MetaHash() string {
 	return fmt.Sprintf("%x", metadataHashAsBytes)
 }
 
+// Key returns signer's key as string for v, if any, otherwise an empty string
 func (v *BlockchainVerification) Key() string {
 	if v != nil && v.Owner != common.BigToAddress(big.NewInt(0)) {
 		return strings.ToLower(v.Owner.Hex())
@@ -77,8 +69,17 @@ func (v *BlockchainVerification) Key() string {
 	return ""
 }
 
+// LevelName returns the level's label for v
 func (v *BlockchainVerification) LevelName() string {
 	return meta.LevelName(v.Level)
+}
+
+// Date returns a RFC3339 formatted string of v's timestamp, if any, otherwise an empty string
+func (v *BlockchainVerification) Date() string {
+	if v.Timestamp != time.Unix(0, 0) {
+		return v.Timestamp.UTC().Format(time.RFC3339)
+	}
+	return ""
 }
 
 func BlockChainVerify(hash string) (verification *BlockchainVerification, err error) {
