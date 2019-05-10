@@ -29,9 +29,15 @@ type result struct {
 	Verification *api.BlockchainVerification `json:"verification"`
 }
 
-func (r result) WriteTo(out io.Writer) (err error) {
+func (r result) WriteTo(out io.Writer) (n int64, err error) {
 	w := new(tabwriter.Writer)
 	w.Init(out, 0, 8, 0, '\t', 0)
+
+	printf := func(format string, a ...interface{}) error {
+		m, err := fmt.Fprintf(w, format, a...)
+		n += int64(m)
+		return err
+	}
 
 	if a := r.Artifact; a != nil {
 
@@ -67,7 +73,10 @@ func (r result) WriteTo(out io.Writer) (err error) {
 					value = fmt.Sprintf("%s", f.Interface())
 				}
 				if value != "" {
-					fmt.Fprintf(w, "%s:\t%s\n", key, value)
+					err = printf("%s:\t%s\n", key, value)
+					if err != nil {
+						return
+					}
 				}
 			}
 		}
@@ -75,19 +84,31 @@ func (r result) WriteTo(out io.Writer) (err error) {
 
 	if bv := r.Verification; bv != nil {
 		if key := bv.Key(); key != "" {
-			fmt.Fprintf(w, "Key:\t%s\n", bv.Key())
+			err = printf("Key:\t%s\n", bv.Key())
+			if err != nil {
+				return
+			}
 		}
 		if bv.Level > 0 {
-			fmt.Fprintf(w, "Level:\t%s\n", bv.LevelName())
+			err = printf("Level:\t%s\n", bv.LevelName())
+			if err != nil {
+				return
+			}
 		}
 		if date := bv.Date(); date != "" {
-			fmt.Fprintf(w, "Date:\t%s\n", date)
+			err = printf("Date:\t%s\n", date)
+			if err != nil {
+				return
+			}
 		}
 	}
 
-	fmt.Fprintf(w, "Status:\t%s\n", meta.StatusNameStyled(r.Verification.Status))
+	err = printf("Status:\t%s\n", meta.StatusNameStyled(r.Verification.Status))
+	if err != nil {
+		return
+	}
 
-	return w.Flush()
+	return n, w.Flush()
 }
 
 func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
