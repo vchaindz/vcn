@@ -10,14 +10,12 @@ package verify
 
 import (
 	"fmt"
-	"math/big"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/extractor"
 
 	"github.com/vchain-us/vcn/pkg/store"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/meta"
 
@@ -48,7 +46,7 @@ func NewCmdVerify() *cobra.Command {
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ...ARG(s)", 1),
 	)
 
-	cmd.Flags().StringP("key", "k", "", "specify the public key <vcn> should use, if not set the last available is used")
+	cmd.Flags().StringArrayP("key", "k", []string{}, "accept only verification matching the passed key(s)")
 	cmd.Flags().String("hash", "", "specify a hash to verify, if set no arg(s) can be used")
 	cmd.Flags().StringP("output", "o", "", "output format, one of: --output=json|--output=yaml|--output=''")
 
@@ -60,7 +58,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	pubKey, err := cmd.Flags().GetString("key")
+	keys, err := cmd.Flags().GetStringArray("key")
 	if err != nil {
 		return err
 	}
@@ -77,7 +75,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		a := &api.Artifact{
 			Hash: hash,
 		}
-		if err := verify(cmd, a, pubKey, user, output); err != nil {
+		if err := verify(cmd, a, keys, user, output); err != nil {
 			return err
 		}
 		return nil
@@ -89,7 +87,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		if err := verify(cmd, a, pubKey, user, output); err != nil {
+		if err := verify(cmd, a, keys, user, output); err != nil {
 			return err
 		}
 	}
@@ -97,28 +95,31 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func verify(cmd *cobra.Command, a *api.Artifact, pubKey string, user *api.User, output string) (err error) {
+func verify(cmd *cobra.Command, a *api.Artifact, keys []string, user *api.User, output string) (err error) {
 	var verification *api.BlockchainVerification
-	if pubKey != "" {
-		// if a key has been passed, check for a verification matching that key
-		verification, err = api.BlockChainVerifyMatchingPublicKey(a.Hash, pubKey)
+	// if keys have been passed, check for a verification matching them
+	if len(keys) > 0 {
+		verification, err = api.BlockChainVerifyMatchingPublicKeys(a.Hash, keys)
 	} else {
-		if pubKeys := user.Keys(); len(pubKeys) > 0 {
-			// if we have an user, check for verification matching user's keys first
-			verification, err = api.BlockChainVerifyMatchingPublicKeys(a.Hash, pubKeys)
+		// if we have an user, check for verification matching user's keys first
+		if hasAuth, _ := user.IsAuthenticated(); hasAuth {
+			if userKeys := user.Keys(); len(userKeys) > 0 {
+				verification, err = api.BlockChainVerifyMatchingPublicKeys(a.Hash, userKeys)
+			}
 		}
 		// if no user nor verification matching the user has found,
 		// fallback to the last with highest level avaiable verification
-		if verification == nil {
+		if verification.Unknown() {
 			verification, err = api.BlockChainVerify(a.Hash)
 		}
 	}
+
 	if err != nil {
 		return fmt.Errorf("unable to verify hash: %s", err)
 	}
 
 	var artifact *api.ArtifactResponse
-	if verification.Owner != common.BigToAddress(big.NewInt(0)) {
+	if !verification.Unknown() {
 		artifact, _ = api.LoadArtifactForHash(user, a.Hash, verification.MetaHash())
 	}
 
@@ -126,22 +127,23 @@ func verify(cmd *cobra.Command, a *api.Artifact, pubKey string, user *api.User, 
 		return err
 	}
 
+	if output != "" {
+		cmd.SilenceErrors = true
+	}
+
 	// todo(ameingast): redundant tracking events?
 	_ = api.TrackPublisher(user, meta.VcnVerifyEvent)
 	_ = api.TrackVerify(user, a.Hash, a.Name)
 
-	if verification.Status != meta.StatusTrusted {
-		if pubKey != "" {
-			err = fmt.Errorf("%s is not verified by %s", a.Hash, pubKey)
-		} else if email := user.Email(); email != "" {
-			err = fmt.Errorf("%s is not verified by %s", a.Hash, email)
-		} else {
-			err = fmt.Errorf("%s is not verified", a.Hash)
+	if !verification.Trusted() {
+		switch true {
+		case len(keys) == 1:
+			return fmt.Errorf("%s is not verified by %s", a.Hash, keys[0])
+		case len(keys) > 1:
+			return fmt.Errorf("%s is not verified by any of %s", a.Hash, strings.Join(keys, ", "))
+		default:
+			return fmt.Errorf("%s is not verified", a.Hash)
 		}
-	}
-
-	if output != "" {
-		cmd.SilenceErrors = true
 	}
 
 	return

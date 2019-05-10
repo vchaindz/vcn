@@ -38,7 +38,7 @@ func NewCmdSign() *cobra.Command {
 	}
 
 	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (format: --attr key=value)")
-	cmd.Flags().StringP("key", "k", "", "specify the public key <vcn> should use, if not set the last available is used")
+	cmd.Flags().StringP("key", "k", "", "specify which user's key to use for signing, if not set the last available is used")
 	cmd.Flags().BoolP("public", "p", false, "when signed as public, the asset name and the signer's identity will be visible to everyone")
 
 	cmd.SetUsageTemplate(
