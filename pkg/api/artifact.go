@@ -79,7 +79,7 @@ type ArtifactResponse struct {
 
 	// ArtifactResponse specific
 	Level             int64  `json:"level"`
-	Visibility        string `json:"visibility"`
+	Visibility        string `json:"visibility" vcn:"Visibility"`
 	Status            string `json:"status"`
 	CreatedAt         string `json:"createdAt"`
 	VerificationCount uint64 `json:"verificationCount"`
