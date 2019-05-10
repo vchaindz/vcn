@@ -78,15 +78,17 @@ type ArtifactResponse struct {
 	Metadata Metadata `json:"metadata" vcn:"Metadata"`
 
 	// ArtifactResponse specific
-	Level               int64  `json:"level"`
-	Visibility          string `json:"visibility"`
-	Status              string `json:"status"`
+	Level             int64  `json:"level"`
+	Visibility        string `json:"visibility"`
+	Status            string `json:"status"`
+	CreatedAt         string `json:"createdAt"`
+	VerificationCount uint64 `json:"verificationCount"`
+	PublisherCount    uint64 `json:"publisherCount"`
+
+	// Publisher info
 	Publisher           string `json:"publisher" vcn:"Signer"`
-	VerificationCount   uint64 `json:"verificationCount"`
-	PublisherCount      uint64 `json:"publisherCount"`
 	PublisherCompany    string `json:"publisherCompany" vcn:"Company"`
-	PublisherWebsiteUrl string `json:"publisherWebsiteUrl" vcn:"Company URL"`
-	CreatedAt           string `json:"createdAt"`
+	PublisherWebsiteUrl string `json:"publisherWebsiteUrl" vcn:"Website"`
 }
 
 func (a ArtifactResponse) String() string {
