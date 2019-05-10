@@ -93,8 +93,9 @@ func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibili
 	if pubKey == "" {
 		pubKey = u.DefaultKey()
 	}
-	fmt.Println("Signer:", u.Email())
-	fmt.Println("Key:", pubKey)
+
+	fmt.Println("Signer:\t" + u.Email())
+	fmt.Println("Key:\t" + pubKey)
 	passphrase, err := cli.ProvidePassphrase()
 	if err != nil {
 		return err
@@ -114,14 +115,6 @@ func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibili
 	}
 
 	fmt.Println()
-	cli.PrintColumn("Asset", a.Name, "NA")
-	cli.PrintColumn("Hash", a.Hash, "NA")
-	if verification.Timestamp != time.Unix(0, 0) {
-		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
-	} else {
-		cli.PrintColumn("Date", "NA", "NA")
-	}
-	sc, ss := meta.StatusColor(verification.Status)
-	cli.PrintColumn("Status", meta.StatusName(verification.Status), "NA", sc, ss)
+	print(a, verification)
 	return nil
 }
