@@ -20,6 +20,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // NewCmdVerify returns the cobra command for `vcn verify`
@@ -46,9 +47,12 @@ func NewCmdVerify() *cobra.Command {
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ...ARG(s)", 1),
 	)
 
-	cmd.Flags().StringArrayP("key", "k", []string{}, "accept only verification matching the passed key(s)")
+	cmd.Flags().StringSliceP("key", "k", nil, "accept only verification matching the passed key(s)")
 	cmd.Flags().String("hash", "", "specify a hash to verify, if set no arg(s) can be used")
 	cmd.Flags().StringP("output", "o", "", "output format, one of: --output=json|--output=yaml|--output=''")
+
+	// Bind to VCN_VERIFY_KEYS env var
+	viper.BindPFlag("verify_keys", cmd.Flags().Lookup("key"))
 
 	return cmd
 }
@@ -58,10 +62,9 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	keys, err := cmd.Flags().GetStringArray("key")
-	if err != nil {
-		return err
-	}
+
+	keys := viper.GetStringSlice("verify_keys")
+
 	output, err := cmd.Flags().GetString("output")
 	if err != nil {
 		return err
