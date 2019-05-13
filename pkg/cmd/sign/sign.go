@@ -38,7 +38,7 @@ func NewCmdSign() *cobra.Command {
 	}
 
 	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (format: --attr key=value)")
-	cmd.Flags().StringP("key", "k", "", "specify the public key <vcn> should use, if not set the last available is used")
+	cmd.Flags().StringP("key", "k", "", "specify which user's key to use for signing, if not set the last available is used")
 	cmd.Flags().BoolP("public", "p", false, "when signed as public, the asset name and the signer's identity will be visible to everyone")
 
 	cmd.SetUsageTemplate(
@@ -93,8 +93,9 @@ func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibili
 	if pubKey == "" {
 		pubKey = u.DefaultKey()
 	}
-	fmt.Println("Signer:", u.Email())
-	fmt.Println("Key:", pubKey)
+
+	fmt.Println("Signer:\t" + u.Email())
+	fmt.Println("Key:\t" + pubKey)
 	passphrase, err := cli.ProvidePassphrase()
 	if err != nil {
 		return err
@@ -114,14 +115,6 @@ func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibili
 	}
 
 	fmt.Println()
-	cli.PrintColumn("Asset", a.Name, "NA")
-	cli.PrintColumn("Hash", a.Hash, "NA")
-	if verification.Timestamp != time.Unix(0, 0) {
-		cli.PrintColumn("Date", verification.Timestamp.String(), "NA")
-	} else {
-		cli.PrintColumn("Date", "NA", "NA")
-	}
-	sc, ss := meta.StatusColor(verification.Status)
-	cli.PrintColumn("Status", meta.StatusName(verification.Status), "NA", sc, ss)
+	print(a, verification)
 	return nil
 }

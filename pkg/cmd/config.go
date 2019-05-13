@@ -20,7 +20,6 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
 )
 
 // initConfig reads in config file and ENV variables if set.
@@ -42,7 +41,7 @@ func initConfig() {
 	// Load config
 	if cfgFile != "" {
 		store.SetConfigFile(cfgFile)
-		fmt.Println("Using config file: ", viper.ConfigFileUsed())
+		fmt.Println("Using config file: ", store.ConfigFile())
 	}
 	if err := store.LoadConfig(); err != nil {
 		fmt.Println(err)

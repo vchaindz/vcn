@@ -101,11 +101,10 @@ func (r result) WriteTo(out io.Writer) (n int64, err error) {
 				return
 			}
 		}
-	}
-
-	err = printf("Status:\t%s\n", meta.StatusNameStyled(r.Verification.Status))
-	if err != nil {
-		return
+		err = printf("Status:\t%s\n", meta.StatusNameStyled(r.Verification.Status))
+		if err != nil {
+			return
+		}
 	}
 
 	return n, w.Flush()

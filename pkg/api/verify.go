@@ -21,7 +21,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/blockchain"
 	"github.com/vchain-us/vcn/pkg/meta"
-	"gopkg.in/yaml.v2"
 )
 
 type BlockchainVerification struct {
@@ -31,7 +30,20 @@ type BlockchainVerification struct {
 	Timestamp time.Time      `json:"timestamp"`
 }
 
+// Trusted returns true if v.Status is meta.StatusTrusted
+func (v *BlockchainVerification) Trusted() bool {
+	return v != nil && v.Status == meta.StatusTrusted
+}
+
+// Unknown returns true if v is nil or v.Status is meta.StatusUnknown
+func (v *BlockchainVerification) Unknown() bool {
+	return v == nil || v.Status == meta.StatusUnknown
+}
+
 func (v *BlockchainVerification) toMap() map[string]interface{} {
+	if v == nil {
+		return nil
+	}
 	return map[string]interface{}{
 		"owner":     v.Key(),
 		"level":     v.Level,
@@ -44,21 +56,26 @@ func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.toMap())
 }
 
-func (v *BlockchainVerification) MarshalYAML() ([]byte, error) {
-	return yaml.Marshal(v.toMap())
+func (v *BlockchainVerification) MarshalYAML() (interface{}, error) {
+	return v.toMap(), nil
 }
 
 func (v *BlockchainVerification) MetaHash() string {
+	if v == nil {
+		return ""
+	}
 	metadata := fmt.Sprintf("%s-%d-%d-%d",
 		v.Owner.Hex(),
 		int64(v.Level),
 		int64(v.Status),
 		int64(v.Timestamp.Unix()))
 	metadataHashAsBytes := sha256.Sum256([]byte(metadata))
+	metahash := fmt.Sprintf("%x", metadataHashAsBytes)
 	logger().WithFields(logrus.Fields{
-		"metahash": metadata,
+		"metadata": metadata,
+		"metahash": metahash,
 	}).Trace("Generated metahash")
-	return fmt.Sprintf("%x", metadataHashAsBytes)
+	return metahash
 }
 
 // Key returns signer's key as string for v, if any, otherwise an empty string
@@ -71,18 +88,25 @@ func (v *BlockchainVerification) Key() string {
 
 // LevelName returns the level's label for v
 func (v *BlockchainVerification) LevelName() string {
-	return meta.LevelName(v.Level)
-}
-
-// Date returns a RFC3339 formatted string of v's timestamp, if any, otherwise an empty string
-func (v *BlockchainVerification) Date() string {
-	if v.Timestamp != time.Unix(0, 0) {
-		return v.Timestamp.UTC().Format(time.RFC3339)
+	if v != nil {
+		return meta.LevelName(v.Level)
 	}
 	return ""
 }
 
-func BlockChainVerify(hash string) (verification *BlockchainVerification, err error) {
+// Date returns a RFC3339 formatted string of v's timestamp, if any, otherwise an empty string
+func (v *BlockchainVerification) Date() string {
+	if v != nil {
+		ut := v.Timestamp.UTC()
+		if ut.Unix() > 0 {
+			return ut.Format(time.RFC3339)
+		}
+	}
+	return ""
+}
+
+// BlockChainVerify returns *BlockchainVerification for the hash
+func BlockChainVerify(hash string) (*BlockchainVerification, error) {
 	logger().WithFields(logrus.Fields{
 		"hash": hash,
 	}).Trace("BlockChainVerify")
@@ -99,22 +123,33 @@ func BlockChainVerify(hash string) (verification *BlockchainVerification, err er
 	if err != nil {
 		return nil, err
 	}
-	verification = new(BlockchainVerification)
-	verification.Owner = address
-	verification.Level = meta.Level(level.Int64())
-	verification.Status = meta.Status(status.Int64())
-	verification.Timestamp = time.Unix(timestamp.Int64(), 0)
-	logger().
-		WithField("verification", verification).
-		Trace("Received blockchain verification")
-	return verification, nil
+	if meta.Status(status.Int64()) != meta.StatusUnknown && address != common.BigToAddress(big.NewInt(0)) {
+		verification := &BlockchainVerification{
+			Owner:     address,
+			Level:     meta.Level(level.Int64()),
+			Status:    meta.Status(status.Int64()),
+			Timestamp: time.Unix(timestamp.Int64(), 0),
+		}
+		logger().
+			WithField("verification", verification).
+			Trace("Blockchain verification found")
+		return verification, nil
+	}
+
+	logger().Trace("No blockchain verification found")
+	return &BlockchainVerification{
+		Status: meta.StatusUnknown,
+	}, nil
 }
 
-func BlockChainVerifyMatchingPublicKey(hash string, pubKey string) (verification *BlockchainVerification, err error) {
+// BlockChainVerifyMatchingPublicKey returns *BlockchainVerification for hash matching pubKey.
+func BlockChainVerifyMatchingPublicKey(hash string, pubKey string) (*BlockchainVerification, error) {
 	return BlockChainVerifyMatchingPublicKeys(hash, []string{pubKey})
 }
 
-func BlockChainVerifyMatchingPublicKeys(hash string, pubKeys []string) (verification *BlockchainVerification, err error) {
+// BlockChainVerifyMatchingPublicKeys returns *BlockchainVerification for hash
+// matching at least one of pubKeys
+func BlockChainVerifyMatchingPublicKeys(hash string, pubKeys []string) (*BlockchainVerification, error) {
 	logger().WithFields(logrus.Fields{
 		"hash": hash,
 		"keys": pubKeys,
@@ -150,14 +185,21 @@ func BlockChainVerifyMatchingPublicKeys(hash string, pubKeys []string) (verifica
 			return nil, err
 		}
 		if keysMap[strings.ToLower(address.Hex())] {
-			return &BlockchainVerification{
+			verification := &BlockchainVerification{
 				Owner:     address,
 				Level:     meta.Level(level.Int64()),
 				Status:    meta.Status(status.Int64()),
 				Timestamp: time.Unix(timestamp.Int64(), 0),
-			}, nil
+			}
+			logger().
+				WithField("verification", verification).
+				Trace("Blockchain verification found")
+			return verification, nil
 		}
 	}
 
-	return nil, fmt.Errorf("no matching asset for hash %s and publicKeys %s", hash, pubKeys)
+	logger().Trace("No blockchain verification found")
+	return &BlockchainVerification{
+		Status: meta.StatusUnknown,
+	}, nil
 }

@@ -24,6 +24,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -49,6 +50,10 @@ func Execute() {
 }
 
 func init() {
+
+	// Read in environment variables that match
+	viper.SetEnvPrefix("vcn")
+	viper.AutomaticEnv()
 
 	// Disable default behavior when started through explorer.exe
 	cobra.MousetrapHelpText = ""

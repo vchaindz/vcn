@@ -69,10 +69,6 @@ func LoadConfig() error {
 		}
 	}
 
-	// Read in environment variables that match
-	v.SetEnvPrefix("vcn")
-	v.AutomaticEnv()
-
 	if err := v.ReadInConfig(); err != nil {
 		return err
 	}
