@@ -1,5 +1,5 @@
 # vcn - vChain CodeNotary [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=svg)](https://circleci.com/gh/vchain-us/vcn)
-> Global, de-centralized signing of code and other digital assets
+> code signing in 1 simple step
 
 ## How it works
 ![vcn How it works](https://raw.githubusercontent.com/vchain-us/vcn/master/docs/vcn_hiwb.png "How it works")
