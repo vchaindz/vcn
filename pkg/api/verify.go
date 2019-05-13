@@ -70,10 +70,12 @@ func (v *BlockchainVerification) MetaHash() string {
 		int64(v.Status),
 		int64(v.Timestamp.Unix()))
 	metadataHashAsBytes := sha256.Sum256([]byte(metadata))
+	metahash := fmt.Sprintf("%x", metadataHashAsBytes)
 	logger().WithFields(logrus.Fields{
-		"metahash": metadata,
+		"metadata": metadata,
+		"metahash": metahash,
 	}).Trace("Generated metahash")
-	return fmt.Sprintf("%x", metadataHashAsBytes)
+	return metahash
 }
 
 // Key returns signer's key as string for v, if any, otherwise an empty string
