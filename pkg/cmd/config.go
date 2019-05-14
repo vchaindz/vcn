@@ -41,7 +41,8 @@ func initConfig() {
 	// Load config
 	if cfgFile != "" {
 		store.SetConfigFile(cfgFile)
-		fmt.Println("Using config file: ", store.ConfigFile())
+		// fixme(leogr): if this enabled it will interfere with --output=json --output=yaml
+		// fmt.Println("Using config file: ", store.ConfigFile())
 	}
 	if err := store.LoadConfig(); err != nil {
 		fmt.Println(err)
