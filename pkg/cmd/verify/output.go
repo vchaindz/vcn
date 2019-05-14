@@ -12,10 +12,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"reflect"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/mattn/go-colorable"
 
 	"gopkg.in/yaml.v2"
 
@@ -128,7 +129,7 @@ func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verif
 
 	switch output {
 	case "":
-		r.WriteTo(os.Stdout)
+		r.WriteTo(colorable.NewColorableStdout())
 	case "yaml":
 		b, err := yaml.Marshal(r)
 		if err != nil {
