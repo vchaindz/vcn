@@ -50,7 +50,7 @@ func (r result) WriteTo(out io.Writer) (n int64, err error) {
 				var value string
 				switch key {
 				case "Size":
-					if size, ok := f.Interface().(uint64); ok {
+					if size, ok := f.Interface().(uint64); ok && size > 0 {
 						value = humanize.Bytes(size)
 					}
 				case "Metadata":
