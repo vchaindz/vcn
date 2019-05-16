@@ -22,17 +22,20 @@ func NewCmdLogout() *cobra.Command {
 		Use:   "logout",
 		Short: "Logout the current user",
 		Long:  ``,
-		RunE:  runLogout,
-		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
+			return Execute()
+		},
+		Args: cobra.NoArgs,
 	}
 
 	return cmd
 }
 
-func runLogout(cmd *cobra.Command, args []string) error {
+// Execute logout action
+func Execute() error {
 	store.Config().ClearContext()
 	if err := store.SaveConfig(); err != nil {
-		cmd.SilenceUsage = true
 		return err
 	}
 

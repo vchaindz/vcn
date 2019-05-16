@@ -24,21 +24,20 @@ import (
 func NewCmdLogin() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Sign-in to vChain.us",
+		Short: "Sign-in to codenotary.io",
 		Long:  ``,
-		RunE:  runLogin,
-		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
+			return Execute()
+		},
+		Args: cobra.NoArgs,
 	}
 
 	return cmd
 }
 
-func runLogin(cmd *cobra.Command, args []string) error {
-	cmd.SilenceUsage = true
-	return login()
-}
-
-func login() error {
+// Execute the login action
+func Execute() error {
 
 	email, err := cli.ProvidePlatformUsername()
 	if err != nil {
