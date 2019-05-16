@@ -60,7 +60,6 @@ You're good to use `verify` without the above registration.
 vcn verify <asset>
 vcn verify docker://<imageId>
 ```
-> By adding `--key`, you can verify that your asset has been signed by a specific public key.
 
 Output results in `json` or `yaml` format:
 ```
@@ -108,6 +107,15 @@ You're good to start doing really cool things, e.g.
 # run a Docker image only when it can be successfully verified
 vcn verify docker://hello-world && docker run hello-world
 ```
+
+```
+# by adding `--key` you can verify that your asset has been signed by a specific public key 
+vcn verify --key 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
+```
+`vcn verify` also:
+- accept multiple keys by multiple by flag, usage `--key 0x0...1 --key 0x0...2` or comma separated `--key 0x0...1,0x0...2`
+- accept multiple keys by env var `VCN_VERIFY_KEYS`, usage: space separated `VCN_VERIFY_KEYS=0x0...1 0x0...2`
+- `--key` takes precedence over  `VCN_VERIFY_KEYS`
 
 ```
 # verify multiple assets by piping other commands' outputs into vcn
