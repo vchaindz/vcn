@@ -49,9 +49,13 @@ func NewCmdSign() *cobra.Command {
 
 func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) error {
 
-	hash, err := cmd.Flags().GetString("hash")
-	if err != nil {
-		return err
+	var hash string
+	if hashFlag := cmd.Flags().Lookup("hash"); hashFlag != nil {
+		var err error
+		hash, err = cmd.Flags().GetString("hash")
+		if err != nil {
+			return err
+		}
 	}
 
 	public, err := cmd.Flags().GetBool("public")
