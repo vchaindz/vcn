@@ -10,6 +10,7 @@ require (
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/caarlos0/spin v1.1.0
 	github.com/cespare/cp v1.1.1 // indirect
+	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dghubble/sling v1.2.0
 	github.com/dustin/go-humanize v1.0.0

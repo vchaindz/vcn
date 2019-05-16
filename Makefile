@@ -35,6 +35,10 @@ install: vendor test
 static:
 	$(GO) build -a -tags netgo -ldflags '${LDFLAGS} -extldflags "-static"' ./cmd/vcn
 
+.PHONY: docs/cmd
+docs/cmd:
+	$(GO) run docs/cmd/main.go
+
 .PHONY: build/xgo
 build/xgo:
 	$(DOCKER) build \
