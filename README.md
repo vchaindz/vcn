@@ -6,11 +6,10 @@
 
 ## Installation
 
-It's easiest to download the lates release from GitHub:
+It's easiest to download the latest version from the [relase page](
+https://github.com/vchain-us/vcn/releases).
 
-https://github.com/vchain-us/vcn/releases
-
-## Installation from Source
+### Installation from Source
 
 After having installed [golang](https://golang.org/doc/install) 1.12 or newer clone this 
 repository into your working directory.
@@ -39,10 +38,17 @@ make install
 
 ## Usage
 
+Detailed **commands usage** can be found [here](docs/cmd/vcn.md).
+
+Furthermore, check out our list of **integrations**:
+
+* [Docker](docs/DOCKERINTEGRATION.md)
+
+### Basic usage
+
 Register an account with [codernotary.io](https://codenotary.io) first.
 
-Then start with the `login` verb; the cli will walk you through login
-and setting up your local keystore upon initial use.
+Then start with the `login` command. `vcn` will walk you through login and setting up your local keystore upon initial use.
 ```
 vcn --help
 vcn login
@@ -54,6 +60,13 @@ You're good to use `verify` without the above registration.
 vcn verify <asset>
 vcn verify docker://<imageId>
 ```
+> By adding `--key`, you can verify that your asset has been signed by a specific public key.
+
+Output results in `json` or `yaml` format:
+```
+vcn verify --output=json <asset>
+vcn verify --output=yaml <asset>
+```
 
 Once your public key is known on the blockchain you can sign assets:
 
@@ -61,8 +74,7 @@ Once your public key is known on the blockchain you can sign assets:
 vcn sign <asset>
 vcn sign docker://<image>
 ```
-
-By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the --public switch.
+> By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the `--public` flag.
 
 ```
 vcn sign --public <asset>
@@ -76,23 +88,17 @@ vcn unsupport <asset>
 vcn untrust <asset>
 ```
 
-Have a look at analytics and extended functionality on the dashboard (browser needed):
-
-```
-vcn dashboard
-```
-
 Fetch all assets you've signed:
 
 ```
 vcn list
 ```
 
-### Integrations
+Have a look at analytics and extended functionality on the dashboard (browser needed):
 
-Check out our list of integrations
-
-* [Docker](https://github.com/vchain-us/vcn/blob/master/docs/DOCKERINTEGRATION.md)
+```
+vcn dashboard
+```
 
 ### Advanced usage 
 
@@ -117,18 +123,12 @@ LOG_LEVEL=TRACE vcn login
 HTTP_PROXY=http://localhost:3128 vcn verify <asset>
 ```
 
-## Development
-
-### Test Automation
-Simply run
-
+## Testing
 ```
 make test
 ```
 
-## Distribution
-
-### Cross-compiling for various platforms
+## Cross-compiling for various platforms
 
 The C libraries of [go-ethereum](https://github.com/ethereum/go-ethereum) make a more sophisticated cross-compilation
 necessary. 
