@@ -16,6 +16,7 @@ import (
 
 	"github.com/caarlos0/spin"
 	"github.com/spf13/cobra"
+	"github.com/vchain-us/vcn/internal/assert"
 	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/meta"
@@ -73,12 +74,12 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	cmd.SilenceUsage = true
 
 	// User
-	if err := cli.AssertUserLogin(); err != nil {
+	if err := assert.UserLogin(); err != nil {
 		return err
 	}
 	u := api.NewUser(store.Config().CurrentContext)
 
-	if err := cli.AssertUserKeystore(); err != nil {
+	if err := assert.UserKeystore(); err != nil {
 		return err
 	}
 

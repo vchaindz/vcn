@@ -12,7 +12,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/vchain-us/vcn/internal/cli"
+	"github.com/vchain-us/vcn/internal/assert"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/store"
 )
@@ -34,7 +34,7 @@ func NewCmdList() *cobra.Command {
 func runList(cmd *cobra.Command, args []string) error {
 
 	cmd.SilenceUsage = true
-	if err := cli.AssertUserLogin(); err != nil {
+	if err := assert.UserLogin(); err != nil {
 		return err
 	}
 	u := api.NewUser(store.Config().CurrentContext)
