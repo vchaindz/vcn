@@ -11,11 +11,10 @@ package sign
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/vchain-us/vcn/pkg/extractor"
 
-	"github.com/briandowns/spinner"
+	"github.com/caarlos0/spin"
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
@@ -101,9 +100,8 @@ func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibili
 		return err
 	}
 
-	s := spinner.New(spinner.CharSets[1], 500*time.Millisecond)
-
-	s.Prefix = "Signing asset... "
+	s := spin.New("%s Signing asset...")
+	s.Set(spin.Spin1)
 	s.Start()
 
 	// TODO: return and display: block #, trx #
