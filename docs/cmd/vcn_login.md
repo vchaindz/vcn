@@ -1,10 +1,10 @@
 ## vcn login
 
-Sign-in to vChain.us
+Sign-in to codenotary.io
 
 ### Synopsis
 
-Sign-in to vChain.us
+Sign-in to codenotary.io
 
 ```
 vcn login [flags]

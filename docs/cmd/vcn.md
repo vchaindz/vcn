@@ -17,7 +17,7 @@ vChain CodeNotary - code signing in 1 simple step
 
 * [vcn dashboard](vcn_dashboard.md)	 - Open https://dashboard.codenotary.io in browser
 * [vcn list](vcn_list.md)	 - List your signed artifacts
-* [vcn login](vcn_login.md)	 - Sign-in to vChain.us
+* [vcn login](vcn_login.md)	 - Sign-in to codenotary.io
 * [vcn logout](vcn_logout.md)	 - Logout the current user
 * [vcn sign](vcn_sign.md)	 - Sign digital assets' hashes onto the blockchain
 * [vcn unsupport](vcn_unsupport.md)	 - Unsupport a digital asset
