@@ -96,6 +96,21 @@ func (a ArtifactResponse) String() string {
 		a.Name, a.Hash, a.Status)
 }
 
+// Artifact returns an new *Artifact from a
+func (a ArtifactResponse) Artifact() *Artifact {
+	return &Artifact{
+		// root fields
+		Kind:        a.Kind,
+		Name:        a.Name,
+		Hash:        a.Hash,
+		Size:        a.Size,
+		ContentType: a.ContentType,
+
+		// custom metadata
+		Metadata: a.Metadata,
+	}
+}
+
 func (u User) createArtifact(verification *BlockchainVerification, walletAddress string,
 	artifact Artifact, visibility meta.Visibility, status meta.Status) error {
 
@@ -152,6 +167,35 @@ func (u *User) LoadArtifacts(walletAddress string) ([]ArtifactResponse, error) {
 			restError.Message, restError.Status)
 	}
 	return response.Content, nil
+}
+
+// LoadArtifact returns an *ArtifactResponse for the given hash and current u, if any
+func (u *User) LoadArtifact(hash string) (*ArtifactResponse, error) {
+	notFound := func() (*ArtifactResponse, error) {
+		return nil, fmt.Errorf("no asset matching hash %s signed by %s found", hash, u.Email())
+	}
+	response := new(PagedArtifactResponse)
+	restError := new(Error)
+	r, err := newSling(u.token()).
+		Get(meta.ArtifactEndpoint()+"/"+hash+"?scope=CURRENT_USER&size=1&sort=createdAt,desc").
+		Receive(&response, restError)
+	if err != nil {
+		return nil, err
+	}
+
+	switch r.StatusCode {
+	case 200:
+		if len(response.Content) < 1 {
+			return notFound()
+		}
+	case 404:
+		return notFound()
+	default:
+		return nil, fmt.Errorf("request failed: %s (%d)",
+			restError.Message, restError.Status)
+	}
+
+	return &response.Content[0], nil
 }
 
 func LoadArtifactForHash(user *User, hash string, metahash string) (*ArtifactResponse, error) {

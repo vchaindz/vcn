@@ -45,10 +45,10 @@ func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state me
 	}
 
 	if artifact.Hash == "" {
-		return nil, makeError("asset's hash is missing", nil)
+		return nil, makeError("hash is missing", nil)
 	}
-	if artifact.Name == "" {
-		return nil, makeError("asset's name is missing", nil)
+	if artifact.Size < 0 {
+		return nil, makeError("invalid size", nil)
 	}
 
 	keyin, err := u.cfg.OpenKey(pubKey)

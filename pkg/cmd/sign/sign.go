@@ -49,6 +49,11 @@ func NewCmdSign() *cobra.Command {
 
 func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) error {
 
+	hash, err := cmd.Flags().GetString("hash")
+	if err != nil {
+		return err
+	}
+
 	public, err := cmd.Flags().GetBool("public")
 	if err != nil {
 		return err
@@ -62,11 +67,8 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	metadata := cmd.Flags().Lookup("attr").Value.(mapOpts).StringToInterface()
 
 	cmd.SilenceUsage = true
-	return sign(args[0], pubKey, state, meta.VisibilityForFlag(public), metadata)
-}
 
-func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibility, metadata api.Metadata) error {
-
+	// User
 	if err := cli.AssertUserLogin(); err != nil {
 		return err
 	}
@@ -76,18 +78,33 @@ func sign(arg string, pubKey string, state meta.Status, visibility meta.Visibili
 		return err
 	}
 
-	// Extract artifact from arg
-	a, err := extractor.Extract(arg)
-	if err != nil {
-		return err
+	// Make the artifact to be signed
+	var a *api.Artifact
+	if hash != "" {
+		// Load existing artifact
+		if ar, err := u.LoadArtifact(hash); err == nil && ar != nil {
+			a = ar.Artifact()
+		} else {
+			if err == nil {
+				return fmt.Errorf("no asset found for %s", hash)
+			}
+			return err
+		}
+	} else {
+		// Extract artifact from arg
+		a, err = extractor.Extract(args[0])
+		if err != nil {
+			return err
+		}
 	}
 
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	if a.Size < 0 {
-		return fmt.Errorf("invalid size")
-	}
+	return sign(u, a, pubKey, state, meta.VisibilityForFlag(public))
+}
+
+func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibility meta.Visibility) error {
 
 	if pubKey == "" {
 		pubKey = u.DefaultKey()
