@@ -72,15 +72,17 @@ func checkToken(token string) (success bool, err error) {
 		"err":       err,
 		"restError": restError,
 	}).Trace("checkToken")
-	switch response.StatusCode {
-	case 200:
-		return true, nil
-	case 401:
-		fallthrough
-	case 403:
-		fallthrough
-	case 419:
-		return false, nil
+	if response != nil {
+		switch response.StatusCode {
+		case 200:
+			return true, nil
+		case 401:
+			fallthrough
+		case 403:
+			fallthrough
+		case 419:
+			return false, nil
+		}
 	}
 	if restError.Error != "" {
 		err = fmt.Errorf("%+v", restError)
