@@ -10,6 +10,7 @@ package meta
 
 import (
 	"math/big"
+	"os"
 	"time"
 )
 
@@ -33,7 +34,7 @@ func MainNetEndpoint() string {
 	case StageStaging:
 		return "https://main.staging.codenotary.io"
 	case StageTest:
-		return "https://main.test.codenotary.io"
+		return os.Getenv("VCN_TEST_NET")
 	default:
 		return "https://main.codenotary.io"
 	}
@@ -46,7 +47,7 @@ func FoundationEndpoint() string {
 	case StageStaging:
 		return "https://api.staging.codenotary.io/foundation"
 	case StageTest:
-		return "https://api.test.codenotary.io/foundation"
+		return os.Getenv("VCN_TEST_API")
 	default:
 		return "https://api.codenotary.io/foundation"
 	}
@@ -59,7 +60,7 @@ func AssetsRelayContractAddress() string {
 	case StageStaging:
 		return "0xf1d4b9fe8290bb5718db5d46c313e7b266570c21"
 	case StageTest:
-		return "0x0"
+		return os.Getenv("VCN_TEST_CONTRACT")
 	default:
 		return "0x495021fe1a48a5b0c85ef1abd68c42cdfc7cda08"
 	}
