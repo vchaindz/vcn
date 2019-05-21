@@ -11,15 +11,12 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/extractor/docker"
 	"github.com/vchain-us/vcn/pkg/extractor/file"
 
 	"github.com/vchain-us/vcn/pkg/store"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 // initConfig reads in config file and ENV variables if set.
@@ -30,13 +27,11 @@ func initConfig() {
 	extractor.Register(file.Scheme, file.Artifact)
 	extractor.Register(docker.Scheme, docker.Artifact)
 
-	// Find home directory
-	home, err := homedir.Dir()
-	if err != nil {
+	// Set ~/.vcn directory
+	if err := store.SetDefaultDir(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	store.SetDir(filepath.Join(home, store.DefaultDirName))
 
 	// Load config
 	if cfgFile != "" {

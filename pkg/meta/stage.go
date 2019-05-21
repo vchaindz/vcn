@@ -16,22 +16,19 @@ import (
 type Stage int64
 
 const (
-	StageProduction  Stage = 0
-	StageStaging     Stage = 1
-	StageTest        Stage = 2
-	StageDevelopment Stage = 3
+	StageProduction Stage = 0
+	StageStaging    Stage = 1
+	StageTest       Stage = 2
 )
 
 func StageEnvironment() Stage {
 	switch os.Getenv("STAGE") {
+	case "PRODUCTION":
+		return StageProduction
 	case "STAGING":
 		return StageStaging
 	case "TEST":
 		return StageTest
-	case "PRODUCTION":
-		return StageProduction
-	case "DEVELOPMENT":
-		return StageDevelopment
 	default:
 		return StageProduction
 	}
@@ -45,8 +42,6 @@ func StageName(stage Stage) (name string) {
 		return "STAGING"
 	case StageTest:
 		return "TEST"
-	case StageDevelopment:
-		return "DEVELOPMENT"
 	default:
 		log.Fatal("unsupported stage", name)
 		return ""

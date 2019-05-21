@@ -21,7 +21,7 @@ func DashboardURL() string {
 	case StageStaging:
 		return "https://dashboard.staging.codenotary.io"
 	case StageTest:
-		return "https://dashboard.test.codenotary.io"
+		return os.Getenv("VCN_TEST_DASHBOARD")
 	default:
 		return "https://dashboard.codenotary.io"
 	}
