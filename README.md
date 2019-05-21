@@ -131,6 +131,19 @@ LOG_LEVEL=TRACE vcn login
 HTTP_PROXY=http://localhost:3128 vcn verify <asset>
 ```
 
+## Environments
+
+By default `vcn` will put the configuration file and private keys within the `~/.vcn` directory.
+
+The following environments are also supported by setting the `STAGE` envirnoment var:
+
+Stage | Directory | Note
+------------ | ------------- | -------------
+`STAGE=PRODUCTION` | `~/.vcn` | *default* 
+`STAGE=STAGING` | `~/.vcn.staging` |
+`STAGE=TEST` | `~/vcn.test` | *`VCN_TEST_DASHBOARD`, `VCN_TEST_NET`, `VCN_TEST_CONTRACT`, `VCN_TEST_API` must be set accordingly to your test environment*
+
+
 ## Testing
 ```
 make test
