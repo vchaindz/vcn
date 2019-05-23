@@ -99,37 +99,97 @@ Have a look at analytics and extended functionality on the dashboard (browser ne
 vcn dashboard
 ```
 
-### Advanced usage 
+### Examples
 
-You're good to start doing really cool things, e.g.
+#### Verify a Docker image automatically prior to running it
+
+First, you’ll need to pull the image by using: 
 
 ```
-# run a Docker image only when it can be successfully verified
+docker pull hello-world
+```
+
+Then use the below command to put in place an automatic safety check. It allows only verified images to run. 
+
+```
 vcn verify docker://hello-world && docker run hello-world
 ```
+If an image was not verified, it will not run and nothing will execute. 
 
-```
-# by adding `--key` you can verify that your asset has been signed by a specific public key 
-vcn verify --key 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
-```
-`vcn verify` also:
-- accept multiple keys by multiple by flag, usage `--key 0x0...1 --key 0x0...2` or comma separated `--key 0x0...1,0x0...2`
-- accept multiple keys by env var `VCN_VERIFY_KEYS`, usage: space separated `VCN_VERIFY_KEYS=0x0...1 0x0...2`
-- `--key` takes precedence over  `VCN_VERIFY_KEYS`
 
+#### Verify multiple assets
+You can verify multiple assets by piping other command outputs into `vcn`:
 ```
-# verify multiple assets by piping other commands' outputs into vcn
 ls | xargs vcn verify
 ```
+> The exit code will be `0` only if all the assets in you other command outputs are verified.
+
+#### Verify by a specific signer
+By adding `--key`, you can verify that your asset has been signed by a specific signer’s public key.
 
 ```
-# work with environment
-# get logs (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC)
-LOG_LEVEL=TRACE vcn login
-
-# or with a proxy
-HTTP_PROXY=http://localhost:3128 vcn verify <asset>
+vcn verify --key 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
 ```
+
+#### Verify by a list of signers
+
+If an asset you or your organization wants to trust needs to be verified multiple times as a prerequisite, then use the `vcn verify` command and the following syntax:
+
+
+- Add a `--key` flag in front of each key you want to add  
+(eg. `--key 0x0...1 --key 0x0...2`)
+- Set the env var `VCN_VERIFY_KEYS` correctly by using a space to separate each key (eg. `VCN_VERIFY_KEYS=0x0...1 0x0...2`)
+
+Also, be aware that using the `--key` flag will take precedence over `VCN_VERIFY_KEYS`.
+
+
+#### Verify using the asset's hash
+
+If you want to verify an asset using only its hash, you can do so by using the command as shown below:
+
+```
+vcn verify --hash fce289e99eb9bca977dae136fbe2a82b6b7d4c372474c9235adc1741675f587e
+```
+
+#### Unsupport/untrust an asset you do not have anymore
+
+In case you want to unsupport/untrust an asset of yours that you no longer have, you can do so using the asset hash(es) with the following steps below.
+
+First, you’ll need to get the hash of the asset from your CodeNotary [dashboard](https://dashboard.codenotary.io/) or alternatively you can use the `vcn list` command. Then, in the CLI, use:
+
+```
+vcn untrust --hash <asset's hash>
+# or 
+vcn unsupport --hash <asset's hash>
+```
+
+#### Signing within automated environments
+
+First, you’ll need to make `vcn` have access to the `~/.vcn` folder that holds your private keys.
+Then, set up your environment accordingly using the following commands:
+```
+export VCN_USER=<email>
+export VCN_PASSWORD=<password>
+export KEYSTORE_PASSWORD=<passphrase>
+```
+
+Once done, you can use `vcn` in your non-interactive environment using:
+
+```
+vcn login
+vcn sign --key <your key> <asset>
+```
+> Other commands like `untrust` and `unsupport` will also work.
+
+
+#### Working with Docker and Kubernetes
+
+Check out our integrations:
+
+* [Docker](docs/DOCKERINTEGRATION.md)
+* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog)
+* [vcn-k8s](https://github.com/vchain-us/vcn-k8s)
+
 
 ## Environments
 
@@ -143,6 +203,14 @@ Stage | Directory | Note
 `STAGE=STAGING` | `~/.vcn.staging` |
 `STAGE=TEST` | `~/vcn.test` | *`VCN_TEST_DASHBOARD`, `VCN_TEST_NET`, `VCN_TEST_CONTRACT`, `VCN_TEST_API` must be set accordingly to your test environment*
 
+### Other useful envs
+```
+# logs (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC)
+LOG_LEVEL=TRACE vcn login
+
+# proxy
+HTTP_PROXY=http://localhost:3128 vcn verify <asset>
+```
 
 ## Testing
 ```
