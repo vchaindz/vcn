@@ -92,9 +92,12 @@ func (i image) inferVer() string {
 }
 
 func inspect(arg string) ([]image, error) {
-	cmd := exec.Command("docker", "inspect", arg)
+	cmd := exec.Command("docker", "inspect", arg, "--type", "image")
 	cmdOutput, err := cmd.Output()
 	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok && len(ee.Stderr) > 0 {
+			return nil, fmt.Errorf(string(ee.Stderr))
+		}
 		return nil, err
 	}
 	data := []image{}
