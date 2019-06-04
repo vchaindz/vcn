@@ -39,6 +39,8 @@ func NewCmdLogin() *cobra.Command {
 // Execute the login action
 func Execute() error {
 
+	cfg := store.Config()
+
 	email, err := cli.ProvidePlatformUsername()
 	if err != nil {
 		return err
@@ -58,6 +60,7 @@ func Execute() error {
 		return err
 	}
 
+	cfg.ClearContext()
 	if err := user.Authenticate(password); err != nil {
 		return err
 	}
@@ -65,7 +68,7 @@ func Execute() error {
 	_ = api.TrackPublisher(user, meta.VcnLoginEvent)
 
 	user.DefaultKeystore() // ensure default keystore
-	store.Config().CurrentContext = user.Email()
+	cfg.CurrentContext = user.Email()
 	if err := store.SaveConfig(); err != nil {
 		return err
 	}
