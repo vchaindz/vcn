@@ -32,7 +32,7 @@ vcn verify docker://hello-world:v1
 
 # Docker Sidecar Integration
 
-vcn also offers a sidecar project, you can use to automatically verify used container images during runtime.
+`vcn` also offers a sidecar project, you can use to automatically verify used container images during runtime.
 
 Check out (https://github.com/vchain-us/vcn-watchdog) on your server. The tool continuously verifies the integrity of your containers:
 

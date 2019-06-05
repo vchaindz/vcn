@@ -1,0 +1,58 @@
+# Configuration
+
+By default, the `vcn` command line stores its config file (`config.json`) and users' secret keys in a directory called `.vcn` within your `$HOME` directory. 
+> If the `STAGE` envirnoment variable has been set, the default configuration directory can be different. See [envirnoments](envirnoments.md).
+
+However, you can specify a different location for the config file via the `--config` command line option. For example:
+
+```
+vcn --config /path/to/your/config.json
+```
+
+The config file contains paths to keystore directories, and stores credentials of the current authenticated user.
+
+`vcn` manages these files and directories and you should not modify them. However, *you can modify* the config file to control where keys are stored.
+
+## Config file
+
+### Example of `config.json`
+
+```
+{
+  "currentcontext": "example@example.net",
+  "users": [
+    {
+      "email": "example@example.net",
+      "token": "<authentication_bearer_token>",
+      "keystores": [
+        {
+          "path": "/path/to/user/keystore"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Breakdown of `config.json`'s components
+
+#### currentcontext
+
+The property `currentcontext` holds the reference (user's email) to the current authenticated user.
+
+#### users
+
+The property `users` is an array of objects (one entry per user). Each object holds:
+
+ - `email` the email address that identifies a specific user
+ - `token` a bearer token used obtained by using `vcn login`
+ - `keystores` an array of objects containing paths to the actual directory that store private keys
+
+### Storing secret keys
+
+Secret keys are stored as encrypted JSON files according to the Web3 Secret Storage specification.
+See https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition for more information.
+
+Each user can have multiple keystore's paths. Each path is a directory containing one or more Web3 Secret Storage file.
+
+You can modify the `keystores` property according to your needs in order to store secret keys in different locations.

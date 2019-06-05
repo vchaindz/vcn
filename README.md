@@ -6,7 +6,7 @@
 
 ## Installation
 
-It's easiest to download the latest version from the [relase page](
+It's easiest to download the latest version from the [release page](
 https://github.com/vchain-us/vcn/releases).
 
 ### Installation from Source
@@ -14,7 +14,7 @@ https://github.com/vchain-us/vcn/releases).
 After having installed [golang](https://golang.org/doc/install) 1.12 or newer clone this 
 repository into your working directory.
 
-### Build locally
+#### Build locally
 
 You can build `vcn` in the working directory using the provided `Makefile`.
 
@@ -38,11 +38,18 @@ make install
 
 ## Usage
 
-Detailed **commands usage** can be found [here](docs/cmd/vcn.md).
+For detailed **command line usage** see [docs/cmd/vcn.md](docs/cmd/vcn.md) or just run `vcn help`.
+
 
 Furthermore, check out our list of **integrations**:
 
-* [Docker](docs/DOCKERINTEGRATION.md)
+* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for signing and verify Docker images
+* [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository 
+* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous verification with CodeNotary
+* [vcn-k8s](https://github.com/vchain-us/vcn-k8s) - Continuous verification with CodeNotary for Kubernetes
+* [jsvcn](https://github.com/vchain-us/jsvcn) - CodeNotary JavaScript Client
+* [jvcn](https://github.com/vchain-us/jvcn) - CodeNotary Java Bindings
+* [jvcn-maven-plugin](https://github.com/vchain-us/jvcn-maven-plugin) - Maven dependency verification and enforcement
 
 ### Basic usage
 
@@ -50,7 +57,6 @@ Register an account with [codernotary.io](https://codenotary.io) first.
 
 Then start with the `login` command. `vcn` will walk you through login and setting up your local keystore upon initial use.
 ```
-vcn --help
 vcn login
 ```
 
@@ -73,14 +79,15 @@ Once your public key is known on the blockchain you can sign assets:
 vcn sign <asset>
 vcn sign docker://<image>
 ```
-> By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the `--public` flag.
+
+By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the `--public` flag.
 
 ```
 vcn sign --public <asset>
 vcn sign --public docker://<image>
 ```
 
-Change the asset's status
+Change the asset's status:
 
 ```
 vcn unsupport <asset>
@@ -191,26 +198,11 @@ Check out our integrations:
 * [vcn-k8s](https://github.com/vchain-us/vcn-k8s)
 
 
+## Configuration
+See [docs/user-guide/configuration.md](docs/user-guide/configuration.md).
+
 ## Environments
-
-By default `vcn` will put the configuration file and private keys within the `~/.vcn` directory.
-
-The following environments are also supported by setting the `STAGE` envirnoment var:
-
-Stage | Directory | Note
------------- | ------------- | -------------
-`STAGE=PRODUCTION` | `~/.vcn` | *default* 
-`STAGE=STAGING` | `~/.vcn.staging` |
-`STAGE=TEST` | `~/vcn.test` | *`VCN_TEST_DASHBOARD`, `VCN_TEST_NET`, `VCN_TEST_CONTRACT`, `VCN_TEST_API` must be set accordingly to your test environment*
-
-### Other useful envs
-```
-# logs (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC)
-LOG_LEVEL=TRACE vcn login
-
-# proxy
-HTTP_PROXY=http://localhost:3128 vcn verify <asset>
-```
+See [docs/user-guide/environments.md](docs/user-guide/environments.md).
 
 ## Testing
 ```
