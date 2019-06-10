@@ -47,7 +47,6 @@ func NewCmdVerify() *cobra.Command {
 
 	cmd.Flags().StringSliceP("key", "k", nil, "accept only verification matching the passed key(s)")
 	cmd.Flags().String("hash", "", "specify a hash to verify, if set no arg(s) can be used")
-	cmd.Flags().StringP("output", "o", "", "output format, one of: --output=json|--output=yaml|--output=''")
 
 	// Bind to VCN_VERIFY_KEYS env var
 	viper.BindPFlag("verify_keys", cmd.Flags().Lookup("key"))

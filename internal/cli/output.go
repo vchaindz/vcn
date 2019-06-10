@@ -143,7 +143,37 @@ func Print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verif
 		}
 		fmt.Println(string(b))
 	default:
-		return fmt.Errorf("output format not supported: %s", output)
+		return outputNotSupportedErr(output)
 	}
 	return nil
+}
+
+func PrintErr(output string, err error) error {
+	switch output {
+	case "":
+		fmt.Printf("Error: %s\n", err)
+	case "yaml":
+		b, err := yaml.Marshal(map[string]string{
+			"error": err.Error(),
+		})
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
+		b, err := json.MarshalIndent(map[string]string{
+			"error": err.Error(),
+		}, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}
+
+func outputNotSupportedErr(output string) error {
+	return fmt.Errorf("output format not supported: %s", output)
 }
