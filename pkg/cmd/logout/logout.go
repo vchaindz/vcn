@@ -24,7 +24,18 @@ func NewCmdLogout() *cobra.Command {
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
-			return Execute()
+			output, err := cmd.Flags().GetString("output")
+			if err != nil {
+				return err
+			}
+
+			if err := Execute(); err != nil {
+				return err
+			}
+			if output == "" {
+				fmt.Println("Logout successful.")
+			}
+			return nil
 		},
 		Args: cobra.NoArgs,
 	}
@@ -38,7 +49,5 @@ func Execute() error {
 	if err := store.SaveConfig(); err != nil {
 		return err
 	}
-
-	fmt.Println("Logout successful.")
 	return nil
 }
