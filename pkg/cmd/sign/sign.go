@@ -12,13 +12,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/vchain-us/vcn/pkg/extractor"
-
 	"github.com/caarlos0/spin"
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/assert"
 	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
 )
@@ -69,6 +68,11 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		return err
 	}
 
+	output, err := cmd.Flags().GetString("output")
+	if err != nil {
+		return err
+	}
+
 	metadata := cmd.Flags().Lookup("attr").Value.(mapOpts).StringToInterface()
 
 	cmd.SilenceUsage = true
@@ -106,35 +110,40 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(u, a, pubKey, state, meta.VisibilityForFlag(public))
+	return sign(u, a, pubKey, state, meta.VisibilityForFlag(public), output)
 }
 
-func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibility meta.Visibility) error {
+func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibility meta.Visibility, output string) error {
 
 	if pubKey == "" {
 		pubKey = u.DefaultKey()
 	}
-
-	fmt.Println("Signer:\t" + u.Email())
-	fmt.Println("Key:\t" + pubKey)
+	if output == "" {
+		fmt.Println("Signer:\t" + u.Email())
+		fmt.Println("Key:\t" + pubKey)
+	}
 	passphrase, err := cli.ProvidePassphrase()
 	if err != nil {
 		return err
 	}
-
 	s := spin.New("%s Signing asset...")
-	s.Set(spin.Spin1)
-	s.Start()
-
+	if output == "" {
+		s.Set(spin.Spin1)
+		s.Start()
+	}
 	// TODO: return and display: block #, trx #
 	verification, err := u.Sign(*a, pubKey, passphrase, state, visibility)
 
-	s.Stop()
+	if output == "" {
+		s.Stop()
+	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Println()
-	print(a, verification)
+	if output == "" {
+		fmt.Println()
+	}
+	cli.Print(output, a, nil, verification)
 	return nil
 }

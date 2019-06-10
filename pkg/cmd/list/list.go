@@ -9,7 +9,7 @@
 package list
 
 import (
-	"fmt"
+	"github.com/vchain-us/vcn/internal/cli"
 
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/assert"
@@ -32,7 +32,10 @@ func NewCmdList() *cobra.Command {
 }
 
 func runList(cmd *cobra.Command, args []string) error {
-
+	output, err := cmd.Flags().GetString("output")
+	if err != nil {
+		return err
+	}
 	cmd.SilenceUsage = true
 	if err := assert.UserLogin(); err != nil {
 		return err
@@ -43,9 +46,5 @@ func runList(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-
-	for _, a := range artifacts {
-		fmt.Print(a)
-	}
-	return nil
+	return cli.PrintList(output, artifacts)
 }

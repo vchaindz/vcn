@@ -37,6 +37,8 @@ func runDashboard(cmd *cobra.Command, args []string) {
 	// be visible in server logs. In case the anyhow long-running web session
 	// has expired the customer will have to log in.
 	url := meta.DashboardURL()
-	fmt.Println(fmt.Sprintf("Taking you to <%s>", url))
+	if output, _ := cmd.Flags().GetString("output"); output == "" {
+		fmt.Println(fmt.Sprintf("Taking you to <%s>", url))
+	}
 	browser.OpenURL(url)
 }

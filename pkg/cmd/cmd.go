@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vchain-us/vcn/internal/cli"
+
 	"github.com/inconshreveable/mousetrap"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/login"
@@ -48,7 +50,11 @@ func Root() *cobra.Command {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if cmd, err := rootCmd.ExecuteC(); err != nil {
+		output, _ := rootCmd.PersistentFlags().GetString("output")
+		if output != "" && !cmd.SilenceErrors {
+			cli.PrintErr(output, err)
+		}
 		defer os.Exit(1)
 	}
 	preExitHook(rootCmd)
@@ -69,6 +75,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.json)")
+	rootCmd.PersistentFlags().StringP("output", "o", "", "output format, one of: --output=json|--output=yaml|--output=''")
 
 	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
 	rootCmd.PersistentFlags().MarkHidden("quit")

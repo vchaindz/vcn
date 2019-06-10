@@ -28,7 +28,18 @@ func NewCmdLogin() *cobra.Command {
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
-			return Execute()
+			output, err := cmd.Flags().GetString("output")
+			if err != nil {
+				return err
+			}
+
+			if err := Execute(); err != nil {
+				return err
+			}
+			if output == "" {
+				fmt.Println("Login successful.")
+			}
+			return nil
 		},
 		Args: cobra.NoArgs,
 	}
@@ -111,6 +122,5 @@ func Execute() error {
 		return err
 	}
 
-	fmt.Println("Login successful.")
 	return nil
 }

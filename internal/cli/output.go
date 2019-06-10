@@ -6,7 +6,7 @@
  *
  */
 
-package verify
+package cli
 
 import (
 	"encoding/json"
@@ -111,7 +111,7 @@ func (r result) WriteTo(out io.Writer) (n int64, err error) {
 	return n, w.Flush()
 }
 
-func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
+func Print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
 
 	r := result{
 		Verification: verification,
@@ -143,7 +143,61 @@ func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verif
 		}
 		fmt.Println(string(b))
 	default:
-		return fmt.Errorf("output format not supported: %s", output)
+		return outputNotSupportedErr(output)
 	}
 	return nil
+}
+
+func PrintList(output string, artifacts []api.ArtifactResponse) error {
+	switch output {
+	case "":
+		for _, a := range artifacts {
+			fmt.Print(a)
+		}
+	case "yaml":
+		b, err := yaml.Marshal(artifacts)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
+		b, err := json.MarshalIndent(artifacts, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}
+
+func PrintErr(output string, err error) error {
+	switch output {
+	case "":
+		fmt.Printf("Error: %s\n", err)
+	case "yaml":
+		b, err := yaml.Marshal(map[string]string{
+			"error": err.Error(),
+		})
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
+		b, err := json.MarshalIndent(map[string]string{
+			"error": err.Error(),
+		}, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}
+
+func outputNotSupportedErr(output string) error {
+	return fmt.Errorf("output format not supported: %s", output)
 }
