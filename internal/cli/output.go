@@ -148,6 +148,30 @@ func Print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verif
 	return nil
 }
 
+func PrintList(output string, artifacts []api.ArtifactResponse) error {
+	switch output {
+	case "":
+		for _, a := range artifacts {
+			fmt.Print(a)
+		}
+	case "yaml":
+		b, err := yaml.Marshal(artifacts)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
+		b, err := json.MarshalIndent(artifacts, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}
+
 func PrintErr(output string, err error) error {
 	switch output {
 	case "":
