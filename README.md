@@ -141,15 +141,14 @@ vcn verify --key 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
 
 #### Verify by a list of signers
 
-If an asset you or your organization wants to trust needs to be verified multiple times as a prerequisite, then use the `vcn verify` command and the following syntax:
-
+If an asset you or your organization wants to trust needs to be verified against a list of signers as a prerequisite, then use the `vcn verify` command and the following syntax:
 
 - Add a `--key` flag in front of each key you want to add  
 (eg. `--key 0x0...1 --key 0x0...2`)
-- Set the env var `VCN_VERIFY_KEYS` correctly by using a space to separate each key (eg. `VCN_VERIFY_KEYS=0x0...1 0x0...2`)
+- Or set the env var `VCN_VERIFY_KEYS` correctly by using a space to separate each key (eg. `VCN_VERIFY_KEYS=0x0...1 0x0...2`)
+> Be aware that using the `--key` flag will take precedence over `VCN_VERIFY_KEYS`.
 
-Also, be aware that using the `--key` flag will take precedence over `VCN_VERIFY_KEYS`.
-
+The asset verification will succeed only if the asset has been signed by at least one of the signers.
 
 #### Verify using the asset's hash
 
