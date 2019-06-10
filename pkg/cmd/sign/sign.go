@@ -12,13 +12,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/vchain-us/vcn/pkg/extractor"
-
 	"github.com/caarlos0/spin"
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/assert"
 	"github.com/vchain-us/vcn/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
 )
@@ -40,6 +39,7 @@ func NewCmdSign() *cobra.Command {
 	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (format: --attr key=value)")
 	cmd.Flags().StringP("key", "k", "", "specify which user's key to use for signing, if not set the last available is used")
 	cmd.Flags().BoolP("public", "p", false, "when signed as public, the asset name and the signer's identity will be visible to everyone")
+	cmd.Flags().StringP("output", "o", "", "output format, one of: --output=json|--output=yaml|--output=''")
 
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
@@ -65,6 +65,11 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 
 	pubKey, err := cmd.Flags().GetString("key")
+	if err != nil {
+		return err
+	}
+
+	output, err := cmd.Flags().GetString("output")
 	if err != nil {
 		return err
 	}
@@ -106,35 +111,40 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(u, a, pubKey, state, meta.VisibilityForFlag(public))
+	return sign(u, a, pubKey, state, meta.VisibilityForFlag(public), output)
 }
 
-func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibility meta.Visibility) error {
+func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibility meta.Visibility, output string) error {
 
 	if pubKey == "" {
 		pubKey = u.DefaultKey()
 	}
-
-	fmt.Println("Signer:\t" + u.Email())
-	fmt.Println("Key:\t" + pubKey)
+	if output == "" {
+		fmt.Println("Signer:\t" + u.Email())
+		fmt.Println("Key:\t" + pubKey)
+	}
 	passphrase, err := cli.ProvidePassphrase()
 	if err != nil {
 		return err
 	}
-
 	s := spin.New("%s Signing asset...")
-	s.Set(spin.Spin1)
-	s.Start()
-
+	if output == "" {
+		s.Set(spin.Spin1)
+		s.Start()
+	}
 	// TODO: return and display: block #, trx #
 	verification, err := u.Sign(*a, pubKey, passphrase, state, visibility)
 
-	s.Stop()
+	if output == "" {
+		s.Stop()
+	}
 	if err != nil {
 		return err
 	}
 
-	fmt.Println()
-	print(a, verification)
+	if output == "" {
+		fmt.Println()
+	}
+	cli.Print(output, a, nil, verification)
 	return nil
 }

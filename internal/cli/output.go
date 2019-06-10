@@ -6,7 +6,7 @@
  *
  */
 
-package verify
+package cli
 
 import (
 	"encoding/json"
@@ -111,7 +111,7 @@ func (r result) WriteTo(out io.Writer) (n int64, err error) {
 	return n, w.Flush()
 }
 
-func print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
+func Print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
 
 	r := result{
 		Verification: verification,
