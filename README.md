@@ -67,11 +67,12 @@ vcn verify <asset>
 vcn verify docker://<imageId>
 ```
 
-Output results in `json` or `yaml` format:
+Output results in `json` or `yaml` formats:
 ```
 vcn verify --output=json <asset>
 vcn verify --output=yaml <asset>
 ```
+> Check out the [user guide](docs/user-guide/formatted-output.md) for further details.
 
 Once your public key is known on the blockchain you can sign assets:
 
