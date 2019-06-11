@@ -12,19 +12,17 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
-
-	"github.com/inconshreveable/mousetrap"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/login"
 	"github.com/vchain-us/vcn/pkg/cmd/logout"
 	"github.com/vchain-us/vcn/pkg/cmd/sign"
-
-	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
 	"github.com/vchain-us/vcn/pkg/cmd/verify"
-
 	"github.com/vchain-us/vcn/pkg/meta"
 
+	"github.com/inconshreveable/mousetrap"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -53,7 +51,7 @@ func Execute() {
 	if cmd, err := rootCmd.ExecuteC(); err != nil {
 		output, _ := rootCmd.PersistentFlags().GetString("output")
 		if output != "" && !cmd.SilenceErrors {
-			cli.PrintErr(output, err)
+			cli.PrintError(output, types.NewError(err))
 		}
 		defer os.Exit(1)
 	}

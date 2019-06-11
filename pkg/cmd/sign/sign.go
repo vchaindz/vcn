@@ -15,8 +15,9 @@ import (
 	"github.com/caarlos0/spin"
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/assert"
-	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
 	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
@@ -144,6 +145,6 @@ func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibi
 	if output == "" {
 		fmt.Println()
 	}
-	cli.Print(output, a, nil, verification)
+	cli.Print(output, types.NewResult(a, nil, verification))
 	return nil
 }

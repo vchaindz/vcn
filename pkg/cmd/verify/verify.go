@@ -14,8 +14,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
 	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
@@ -118,12 +119,12 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, user *api.User, 
 		return fmt.Errorf("unable to verify hash: %s", err)
 	}
 
-	var artifact *api.ArtifactResponse
+	var ar *api.ArtifactResponse
 	if !verification.Unknown() {
-		artifact, _ = api.LoadArtifactForHash(user, a.Hash, verification.MetaHash())
+		ar, _ = api.LoadArtifactForHash(user, a.Hash, verification.MetaHash())
 	}
 
-	if err = cli.Print(output, a, artifact, verification); err != nil {
+	if err = cli.Print(output, types.NewResult(a, ar, verification)); err != nil {
 		return err
 	}
 

@@ -22,15 +22,15 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-type result struct {
-	Artifact     *api.ArtifactResponse       `json:"artifact"`
-	Verification *api.BlockchainVerification `json:"verification"`
-}
+func WriteResultTo(r *types.Result, out io.Writer) (n int64, err error) {
+	if r == nil {
+		return 0, nil
+	}
 
-func (r result) WriteTo(out io.Writer) (n int64, err error) {
 	w := new(tabwriter.Writer)
 	w.Init(out, 0, 8, 0, '\t', 0)
 
@@ -111,25 +111,10 @@ func (r result) WriteTo(out io.Writer) (n int64, err error) {
 	return n, w.Flush()
 }
 
-func Print(output string, a *api.Artifact, artifact *api.ArtifactResponse, verification *api.BlockchainVerification) error {
-
-	r := result{
-		Verification: verification,
-	}
-	if artifact != nil {
-		r.Artifact = artifact
-	} else if a != nil {
-		r.Artifact = &api.ArtifactResponse{
-			Name: a.Name,
-			Kind: a.Kind,
-			Hash: a.Hash,
-			Size: a.Size,
-		}
-	}
-
+func Print(output string, r *types.Result) error {
 	switch output {
 	case "":
-		r.WriteTo(colorable.NewColorableStdout())
+		WriteResultTo(r, colorable.NewColorableStdout())
 	case "yaml":
 		b, err := yaml.Marshal(r)
 		if err != nil {
@@ -172,22 +157,21 @@ func PrintList(output string, artifacts []api.ArtifactResponse) error {
 	return nil
 }
 
-func PrintErr(output string, err error) error {
+func PrintError(output string, err *types.Error) error {
+	if err == nil {
+		return nil
+	}
 	switch output {
 	case "":
 		fmt.Printf("Error: %s\n", err)
 	case "yaml":
-		b, err := yaml.Marshal(map[string]string{
-			"error": err.Error(),
-		})
+		b, err := yaml.Marshal(err)
 		if err != nil {
 			return err
 		}
 		fmt.Println(string(b))
 	case "json":
-		b, err := json.MarshalIndent(map[string]string{
-			"error": err.Error(),
-		}, "", "  ")
+		b, err := json.MarshalIndent(err, "", "  ")
 		if err != nil {
 			return err
 		}
