@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vchain-us/vcn/internal/cli"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 
 	"github.com/inconshreveable/mousetrap"
 	"github.com/vchain-us/vcn/pkg/cmd/list"

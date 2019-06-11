@@ -9,7 +9,7 @@
 package list
 
 import (
-	"github.com/vchain-us/vcn/internal/cli"
+	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/assert"
