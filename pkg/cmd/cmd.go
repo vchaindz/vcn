@@ -35,9 +35,6 @@ var rootCmd = &cobra.Command{
 	Version: meta.Version(),
 	Short:   "vChain CodeNotary - code signing in 1 simple step",
 	Long:    ``,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Root returns the root &cobra.Command
@@ -74,13 +71,8 @@ func init() {
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vcn/config.json)")
 	rootCmd.PersistentFlags().StringP("output", "o", "", "output format, one of: --output=json|--output=yaml|--output=''")
-
 	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
 	rootCmd.PersistentFlags().MarkHidden("quit")
-
-	// todo(leogr): clean up deprecated -y flag, kept for backward compatibility
-	rootCmd.PersistentFlags().BoolP("yes", "y", false, "")
-	rootCmd.PersistentFlags().MarkHidden("yes")
 
 	// Verification group
 	rootCmd.AddCommand(verify.NewCmdVerify())

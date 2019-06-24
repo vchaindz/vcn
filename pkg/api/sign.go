@@ -76,7 +76,6 @@ func (u User) Sign(artifact Artifact, pubKey string, passphrase string, state me
 	return u.commitHash(keyin, passphrase, artifact, state, visibility)
 }
 
-// todo(leogr): refactor
 func (u User) commitHash(
 	keyin io.Reader,
 	passphrase string,

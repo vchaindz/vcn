@@ -14,10 +14,16 @@ import (
 	"github.com/fatih/color"
 )
 
+// Level is the type for all possibile signature levels
 type Level int64
+
+// Status is the type for all possibile asset statuses
 type Status int64
+
+// Visibility is the type for all visibility values
 type Visibility int64
 
+// Allowed Level values
 const (
 	LevelDisabled         Level = -1
 	LevelUnknown          Level = 0
@@ -28,6 +34,7 @@ const (
 	LevelVchain           Level = 99
 )
 
+// Allowed Status values
 const (
 	StatusTrusted     Status = 0
 	StatusUntrusted   Status = 1
@@ -35,11 +42,13 @@ const (
 	StatusUnsupported Status = 3
 )
 
+// Allowed Visibility values
 const (
 	VisibilityPublic  Visibility = 0
 	VisibilityPrivate Visibility = 1
 )
 
+// Event tracking related consts
 const (
 	VcnLoginEvent  string = "VCN_LOGIN"
 	VcnSignEvent   string = "VCN_SIGN"
@@ -49,17 +58,19 @@ const (
 	KeyUploadedEvent string = "KEYSTORE_UPLOADED"
 )
 
+// vcn envirnoment variable names
 const (
 	VcnUserEnv          string = "VCN_USER"
 	VcnPasswordEnv      string = "VCN_PASSWORD"
 	KeyStorePasswordEnv string = "KEYSTORE_PASSWORD"
 )
 
-func VcnClientName() (name string) {
+func VcnClientName() string {
 	return "VCN:" + Version()
 }
 
-func LevelName(level Level) (name string) {
+// LevelName returns the name of the given level as string
+func LevelName(level Level) string {
 	switch level {
 	case LevelDisabled:
 		return "DISABLED"
@@ -76,12 +87,13 @@ func LevelName(level Level) (name string) {
 	case LevelVchain:
 		return "99 - VCHAIN"
 	default:
-		log.Fatal("unsupported level", name)
+		log.Fatal("unsupported level", level)
 		return ""
 	}
 }
 
-func StatusName(status Status) (name string) {
+// StatusName returns the name of the given status as string
+func StatusName(status Status) string {
 	switch status {
 	case StatusTrusted:
 		return "TRUSTED"
@@ -92,32 +104,34 @@ func StatusName(status Status) (name string) {
 	case StatusUnsupported:
 		return "UNSUPPORTED"
 	default:
-		log.Fatal("unsupported status", name)
+		log.Fatal("unsupported status", status)
 		return ""
 	}
 }
 
+// StatusNameStyled returns the colorized name of the given status as string
 func StatusNameStyled(status Status) string {
 	c, s := StatusColor(status)
 	return color.New(c, s).Sprintf(StatusName(status))
 }
 
-func VisibilityName(visibility Visibility) (name string) {
+// VisibilityName returns the name of the given visibility as string
+func VisibilityName(visibility Visibility) string {
 	switch visibility {
 	case VisibilityPublic:
 		return "PUBLIC"
 	case VisibilityPrivate:
 		return "PRIVATE"
 	default:
-		log.Fatal("unsupported visibility", name)
+		log.Fatal("unsupported visibility", visibility)
 		return ""
 	}
 }
 
-func VisibilityForFlag(public bool) (visibility Visibility) {
+// VisibilityForFlag returns VisibilityPublic if public is true, otherwise VisibilityPrivate
+func VisibilityForFlag(public bool) Visibility {
 	if public {
 		return VisibilityPublic
-	} else {
-		return VisibilityPrivate
 	}
+	return VisibilityPrivate
 }

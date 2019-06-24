@@ -142,7 +142,7 @@ func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibi
 		s.Set(spin.Spin1)
 		s.Start()
 	}
-	// TODO: return and display: block #, trx #
+
 	verification, err := u.Sign(*a, pubKey, passphrase, state, visibility)
 
 	if output == "" {

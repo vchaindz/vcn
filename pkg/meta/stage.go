@@ -13,14 +13,17 @@ import (
 	"os"
 )
 
+// Stage is the type for all possibile stage values
 type Stage int64
 
+// Allowed stage values
 const (
 	StageProduction Stage = 0
 	StageStaging    Stage = 1
 	StageTest       Stage = 2
 )
 
+// StageEnvironment returns the current Stage value
 func StageEnvironment() Stage {
 	switch os.Getenv("STAGE") {
 	case "PRODUCTION":
@@ -34,7 +37,8 @@ func StageEnvironment() Stage {
 	}
 }
 
-func StageName(stage Stage) (name string) {
+// StageName returns the name of the given stage as string
+func StageName(stage Stage) string {
 	switch stage {
 	case StageProduction:
 		return "PRODUCTION"
@@ -43,7 +47,7 @@ func StageName(stage Stage) (name string) {
 	case StageTest:
 		return "TEST"
 	default:
-		log.Fatal("unsupported stage", name)
+		log.Fatal("unsupported stage", stage)
 		return ""
 	}
 }
