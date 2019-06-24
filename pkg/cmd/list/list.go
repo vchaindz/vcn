@@ -22,7 +22,7 @@ func NewCmdList() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
-		Short:   "List your signed artifacts",
+		Short:   "List your signed assets",
 		Long:    ``,
 		RunE:    runList,
 		Args:    cobra.NoArgs,

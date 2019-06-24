@@ -18,7 +18,7 @@ func NewCmdUnsupport() *cobra.Command {
 	cmd := NewCmdSign()
 	cmd.Use = "unsupport"
 	cmd.Aliases = []string{"us"}
-	cmd.Short = "Unsupport a digital asset"
+	cmd.Short = "Unsupport an asset"
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		return runSignWithState(cmd, args, meta.StatusUnsupported)
 	}

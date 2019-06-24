@@ -18,7 +18,7 @@ func NewCmdUntrust() *cobra.Command {
 	cmd := NewCmdSign()
 	cmd.Use = "untrust"
 	cmd.Aliases = []string{"ut"}
-	cmd.Short = "Untrust a digital asset"
+	cmd.Short = "Untrust an asset"
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		return runSignWithState(cmd, args, meta.StatusUntrusted)
 	}

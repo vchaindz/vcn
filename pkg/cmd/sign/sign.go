@@ -28,7 +28,7 @@ func NewCmdSign() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "sign",
 		Aliases: []string{"s"},
-		Short:   "Sign digital assets' hashes onto the blockchain",
+		Short:   "Sign asset's hash onto the blockchain",
 		Long:    ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runSignWithState(cmd, args, meta.StatusTrusted)

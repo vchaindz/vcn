@@ -28,7 +28,7 @@ func NewCmdVerify() *cobra.Command {
 		Use:     "verify",
 		Example: "  vcn verify /bin/vcn",
 		Aliases: []string{"v"},
-		Short:   "Verify digital artifact against blockchain",
+		Short:   "Verify assets against blockchain",
 		Long:    ``,
 		RunE:    runVerify,
 		Args: func(cmd *cobra.Command, args []string) error {
