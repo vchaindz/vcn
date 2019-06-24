@@ -33,11 +33,15 @@ type publisherExistsParams struct {
 	Email string `url:"email"`
 }
 
+func publisherEndpoint() string {
+	return meta.FoundationEndpoint() + "/v1/publisher"
+}
+
 func checkUserExists(email string) (success bool, err error) {
 	response := new(publisherExistsResponse)
 	restError := new(Error)
 	r, err := sling.New().
-		Get(meta.PublisherEndpoint()+"/exists").
+		Get(publisherEndpoint()+"/exists").
 		QueryStruct(&publisherExistsParams{Email: email}).
 		Receive(&response, restError)
 	logger().WithFields(logrus.Fields{
@@ -57,7 +61,7 @@ func checkUserExists(email string) (success bool, err error) {
 func checkToken(token string) (success bool, err error) {
 	restError := new(Error)
 	response, err := newSling(token).
-		Get(meta.TokenCheckEndpoint()).
+		Get(publisherEndpoint()+"/auth/check").
 		Receive(nil, restError)
 	logger().WithFields(logrus.Fields{
 		"response":  response,
@@ -86,7 +90,7 @@ func authenticateUser(email string, password string) (token string, err error) {
 	response := new(tokenResponse)
 	restError := new(Error)
 	r, err := sling.New().
-		Post(meta.PublisherEndpoint()+"/auth").
+		Post(publisherEndpoint()+"/auth").
 		BodyJSON(authRequest{Email: email, Password: password}).
 		Receive(response, restError)
 	logger().WithFields(logrus.Fields{

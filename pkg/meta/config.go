@@ -79,18 +79,6 @@ func OrganisationsRelayContractAddress() string {
 	}
 }
 
-func TrackingEvent() string {
-	return FoundationEndpoint() + "/v1/tracking-event"
-}
-
-func TokenCheckEndpoint() string {
-	return PublisherEndpoint() + "/auth/check"
-}
-
-func PublisherEndpoint() string {
-	return FoundationEndpoint() + "/v1/publisher"
-}
-
 func WalletEndpoint() string {
 	return FoundationEndpoint() + "/v1/wallet"
 }
