@@ -8,7 +8,7 @@
 
 package meta
 
-var version = "v0.4.x-dev"
+var version = "v0.5.x-dev"
 
 // Version returns the current CodeNotary vcn version string
 func Version() string {
