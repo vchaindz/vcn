@@ -25,14 +25,6 @@ type tokenResponse struct {
 	Token string `token:"token"`
 }
 
-type Error struct {
-	Status    int    `json:"status"`
-	Message   string `json:"message"`
-	Path      string `json:"path"`
-	Timestamp string `json:"timestamp"`
-	Error     string `json:"error"`
-}
-
 type publisherExistsResponse struct {
 	Exists bool `json:"exists"`
 }
