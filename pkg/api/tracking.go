@@ -42,7 +42,7 @@ func TrackVerify(user *User, hash string, filename string) (err error) {
 	r, err := newSling(user.token()).
 		Post(meta.TrackingEvent()+"/verify").
 		BodyJSON(VerifyArtifactTrackingEventRequest{
-			Client:   meta.VcnClientName(),
+			Client:   meta.UserAgent(),
 			Filename: filename,
 			Hash:     hash,
 		}).Receive(nil, restError)

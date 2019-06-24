@@ -9,7 +9,9 @@
 package meta
 
 import (
+	"fmt"
 	"log"
+	"runtime"
 
 	"github.com/fatih/color"
 )
@@ -65,8 +67,10 @@ const (
 	KeyStorePasswordEnv string = "KEYSTORE_PASSWORD"
 )
 
-func VcnClientName() string {
-	return "VCN:" + Version()
+// UserAgent returns the vcn's User-Agent string
+func UserAgent() string {
+	// Syntax reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent#Syntax
+	return fmt.Sprintf("vcn/%s (%s; %s)", Version(), runtime.GOOS, runtime.GOARCH)
 }
 
 // LevelName returns the name of the given level as string
