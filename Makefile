@@ -61,6 +61,10 @@ clean/dist:
 clean: clean/dist
 	rm -f ./vcn
 
+.PHONY: CHANGELOG.md
+CHANGELOG.md:
+	git-chglog -o CHANGELOG.md
+
 .PHONY: dist
 dist: clean/dist build/xgo
 	mkdir -p dist
