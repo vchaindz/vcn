@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vchain-us/vcn/pkg/cmd/inspect"
+
 	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
@@ -79,6 +81,7 @@ func init() {
 
 	// Verification group
 	rootCmd.AddCommand(verify.NewCmdVerify())
+	rootCmd.AddCommand(inspect.NewCmdInspect())
 	rootCmd.AddCommand(list.NewCmdList())
 
 	// Signing group

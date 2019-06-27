@@ -15,14 +15,22 @@ import (
 type Result struct {
 	Artifact     *api.ArtifactResponse       `json:"artifact"`
 	Verification *api.BlockchainVerification `json:"verification"`
+	Errors       []error                     `json:"error,omitempty"`
+}
+
+func (r *Result) AddError(err error) {
+	r.Errors = append(r.Errors, err)
 }
 
 func NewResult(a *api.Artifact, ar *api.ArtifactResponse, v *api.BlockchainVerification) *Result {
-	r := Result{
-		Verification: v,
+	r := Result{}
+	if v != nil {
+		vCopy := *v
+		r.Verification = &vCopy
 	}
 	if ar != nil {
-		r.Artifact = ar
+		arc := *ar
+		r.Artifact = &arc
 	} else if a != nil {
 		r.Artifact = &api.ArtifactResponse{
 			Name: a.Name,

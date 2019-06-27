@@ -16,6 +16,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
 
 	"gopkg.in/yaml.v2"
@@ -108,6 +109,14 @@ func WriteResultTo(r *types.Result, out io.Writer) (n int64, err error) {
 		}
 	}
 
+	for _, e := range r.Errors {
+		c, s := meta.StyleError()
+		err = printf("Error:\t%s\n", color.New(c, s).Sprintf(e.Error()))
+		if err != nil {
+			return
+		}
+	}
+
 	return n, w.Flush()
 }
 
@@ -123,6 +132,31 @@ func Print(output string, r *types.Result) error {
 		fmt.Println(string(b))
 	case "json":
 		b, err := json.MarshalIndent(r, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}
+
+func PrintSlice(output string, rs []types.Result) error {
+	switch output {
+	case "":
+		for _, r := range rs {
+			WriteResultTo(&r, colorable.NewColorableStdout())
+			fmt.Println()
+		}
+	case "yaml":
+		b, err := yaml.Marshal(rs)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
+		b, err := json.MarshalIndent(rs, "", "  ")
 		if err != nil {
 			return err
 		}
