@@ -56,6 +56,31 @@ func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.toMap())
 }
 
+func (v *BlockchainVerification) UnmarshalJSON(b []byte) error {
+	if v == nil {
+		v = &BlockchainVerification{}
+	}
+	data := struct {
+		Owner     string
+		Level     int64
+		Status    int64
+		Timestamp string
+	}{}
+	err := json.Unmarshal(b, &data)
+	if err != nil {
+		return err
+	}
+	if data.Owner != "" {
+		v.Owner = common.HexToAddress(data.Owner)
+	}
+	v.Level = meta.Level(data.Level)
+	v.Status = meta.Status(data.Status)
+	if data.Timestamp != "" {
+		v.Timestamp.UnmarshalText([]byte(data.Timestamp))
+	}
+	return nil
+}
+
 func (v *BlockchainVerification) MarshalYAML() (interface{}, error) {
 	return v.toMap(), nil
 }
