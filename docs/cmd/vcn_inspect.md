@@ -1,19 +1,20 @@
-## vcn logout
+## vcn inspect
 
-Logout the current user
+Return the asset history with low-level information
 
 ### Synopsis
 
-Logout the current user
+Return the asset history with low-level information
 
 ```
-vcn logout [flags]
+vcn inspect [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for logout
+      --hash string   specify a hash to inspect, if set no arg can be used
+  -h, --help          help for inspect
 ```
 
 ### Options inherited from parent commands
