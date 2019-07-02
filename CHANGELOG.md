@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
-<a name="0.5.1"></a>
-## [0.5.1] - 2019-07-02
+<a name="v0.5.1"></a>
+## [v0.5.1] - 2019-07-02
 ### Bug Fixes
 - `BlockchainVerification` json unmarshalling
 
@@ -266,8 +266,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/0.5.1...HEAD
-[0.5.1]: https://github.com/vchain-us/vcn/compare/0.5.0...0.5.1
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.5.1...HEAD
+[v0.5.1]: https://github.com/vchain-us/vcn/compare/0.5.0...v0.5.1
 [0.5.0]: https://github.com/vchain-us/vcn/compare/v0.5.0...0.5.0
 [v0.5.0]: https://github.com/vchain-us/vcn/compare/0.4.3...v0.5.0
 [0.4.3]: https://github.com/vchain-us/vcn/compare/0.4.2...0.4.3

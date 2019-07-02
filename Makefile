@@ -67,7 +67,7 @@ CHANGELOG.md:
 
 .PHONY: CHANGELOG.md.next-tag
 CHANGELOG.md.next-tag:
-	git-chglog -o CHANGELOG.md --next-tag ${VERSION}
+	git-chglog -o CHANGELOG.md --next-tag v${VERSION}
 
 .PHONY: dist
 dist: clean/dist build/xgo
