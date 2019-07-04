@@ -62,7 +62,12 @@ type ArtifactRequest struct {
 }
 
 type PagedArtifactResponse struct {
-	Content []ArtifactResponse `json:"content"`
+	Content       []ArtifactResponse `json:"content"`
+	TotalElements uint64             `json:"totalElements"`
+	Pageable      struct {
+		PageSize   uint64 `json:"pageSize"`
+		PageNumber uint64 `json:"pageNumber"`
+	} `json:"pageable"`
 }
 
 type ArtifactResponse struct {
@@ -193,7 +198,38 @@ func (u *User) LoadArtifact(hash string) (*ArtifactResponse, error) {
 			restError.Message, restError.Status)
 	}
 
-	return &response.Content[0], nil
+	ar := &response.Content[0]
+	if ar.Hash != hash {
+		return notFound()
+	}
+
+	return ar, nil
+}
+
+func (u User) ListArtifacts(page uint) (*PagedArtifactResponse, error) {
+	response := new(PagedArtifactResponse)
+	restError := new(Error)
+	url := fmt.Sprintf(
+		"%s/search?limit=CURRENT_USER&sort=createdAt,desc&size=25&page=%d&group=true",
+		meta.ArtifactEndpoint(),
+		page,
+	)
+	r, err := newSling(u.token()).
+		Get(url).
+		Receive(&response, restError)
+	if err != nil {
+		return nil, err
+	}
+
+	if r.StatusCode == 200 {
+		return response, nil
+	}
+
+	return nil, fmt.Errorf(
+		"request failed: %s (%d)",
+		restError.Message,
+		restError.Status,
+	)
 }
 
 func LoadArtifactForHash(user *User, hash string, metahash string) (*ArtifactResponse, error) {
