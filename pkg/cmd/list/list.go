@@ -9,6 +9,8 @@
 package list
 
 import (
+	"fmt"
+
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 
 	"github.com/spf13/cobra"
@@ -28,11 +30,26 @@ func NewCmdList() *cobra.Command {
 		Args:    cobra.NoArgs,
 	}
 
+	cmd.Flags().UintP("page", "p", 0, "page number")
+
 	return cmd
 }
 
+const (
+	listFooter = `
+Shown %d-%d of %d assets (current page %d)
+
+To list next page, run:
+vcn list --page %d
+`
+)
+
 func runList(cmd *cobra.Command, args []string) error {
 	output, err := cmd.Flags().GetString("output")
+	if err != nil {
+		return err
+	}
+	page, err := cmd.Flags().GetUint("page")
 	if err != nil {
 		return err
 	}
@@ -42,9 +59,37 @@ func runList(cmd *cobra.Command, args []string) error {
 	}
 	u := api.NewUser(store.Config().CurrentContext)
 
-	artifacts, err := u.LoadAllArtifacts()
+	artifacts, err := u.ListArtifacts(page)
 	if err != nil {
 		return err
 	}
-	return cli.PrintList(output, artifacts)
+	if output == "" {
+		fmt.Printf("Listing assets for %s...\n\n", u.Email())
+	}
+	if err = cli.PrintList(output, artifacts.Content); err != nil {
+		return err
+	}
+	if output == "" {
+		if l := uint64(len(artifacts.Content)); l > 0 {
+			offset := artifacts.Pageable.PageSize * artifacts.Pageable.PageNumber
+			fmt.Printf(
+				"%s's assets: %d-%d of %d (current page %d)\n\n",
+				u.Email(),
+				1+offset,
+				uint64(len(artifacts.Content))+offset,
+				artifacts.TotalElements,
+				artifacts.Pageable.PageNumber,
+			)
+
+			if (offset + artifacts.Pageable.PageSize) <= artifacts.TotalElements {
+				fmt.Printf(
+					"To list next page, run:\nvcn list --page %d\n\n",
+					artifacts.Pageable.PageNumber+1,
+				)
+			}
+		} else {
+			fmt.Printf("No results.\n\n")
+		}
+	}
+	return nil
 }
