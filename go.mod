@@ -17,6 +17,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/fjl/memsize v0.0.0-20180929194037-2a09253e352a // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/google/go-cmp v0.3.0
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/h2non/filetype v1.0.8
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
@@ -28,6 +29,7 @@ require (
 	github.com/mattn/go-colorable v0.1.1
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/opencontainers/go-digest v1.0.0-rc1
 	github.com/pborman/uuid v1.2.0 // indirect
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/rjeczalik/notify v0.9.2 // indirect
