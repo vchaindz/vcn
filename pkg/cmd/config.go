@@ -13,6 +13,7 @@ import (
 	"os"
 
 	"github.com/vchain-us/vcn/pkg/extractor"
+	"github.com/vchain-us/vcn/pkg/extractor/dir"
 	"github.com/vchain-us/vcn/pkg/extractor/docker"
 	"github.com/vchain-us/vcn/pkg/extractor/file"
 
@@ -25,6 +26,7 @@ func initConfig() {
 	// Register metadata extractors
 	extractor.Register("", file.Artifact)
 	extractor.Register(file.Scheme, file.Artifact)
+	extractor.Register(dir.Scheme, dir.Artifact)
 	extractor.Register(docker.Scheme, docker.Artifact)
 
 	// Set ~/.vcn directory
