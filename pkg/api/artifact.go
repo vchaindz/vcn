@@ -24,6 +24,15 @@ type Artifact struct {
 	Metadata
 }
 
+func (a Artifact) Copy() Artifact {
+	c := a
+	if a.Metadata != nil {
+		c.Metadata = nil
+		c.Metadata.SetValues(a.Metadata)
+	}
+	return c
+}
+
 func (a Artifact) toRequest() *ArtifactRequest {
 	aR := &ArtifactRequest{
 		// root fields
