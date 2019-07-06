@@ -39,7 +39,7 @@ func (h *hook) finalize(v *api.BlockchainVerification, output string) error {
 		if manifest != nil && path != "" {
 			oldManifest, err := bundle.ReadManifest(filepath.Join(path, bundle.ManifestFilename))
 			if err != nil {
-				return err
+				return nil // continue if missing or bad manifest
 			}
 			equal, out, err := manifest.Diff(*oldManifest, false)
 			if err != nil {
