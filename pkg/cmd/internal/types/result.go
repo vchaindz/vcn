@@ -33,10 +33,11 @@ func NewResult(a *api.Artifact, ar *api.ArtifactResponse, v *api.BlockchainVerif
 		r.Artifact = &arc
 	} else if a != nil {
 		r.Artifact = &api.ArtifactResponse{
-			Name: a.Name,
-			Kind: a.Kind,
-			Hash: a.Hash,
-			Size: a.Size,
+			Name:     a.Name,
+			Kind:     a.Kind,
+			Hash:     a.Hash,
+			Size:     a.Size,
+			Metadata: a.Metadata,
 		}
 	}
 	return &r
