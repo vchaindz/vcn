@@ -132,6 +132,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 }
 
 func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user *api.User, output string) (err error) {
+	hook := newHook(a)
 	var verification *api.BlockchainVerification
 	// if keys have been passed, check for a verification matching them
 	if len(keys) > 0 {
@@ -172,6 +173,11 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 
 	if err != nil {
 		return fmt.Errorf("unable to verify hash: %s", err)
+	}
+
+	err = hook.finalize(verification, output)
+	if err != nil {
+		return err
 	}
 
 	var ar *api.ArtifactResponse

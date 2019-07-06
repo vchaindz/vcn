@@ -145,11 +145,17 @@ func sign(u *api.User, a *api.Artifact, pubKey string, state meta.Status, visibi
 		s.Start()
 	}
 
+	hook := newHook(a)
 	verification, err := u.Sign(*a, pubKey, passphrase, state, visibility)
 
 	if output == "" {
 		s.Stop()
 	}
+	if err != nil {
+		return err
+	}
+
+	err = hook.finalize(verification)
 	if err != nil {
 		return err
 	}
