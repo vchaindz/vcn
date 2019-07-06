@@ -27,7 +27,7 @@ type Descriptor struct {
 	Digest digest.Digest `json:"digest"`
 
 	// Size specifies the size in bytes of the targeted content.
-	Size int64 `json:"size"`
+	Size uint64 `json:"size"`
 }
 
 // NewDescriptor returns a new *Descriptor for the provided path and src.
@@ -41,6 +41,6 @@ func NewDescriptor(path string, src io.Reader) (*Descriptor, error) {
 	return &Descriptor{
 		Path:   path,
 		Digest: digester.Digest(),
-		Size:   size,
+		Size:   uint64(size),
 	}, nil
 }
