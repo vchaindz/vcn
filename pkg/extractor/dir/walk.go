@@ -37,7 +37,7 @@ func walk(root string) (files []bundle.Descriptor, err error) {
 		if err != nil {
 			return err
 		}
-		d, err := bundle.NewDescriptor(relPath, file)
+		d, err := bundle.NewDescriptor(filepath.ToSlash(relPath), file)
 		file.Close()
 		if err != nil {
 			return err
