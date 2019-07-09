@@ -10,6 +10,7 @@ package bundle
 
 import (
 	"io"
+	"sort"
 
 	// See https://github.com/opencontainers/go-digest#usage
 	_ "crypto/sha256"
@@ -20,14 +21,28 @@ import (
 
 // Descriptor describes the disposition of targeted content.
 type Descriptor struct {
-	// Path specifies the relative location of the targeted content.
-	Path string `json:"path"`
-
 	// Digest is the digest of the targeted content.
 	Digest digest.Digest `json:"digest"`
 
 	// Size specifies the size in bytes of the targeted content.
 	Size uint64 `json:"size"`
+
+	// Paths specifies the relative locations of the targeted content.
+	Paths []string `json:"paths"`
+}
+
+func (d *Descriptor) sortUnique() {
+	tmp := make(map[string]bool, len(d.Paths))
+	for _, p := range d.Paths {
+		tmp[p] = true
+	}
+	d.Paths = make([]string, len(tmp))
+	i := 0
+	for p := range tmp {
+		d.Paths[i] = p
+		i++
+	}
+	sort.Strings(d.Paths)
 }
 
 // NewDescriptor returns a new *Descriptor for the provided path and src.
@@ -39,7 +54,7 @@ func NewDescriptor(path string, src io.Reader) (*Descriptor, error) {
 	}
 
 	return &Descriptor{
-		Path:   path,
+		Paths:  []string{path},
 		Digest: digester.Digest(),
 		Size:   uint64(size),
 	}, nil

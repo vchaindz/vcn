@@ -10,6 +10,7 @@ package bundle
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"sort"
 
@@ -38,34 +39,52 @@ type Manifest struct {
 }
 
 // MarshalJSON implements the json.Marshaler interface.
-func (m Manifest) MarshalJSON() ([]byte, error) {
+func (m *Manifest) MarshalJSON() ([]byte, error) {
+	if m == nil {
+		return nil, fmt.Errorf("cannot marshal nil manifest")
+	}
 	m.Sort()
 	type alias Manifest
-	mm := alias(m)
+	mm := alias(*m)
 	return json.Marshal(mm)
 }
 
 // Sort m's items
-func (m Manifest) Sort() {
-	sort.SliceStable(m.Items, func(k, j int) bool {
-		pK := m.Items[k].Path
-		pJ := m.Items[j].Path
-		if pK == pJ {
-			dK := m.Items[k].Digest.String()
-			dJ := m.Items[j].Digest.String()
-			if dK == dJ {
-				return m.Items[k].Size < m.Items[j].Size
-			}
-			return dK < dJ
+func (m *Manifest) Sort() {
+	if m == nil {
+		return
+	}
+
+	// make unique index
+	idx := make(map[string]Descriptor, len(m.Items))
+	for _, d := range m.Items {
+		k := d.Digest.String()
+		if dd, ok := idx[k]; ok {
+			dd.Paths = append(dd.Paths, d.Paths...)
+			idx[k] = dd
+		} else {
+			idx[k] = d
 		}
-		return pK < pJ
+	}
+
+	// recreate unique digest list and sort paths
+	m.Items = make([]Descriptor, len(idx))
+	i := 0
+	for _, d := range idx {
+		d.sortUnique()
+		m.Items[i] = d
+		i++
+	}
+
+	// finally, sort items by digest
+	sort.SliceStable(m.Items, func(k, j int) bool {
+		return m.Items[k].Digest.String() < m.Items[j].Digest.String()
 	})
 }
 
 // Digest digests the JSON encoded m and returns a digest.Digest.
-func (m Manifest) Digest() (digest.Digest, error) {
-	m.Sort()
-	b, err := json.Marshal(m)
+func (m *Manifest) Digest() (digest.Digest, error) {
+	b, err := json.Marshal(m) // sorting is implicitly called by Marshal
 	if err != nil {
 		return "", err
 	}
