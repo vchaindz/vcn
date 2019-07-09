@@ -1,15 +1,17 @@
 # Environments
 
-By default `vcn` will put the config file and secret keys within the a directory called `.vcn` within your `$HOME`.
-However, `vcn` can work with distinct envirnoments (eg. for testing purpose).
+By default `vcn` will put the config file and secret keys within the a directory called `.vcn` within your [home directory](https://en.wikipedia.org/wiki/Home_directory) (e.g. `$HOME/.vcn` or `%USERPROFILE%\.vcn` on Windows).
 
-The following environments are supported by setting the `STAGE` envirnoment var:
+However, `vcn` can work with distinct environments (eg. for testing purpose).
+
+The following environments are supported by setting the `STAGE` environment var:
 
 Stage | Directory | Note
 ------------ | ------------- | -------------
-`STAGE=PRODUCTION` | `~/.vcn` | *default* 
-`STAGE=STAGING` | `~/.vcn.staging` |
-`STAGE=TEST` | `~/vcn.test` | *`VCN_TEST_DASHBOARD`, `VCN_TEST_NET`, `VCN_TEST_CONTRACT`, `VCN_TEST_API` must be set accordingly to your test environment*
+`STAGE=PRODUCTION` | `.vcn` | *default* 
+`STAGE=STAGING` | `.vcn.staging` |
+`STAGE=TEST` | `vcn.test` | *`VCN_TEST_DASHBOARD`, `VCN_TEST_NET`, `VCN_TEST_CONTRACT`, `VCN_TEST_API` must be set accordingly to your test environment*
+
 
 ## Other environment variables
 

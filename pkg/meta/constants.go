@@ -60,7 +60,7 @@ const (
 	KeyUploadedEvent string = "KEYSTORE_UPLOADED"
 )
 
-// vcn envirnoment variable names
+// vcn environment variable names
 const (
 	VcnUserEnv          string = "VCN_USER"
 	VcnPasswordEnv      string = "VCN_PASSWORD"

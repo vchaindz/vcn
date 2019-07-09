@@ -1,7 +1,7 @@
 # Configuration
 
 By default, the `vcn` command line stores its config file (`config.json`) and users' secret keys in a directory called `.vcn` within your `$HOME` directory. 
-> If the `STAGE` envirnoment variable has been set, the default configuration directory can be different. See [envirnoments](envirnoments.md).
+> If the `STAGE` environment variable has been set, the default configuration directory can be different. See [environments](environments.md).
 
 However, you can specify a different location for the config file via the `--config` command line option. For example:
 
