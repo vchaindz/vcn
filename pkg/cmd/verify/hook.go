@@ -41,12 +41,12 @@ func (h *hook) finalize(v *api.BlockchainVerification, output string) error {
 			if err != nil {
 				return nil // continue if missing or bad manifest
 			}
-			equal, out, err := manifest.Diff(*oldManifest, false)
+			report, equal, err := manifest.DiffByPath(*oldManifest)
 			if err != nil {
 				return err
 			}
 			if !equal {
-				fmt.Printf("Diff\n%s\n", out)
+				fmt.Printf("Diff\n%s\n", report)
 			}
 
 		}
