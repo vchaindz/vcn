@@ -11,12 +11,17 @@ package dir
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/vchain-us/vcn/pkg/bundle"
 )
 
 func walk(root string) (files []bundle.Descriptor, err error) {
 	files = make([]bundle.Descriptor, 0)
+	ignore, err := newIgnoreFileMatcher(root)
+	if err != nil {
+		return
+	}
 	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		// ignore dirs
 		if info.IsDir() {
@@ -27,9 +32,11 @@ func walk(root string) (files []bundle.Descriptor, err error) {
 		if err != nil {
 			return err
 		}
+		// descriptor's path must be OS agnostic
+		relPath = filepath.ToSlash(relPath)
 
-		// ignore  manifest file
-		if relPath == bundle.ManifestFilename {
+		// ignore manifest file
+		if relPath == bundle.ManifestFilename || ignore.Match(strings.Split(relPath, "/"), false) {
 			return nil
 		}
 
@@ -37,7 +44,7 @@ func walk(root string) (files []bundle.Descriptor, err error) {
 		if err != nil {
 			return err
 		}
-		d, err := bundle.NewDescriptor(filepath.ToSlash(relPath), file)
+		d, err := bundle.NewDescriptor(relPath, file)
 		file.Close()
 		if err != nil {
 			return err

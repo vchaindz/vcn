@@ -21,7 +21,10 @@ import (
 // Scheme for dir
 const Scheme = "dir"
 
+// ManifestKey is the metadata's key for storing the manifest
 const ManifestKey = "manifest"
+
+// PathKey is the metadata's key for the directory path
 const PathKey = "path"
 
 // Artifact returns a file *api.Artifact from a given u
