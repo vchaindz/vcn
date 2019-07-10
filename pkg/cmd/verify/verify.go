@@ -65,6 +65,8 @@ func NewCmdVerify() *cobra.Command {
 	cmd.Flags().StringSliceP("key", "k", nil, "accept only signatures matching the passed key(s)")
 	cmd.Flags().StringP("org", "I", "", "accept only signatures matching the passed organisation's ID, if set no other key(s) can be used")
 	cmd.Flags().String("hash", "", "specify a hash to verify, if set no arg(s) can be used")
+	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
+	cmd.Flags().MarkHidden("raw-diff")
 
 	return cmd
 }
@@ -132,7 +134,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 }
 
 func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user *api.User, output string) (err error) {
-	hook := newHook(a)
+	hook := newHook(cmd, a)
 	var verification *api.BlockchainVerification
 	// if keys have been passed, check for a verification matching them
 	if len(keys) > 0 {

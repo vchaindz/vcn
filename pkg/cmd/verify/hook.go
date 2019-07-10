@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/pkg/bundle"
 
 	"github.com/vchain-us/vcn/pkg/api"
@@ -19,14 +20,16 @@ import (
 )
 
 type hook struct {
-	a api.Artifact
+	a       api.Artifact
+	rawDiff bool
 }
 
-func newHook(a *api.Artifact) *hook {
+func newHook(cmd *cobra.Command, a *api.Artifact) *hook {
 	if a != nil {
 		h := hook{
 			a: a.Copy(),
 		}
+		h.rawDiff, _ = cmd.Flags().GetBool("raw-diff")
 		dir.RemoveMetadata(a)
 		return &h
 	}
@@ -53,7 +56,14 @@ func (h *hook) finalize(v *api.BlockchainVerification, output string) error {
 				return err
 			}
 			if v != nil && !v.Unknown() {
-				report, equal, err := manifest.DiffByPath(*oldManifest)
+				var report string
+				var equal bool
+				var err error
+				if h.rawDiff {
+					report, equal, err = manifest.Diff(*oldManifest)
+				} else {
+					report, equal, err = manifest.DiffByPath(*oldManifest)
+				}
 				if err != nil {
 					return err
 				}
