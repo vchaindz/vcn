@@ -29,6 +29,56 @@ import (
 //
 const IgnoreFilename = ".vcnignore"
 
+// DefaultIgnoreFileContent is the content of ignore file with default patterns.
+const DefaultIgnoreFileContent = `# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Windows folder config file
+[Dd]esktop.ini
+
+# Windows Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS Thumbnails
+._*
+
+# macOS files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
+`
+
 const (
 	ignorefileCommentPrefix = "#"
 	ignorefileEOL           = "\n"
@@ -61,4 +111,22 @@ func newIgnoreFileMatcher(path string) (m gitignore.Matcher, err error) {
 	}
 	m = gitignore.NewMatcher(ps)
 	return
+}
+
+// initIgnoreFile writes the default ignore file if it does not exist.
+func initIgnoreFile(root string) error {
+	filename := filepath.Join(root, IgnoreFilename)
+
+	// create and open the file if not exists
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0644)
+	if err != nil {
+		if os.IsExist(err) {
+			return nil // file exists already
+		}
+		return err
+	}
+
+	// otherwise, write the default content
+	_, err = f.WriteString(DefaultIgnoreFileContent)
+	return err
 }

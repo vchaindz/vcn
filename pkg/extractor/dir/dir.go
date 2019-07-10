@@ -55,6 +55,10 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 		return nil, nil
 	}
 
+	if err := initIgnoreFile(path); err != nil {
+		return nil, err
+	}
+
 	files, err := walk(path)
 	if err != nil {
 		return nil, err
