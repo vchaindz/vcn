@@ -39,16 +39,30 @@ func (h *hook) finalize(v *api.BlockchainVerification, output string) error {
 		if manifest != nil && path != "" {
 			oldManifest, err := bundle.ReadManifest(filepath.Join(path, bundle.ManifestFilename))
 			if err != nil {
-				return nil // continue if missing or bad manifest
+				fmt.Printf("Diff is unavailable because '%s' is missing or invalid.\n\n", bundle.ManifestFilename)
+				return nil // ignore missing or bad manifest
 			}
-			report, equal, err := manifest.DiffByPath(*oldManifest)
+			// check old manifest integrity
+			oldDigest, err := oldManifest.Digest()
+			if err != nil {
+				fmt.Printf("Diff is unavailable because '%s' is invalid.\n\n", bundle.ManifestFilename)
+				return nil // ignore bad manifest
+			}
+			v, err := api.BlockChainVerify(oldDigest.Encoded())
 			if err != nil {
 				return err
 			}
-			if !equal {
-				fmt.Printf("Diff\n%s\n", report)
+			if v != nil && !v.Unknown() {
+				report, equal, err := manifest.DiffByPath(*oldManifest)
+				if err != nil {
+					return err
+				}
+				if !equal {
+					fmt.Printf("Diff since %s\n\n%s\n\n", v.Date(), report)
+				}
+			} else {
+				fmt.Printf("Diff is unavailable because '%s' has been tampered.\n\n", bundle.ManifestFilename)
 			}
-
 		}
 	}
 	return nil
