@@ -23,8 +23,8 @@ func walk(root string) (files []bundle.Descriptor, err error) {
 		return
 	}
 	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		// ignore dirs
-		if info.IsDir() {
+		// ignore irregular files (e.g. dir, symlink, pipe, socket, device...)
+		if !info.Mode().IsRegular() {
 			return nil
 		}
 
