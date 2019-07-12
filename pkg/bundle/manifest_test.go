@@ -100,3 +100,22 @@ func TestManifestWrongAlgo(t *testing.T) {
 	m.Items[0].Digest = digest.Digest("sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 	assert.NoError(t, m.Normalize())
 }
+
+func TestManifestSameDigestMultipleSizes(t *testing.T) {
+	m := Manifest{
+		SchemaVersion: 1,
+		Items: []Descriptor{
+			Descriptor{
+				Digest: digest.Digest("sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+				Size:   0,
+				Paths:  []string{"file"},
+			},
+			Descriptor{
+				Digest: digest.Digest("sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+				Size:   1,
+				Paths:  []string{"file1"},
+			},
+		},
+	}
+	assert.Error(t, m.Normalize())
+}

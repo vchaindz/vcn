@@ -82,6 +82,14 @@ func (m *Manifest) Normalize() error {
 	for _, d := range m.Items {
 		k := d.Digest.String()
 		if dd, ok := idx[k]; ok {
+			if d.Size != dd.Size {
+				return fmt.Errorf(
+					"distinct sizes found for same digest (%s): %d, %d",
+					d.Digest.String(),
+					d.Size,
+					dd.Size,
+				)
+			}
 			dd.Paths = append(dd.Paths, d.Paths...)
 			idx[k] = dd
 		} else {
