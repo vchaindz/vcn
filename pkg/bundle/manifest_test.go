@@ -11,15 +11,19 @@ package bundle
 import (
 	"encoding/json"
 	"io"
+	"io/ioutil"
+	"log"
+	"os"
 	"strings"
+
+	"github.com/opencontainers/go-digest"
 
 	"github.com/stretchr/testify/assert"
 
 	"testing"
 )
 
-func TestManifest(t *testing.T) {
-
+func getTestManifest(t *testing.T) *Manifest {
 	items := make([]Descriptor, 0)
 	for path, src := range map[string]io.Reader{
 		"digits.txt":     strings.NewReader("1234567890"),
@@ -31,7 +35,12 @@ func TestManifest(t *testing.T) {
 		items = append(items, *d)
 	}
 
-	m := NewManifest(items...)
+	return NewManifest(items...)
+}
+
+func TestManifest(t *testing.T) {
+
+	m := getTestManifest(t)
 
 	assert.NotNil(t, m)
 
@@ -47,4 +56,47 @@ func TestManifest(t *testing.T) {
 		string(j),
 	)
 
+}
+
+func TestWriteReadManifest(t *testing.T) {
+	tmpfile, err := ioutil.TempFile("", "vcn-manifest")
+	if err != nil {
+		log.Fatal(err)
+	}
+	filename := tmpfile.Name()
+	defer os.Remove(filename) // clean up
+	m := getTestManifest(t)
+
+	assert.NoError(t, WriteManifest(*m, filename))
+
+	assert.NoError(t, m.Normalize())
+
+	mm, err := ReadManifest(filename)
+	assert.NoError(t, err)
+	assert.Equal(t, m, mm)
+}
+
+func TestManifestWrongVersion(t *testing.T) {
+	m := Manifest{
+		SchemaVersion: 11,
+	}
+	err := m.Normalize()
+	assert.Error(t, err)
+}
+
+func TestManifestWrongAlgo(t *testing.T) {
+	m := Manifest{
+		SchemaVersion: 1,
+		Items: []Descriptor{
+			Descriptor{
+				Digest: digest.Digest("sha512:cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"),
+				Size:   0,
+				Paths:  []string{"file"},
+			},
+		},
+	}
+	assert.Error(t, m.Normalize())
+
+	m.Items[0].Digest = digest.Digest("sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+	assert.NoError(t, m.Normalize())
 }

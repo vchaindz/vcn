@@ -27,9 +27,25 @@ const (
 
 	// ManifestFilename is the default filename for manifest when stored.
 	ManifestFilename = ".vcn.manifest.json"
+
+	// ManifestDigestAlgo is the only supported digest's algorithm by current manifest schema version.
+	ManifestDigestAlgo = digest.SHA256
 )
 
 // Manifest provides bundle structure when marshalled to JSON.
+//
+// Specifications (version 1):
+//  - `schemaVersion` is the version number of the current specification (MUST be always 1 in this case)
+//  - fields order is defined as per code structs definitions, orderning MUST NOT be changed
+//  - `items` MUST be sorted by its digest's value (lexically byte-wise)
+//  - multiple `items` MUST NOT have the same digest value
+//  - `items.paths` MUST be sorted by value (lexically byte-wise)
+//  - across the same manifest multiple `items.paths`'s elements MUST NOT have the value
+//  - json representation of the manifest MUST NOT be indented
+//  - sha256 is the only digest's algorithm that MUST be used
+//
+// The Normalize() method provides sorting funcionality and specification enforcement. It's implictly called
+// when the manifest is marshalled.
 type Manifest struct {
 	// SchemaVersion is the manifest schema that this bundle follows
 	SchemaVersion uint `json:"schemaVersion"`
@@ -40,19 +56,25 @@ type Manifest struct {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (m *Manifest) MarshalJSON() ([]byte, error) {
-	if m == nil {
-		return nil, fmt.Errorf("cannot marshal nil manifest")
+	if err := m.Normalize(); err != nil {
+		return nil, err
 	}
-	m.Sort()
+
 	type alias Manifest
 	mm := alias(*m)
 	return json.Marshal(mm)
 }
 
-// Sort m's items
-func (m *Manifest) Sort() {
+// Normalize deduplicates and sorts items and items's paths in accordance with manifest's schema specs.
+// An error is returned when duplicate paths accross different items are found, or if digest's algo
+// does not match sha256.
+func (m *Manifest) Normalize() error {
 	if m == nil {
-		return
+		return fmt.Errorf("nil manifest")
+	}
+
+	if m.SchemaVersion != ManifestSchemaVersion {
+		return fmt.Errorf("unsupported bundle.Manifest schema version: %d", m.SchemaVersion)
 	}
 
 	// make unique index
@@ -69,17 +91,32 @@ func (m *Manifest) Sort() {
 
 	// recreate unique digest list and sort paths
 	m.Items = make([]Descriptor, len(idx))
+	paths := make(map[string]bool)
 	i := 0
 	for _, d := range idx {
 		d.sortUnique()
 		m.Items[i] = d
 		i++
+
+		// specs enforcement:
+		// - the only allowed digest's algo is SHA256
+		// - within the same manifest multiple paths elements with same value are NOT allowed
+		if algo := d.Digest.Algorithm(); algo != ManifestDigestAlgo {
+			return fmt.Errorf("unsupported digest algorithm: %s", string(algo))
+		}
+		for _, p := range d.Paths {
+			if paths[p] {
+				return fmt.Errorf("duplicate path in manifest: %s", p)
+			}
+			paths[p] = true
+		}
 	}
 
 	// finally, sort items by digest
 	sort.SliceStable(m.Items, func(k, j int) bool {
 		return m.Items[k].Digest.String() < m.Items[j].Digest.String()
 	})
+	return nil
 }
 
 // Digest digests the JSON encoded m and returns a digest.Digest.
@@ -105,7 +142,7 @@ func NewManifest(items ...Descriptor) *Manifest {
 
 // WriteManifest writes manifest's data to a file named by filename.
 func WriteManifest(manifest Manifest, filename string) error {
-	data, err := json.Marshal(manifest)
+	data, err := json.Marshal(&manifest)
 	if err != nil {
 		return err
 	}
@@ -118,6 +155,19 @@ func ReadManifest(filename string) (*Manifest, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	d := digest.SHA256.FromBytes(data)
+
 	m := Manifest{}
-	return &m, json.Unmarshal(data, &m)
+	json.Unmarshal(data, &m)
+
+	dd, err := m.Digest()
+	if err != nil {
+		return nil, err
+	}
+	if dd != d {
+		return nil, fmt.Errorf("manifest integrity check failed")
+	}
+
+	return &m, nil
 }
