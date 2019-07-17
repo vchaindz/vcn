@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.5.2"></a>
+## [v0.5.2] - 2019-07-17
+### Bug Fixes
+- update go.sum for xgo
+- **bundle:** use uint64 for size
+- **dir:** OS agnostic paths
+- **list:** show all assets with pagination (fixes [#28](https://github.com/vchain-us/vcn/issues/28))
+
+### Changes
+- **api:** add Artifact.Copy()
+- **bundle:** return error if distinct sizes are found for the same digest
+- **bundle:** descriptor test
+- **bundle:** rework diff
+- **cmd:** always show local extracted metadata
+
+### Features
+- directory signing and verify with manifest
+- **api:** list assets grouped by hash with pagination
+- **bundle:** enforce manifest specs
+- **bundle:** diff
+- **bundle:** arrange multiple items in a Merkle Directed Acyclic Graph
+- **extractor:** scheme for directories
+
+
 <a name="v0.5.1"></a>
 ## [v0.5.1] - 2019-07-02
 ### Bug Fixes
@@ -266,7 +290,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.5.2...HEAD
+[v0.5.2]: https://github.com/vchain-us/vcn/compare/v0.5.1...v0.5.2
 [v0.5.1]: https://github.com/vchain-us/vcn/compare/0.5.0...v0.5.1
 [0.5.0]: https://github.com/vchain-us/vcn/compare/v0.5.0...0.5.0
 [v0.5.0]: https://github.com/vchain-us/vcn/compare/0.4.3...v0.5.0
