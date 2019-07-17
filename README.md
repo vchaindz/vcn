@@ -6,10 +6,24 @@
 
 ## Installation
 
-It's easiest to download the latest version from the [release page](
+### Binary (Cross-platform)
+
+It's easiest to download the latest version for your platform from the [release page](
 https://github.com/vchain-us/vcn/releases).
 
-### Installation from Source
+Once downloaded, you can rename the binary to `vcn`, then run it from anywhere.
+> For Linux and macOS you need to mark the file as executable: `chmod +x vcn`
+
+### Homebrew / Linuxbrew
+
+If you are on macOS and using [Homebrew](https://brew.sh/) (or on Linux and using [Linuxbrew](https://linuxbrew.sh/)), you can install `vcn` with the following:
+
+```
+brew tap vchain-us/brew
+brew install vcn
+```
+
+### From Source
 
 After having installed [golang](https://golang.org/doc/install) 1.12 or newer clone this 
 repository into your working directory.
@@ -27,7 +41,7 @@ Then run
 ./vcn
 ```
 
-### System-wide installation
+#### System-wide
 
 This will put the `vcn` executable into `GOBIN` which is
 accessible throughout the system.
@@ -43,13 +57,13 @@ For detailed **command line usage** see [docs/cmd/vcn.md](docs/cmd/vcn.md) or ju
 
 Furthermore, check out our list of **integrations**:
 
-* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for signing and verify Docker images
-* [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository 
-* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous verification with CodeNotary
-* [vcn-k8s](https://github.com/vchain-us/vcn-k8s) - Continuous verification with CodeNotary for Kubernetes
-* [jsvcn](https://github.com/vchain-us/jsvcn) - CodeNotary JavaScript Client
-* [jvcn](https://github.com/vchain-us/jvcn) - CodeNotary Java Bindings
-* [jvcn-maven-plugin](https://github.com/vchain-us/jvcn-maven-plugin) - Maven dependency verification and enforcement
+* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for signing and verify Docker images.
+* [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
+* [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
+* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous verification with CodeNotary for Docker.
+* [jsvcn](https://github.com/vchain-us/jsvcn) - CodeNotary JavaScript Client.
+* [jvcn](https://github.com/vchain-us/jvcn) - CodeNotary Java Bindings.
+* [jvcn-maven-plugin](https://github.com/vchain-us/jvcn-maven-plugin) - Maven dependency verification and enforcement.
 
 ### Basic usage
 
@@ -63,8 +77,10 @@ vcn login
 You're good to use `verify` without the above registration.
 
 ```
-vcn verify <asset>
+vcn verify <file>
+vcn verify dir://<directory>
 vcn verify docker://<imageId>
+vcn verify --hash <hash>
 ```
 
 Output results in `json` or `yaml` formats:
@@ -77,14 +93,16 @@ vcn verify --output=yaml <asset>
 Once your public key is known on the blockchain you can sign assets:
 
 ```
-vcn sign <asset>
-vcn sign docker://<image>
+vcn sign <file>
+vcn sign dir://<directory>
+vcn sign docker://<imageId>
+vcn sign --hash <hash>
 ```
 
 By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the `--public` flag.
 
 ```
-vcn sign --public <asset>
+vcn sign --public <file>
 vcn sign --public docker://<image>
 ```
 
@@ -172,7 +190,7 @@ vcn unsupport --hash <asset's hash>
 
 #### Signing within automated environments
 
-First, you’ll need to make `vcn` have access to the `~/.vcn` folder that holds your private keys.
+First, you’ll need to make `vcn` have access to the `${HOME}/.vcn` folder that holds your private keys.
 Then, set up your environment accordingly using the following commands:
 ```
 export VCN_USER=<email>
