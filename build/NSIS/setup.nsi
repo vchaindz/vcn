@@ -13,7 +13,7 @@
   LicenseData "gpl3license.txt"
   
   ;Default installation folder
-  InstallDir "$LOCALAPPDATA\CodeNotary"
+  InstallDir "$PROGRAMFILES64\CodeNotary"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKCU "Software\CodeNotary" ""
