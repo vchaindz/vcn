@@ -1,7 +1,7 @@
 # vcn - vChain CodeNotary [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=svg)](https://circleci.com/gh/vchain-us/vcn)
 
 
-# The Trust and Integrity platform for the Cloud native environment
+## The Trust and Integrity platform for the Cloud native environment
 Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
 
 When using CodeNotary vcn in source code, release, deployment or at runtime, you allow a continuous trust verification that can be used to detect unusual or unwanted activity in your workload and act on it. 
@@ -10,10 +10,10 @@ That allows change and revocation post-release without breaking any customer env
 
 Everything is done in a global, collaborative way to break the common silo solution architecture. Leveraging an immutable, always-on DLT platform allows you to avoid complex setup of Certificate authorities or digital certificates (that are unfit for DevOps anyway). 
 
-# DevSecOps in mind
+## DevSecOps in mind
 Codenotary vcn is a solution written by a devops-obsessed engineers for Devops engineers to bring better trust and security to the the CloudNative source to deployment process 
 
-# What kind of behaviors can CodeNotary vcn detect?
+## What kind of behaviors can CodeNotary vcn detect?
 vcn (and its extensions for Docker, Kubernetes, documents or CI/CD) can detect, authenticate and alert on any behavior that involves using unauthentic digital assets. vcn verification can be embedded anywhere and can be used to trigger alerts, updates or workflows.
 
 vcn is so versatile, it can help detecting or acting on the following (but not limited to):
@@ -89,54 +89,54 @@ For detailed **command line usage** see [docs/cmd/vcn.md](docs/cmd/vcn.md) or ju
 
 Furthermore, check out our list of **integrations**:
 
-* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for signing and verify Docker images.
+* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for notarizing and authenticating Docker images.
 * [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
 * [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
-* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous verification with CodeNotary for Docker.
+* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous authentication with CodeNotary for Docker.
 * [jsvcn](https://github.com/vchain-us/jsvcn) - CodeNotary JavaScript Client.
 * [jvcn](https://github.com/vchain-us/jvcn) - CodeNotary Java Bindings.
-* [jvcn-maven-plugin](https://github.com/vchain-us/jvcn-maven-plugin) - Maven dependency verification and enforcement.
+* [jvcn-maven-plugin](https://github.com/vchain-us/jvcn-maven-plugin) - Maven dependency authentication and enforcement.
 
 ### Basic usage
 
 Register an account with [codernotary.io](https://codenotary.io) first.
 
-Then start with the `login` command. `vcn` will walk you through login and setting up your local keystore upon initial use.
+Then start with the `login` command. `vcn` will walk you through login and setting up your secret upon initial use.
 ```
 vcn login
 ```
 
-You're good to use `verify` without the above registration.
+You're good to use `authenticate` without the above registration.
 
 ```
-vcn verify <file>
-vcn verify dir://<directory>
-vcn verify docker://<imageId>
-vcn verify podman://<imageId>
-vcn verify --hash <hash>
+vcn authenticate <file>
+vcn authenticate dir://<directory>
+vcn authenticate docker://<imageId>
+vcn authenticate podman://<imageId>
+vcn authenticate --hash <hash>
 ```
 
 Output results in `json` or `yaml` formats:
 ```
-vcn verify --output=json <asset>
-vcn verify --output=yaml <asset>
+vcn authenticate --output=json <asset>
+vcn authenticate --output=yaml <asset>
 ```
 > Check out the [user guide](docs/user-guide/formatted-output.md) for further details.
 
-Once your public key is known on the blockchain you can sign assets:
+Once your secret is set you can notarize assets:
 
 ```
-vcn sign <file>
-vcn sign dir://<directory>
-vcn sign docker://<imageId>
-vcn sign podman://<imageId>
-vcn sign --hash <hash>
+vcn notarize <file>
+vcn notarize dir://<directory>
+vcn notarize docker://<imageId>
+vcn notarize podman://<imageId>
+vcn notarize --hash <hash>
 ```
 
-By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the `--public` flag.
+By default all assets are notarized private, so not much information is disclosed about the asset. If you want to make that public and therefore, more trusted, please use the `--public` flag.
 
 ```
-vcn sign --public <asset>
+vcn notarize --public <asset>
 ```
 
 Change the asset's status:
@@ -146,7 +146,7 @@ vcn unsupport <asset>
 vcn untrust <asset>
 ```
 
-Fetch all assets you've signed:
+Fetch all assets you've notarized:
 
 ```
 vcn list
@@ -160,7 +160,7 @@ vcn dashboard
 
 ### Examples
 
-#### Verify a Docker image automatically prior to running it
+#### Authenticate a Docker image automatically prior to running it
 
 First, you’ll need to pull the image by using: 
 
@@ -171,42 +171,42 @@ docker pull hello-world
 Then use the below command to put in place an automatic safety check. It allows only verified images to run. 
 
 ```
-vcn verify docker://hello-world && docker run hello-world
+vcn authenticate docker://hello-world && docker run hello-world
 ```
 If an image was not verified, it will not run and nothing will execute. 
 
 
-#### Verify multiple assets
-You can verify multiple assets by piping other command outputs into `vcn`:
+#### Authenticate multiple assets
+You can authenticate multiple assets by piping other command outputs into `vcn`:
 ```
-ls | xargs vcn verify
+ls | xargs vcn authenticate
 ```
 > The exit code will be `0` only if all the assets in you other command outputs are verified.
 
-#### Verify by a specific signer
-By adding `--key`, you can verify that your asset has been signed by a specific signer’s public key.
+#### Authenticate by a specific signer
+By adding `--key`, you can authenticate that your asset has been signed by a specific signer’s public key address.
 
 ```
-vcn verify --key 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
+vcn authenticate --key 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
 ```
 
-#### Verify by a list of signers
+#### Authenticate by a list of signers
 
-If an asset you or your organization wants to trust needs to be verified against a list of signers as a prerequisite, then use the `vcn verify` command and the following syntax:
+If an asset you or your organization wants to trust needs to be verified against a list of signers as a prerequisite, then use the `vcn authenticate` command and the following syntax:
 
 - Add a `--key` flag in front of each key you want to add  
 (eg. `--key 0x0...1 --key 0x0...2`)
 - Or set the env var `VCN_KEY` correctly by using a space to separate each key (eg. `VCN_KEY=0x0...1 0x0...2`)
 > Be aware that using the `--key` flag will take precedence over `VCN_KEY`.
 
-The asset verification will succeed only if the asset has been signed by at least one of the signers.
+The asset authentication will succeed only if the asset has been signed by at least one of the signers.
 
-#### Verify using the asset's hash
+#### Authenticate using the asset's hash
 
-If you want to verify an asset using only its hash, you can do so by using the command as shown below:
+If you want to authenticate an asset using only its hash, you can do so by using the command as shown below:
 
 ```
-vcn verify --hash fce289e99eb9bca977dae136fbe2a82b6b7d4c372474c9235adc1741675f587e
+vcn authenticate --hash fce289e99eb9bca977dae136fbe2a82b6b7d4c372474c9235adc1741675f587e
 ```
 
 #### Unsupport/untrust an asset you do not have anymore
@@ -221,7 +221,7 @@ vcn untrust --hash <asset's hash>
 vcn unsupport --hash <asset's hash>
 ```
 
-#### Signing within automated environments
+#### Notarization within automated environments
 
 First, you’ll need to make `vcn` have access to the `${HOME}/.vcn` folder that holds your private keys.
 Then, set up your environment accordingly using the following commands:
@@ -235,7 +235,7 @@ Once done, you can use `vcn` in your non-interactive environment using:
 
 ```
 vcn login
-vcn sign --key <your key> <asset>
+vcn notarize --key <your key> <asset>
 ```
 > Other commands like `untrust` and `unsupport` will also work.
 
