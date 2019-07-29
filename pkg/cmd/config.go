@@ -28,6 +28,7 @@ func initConfig() {
 	extractor.Register(file.Scheme, file.Artifact)
 	extractor.Register(dir.Scheme, dir.Artifact)
 	extractor.Register(docker.Scheme, docker.Artifact)
+	extractor.Register(docker.SchemePodman, docker.Artifact)
 
 	// Set ~/.vcn directory
 	if err := store.SetDefaultDir(); err != nil {

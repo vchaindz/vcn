@@ -18,23 +18,28 @@ import (
 	"github.com/vchain-us/vcn/pkg/uri"
 )
 
-// Scheme for docker
+// Scheme for docker (default)
 const Scheme = "docker"
+
+// SchemePodman is the scheme for podman (Docker-compatible CLI interface)
+const SchemePodman = "podman"
+
+var schemes = map[string]bool{Scheme: true, SchemePodman: true}
 
 // Artifact returns a file *api.Artifact from a given u
 func Artifact(u *uri.URI) (*api.Artifact, error) {
 
-	if u.Scheme != Scheme {
+	if !schemes[u.Scheme] {
 		return nil, nil
 	}
 
 	id := strings.TrimPrefix(u.Opaque, "//")
-	images, err := inspect(id)
+	images, err := inspect(u.Scheme, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to inspect docker image: %s", err)
+		return nil, fmt.Errorf("failed to inspect %s image: %s", u.Scheme, err)
 	}
 	if len(images) < 1 {
-		return nil, fmt.Errorf("no docker image found for: %s", id)
+		return nil, fmt.Errorf("no %s image found for: %s", u.Scheme, id)
 	}
 
 	i := images[0]
@@ -44,10 +49,10 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 		"platform":     i.Os,
 		"version":      i.inferVer(),
 	}
-	m[Scheme] = i
+	m[u.Scheme] = i
 	return &api.Artifact{
-		Kind:     Scheme,
-		Name:     Scheme + "://" + i.name(),
+		Kind:     u.Scheme,
+		Name:     u.Scheme + "://" + i.name(),
 		Hash:     i.hash(),
 		Size:     i.Size,
 		Metadata: m,
@@ -91,8 +96,8 @@ func (i image) inferVer() string {
 	return ""
 }
 
-func inspect(arg string) ([]image, error) {
-	cmd := exec.Command("docker", "inspect", arg, "--type", "image")
+func inspect(executable string, arg string) ([]image, error) {
+	cmd := exec.Command(executable, "inspect", arg, "--type", "image")
 	cmdOutput, err := cmd.Output()
 	if err != nil {
 		if ee, ok := err.(*exec.ExitError); ok && len(ee.Stderr) > 0 {
