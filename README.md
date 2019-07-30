@@ -80,6 +80,7 @@ You're good to use `verify` without the above registration.
 vcn verify <file>
 vcn verify dir://<directory>
 vcn verify docker://<imageId>
+vcn verify podman://<imageId>
 vcn verify --hash <hash>
 ```
 
@@ -96,14 +97,14 @@ Once your public key is known on the blockchain you can sign assets:
 vcn sign <file>
 vcn sign dir://<directory>
 vcn sign docker://<imageId>
+vcn sign podman://<imageId>
 vcn sign --hash <hash>
 ```
 
 By default all assets are signed private, so not much information is disclosed about the signer. If you want to make it public and therefore, more trusted, please use the `--public` flag.
 
 ```
-vcn sign --public <file>
-vcn sign --public docker://<image>
+vcn sign --public <asset>
 ```
 
 Change the asset's status:
