@@ -133,13 +133,13 @@ func (u User) commitHash(
 		return
 	}
 
-	pubKey := transactor.From.Hex()
-	verification, err = BlockChainVerifyMatchingPublicKey(artifact.Hash, pubKey)
+	signerID := transactor.From.Hex()
+	verification, err = VerifyMatchingSignerID(artifact.Hash, signerID)
 	if err != nil {
 		return
 	}
 
-	err = u.createArtifact(verification, strings.ToLower(pubKey), artifact, visibility, status)
+	err = u.createArtifact(verification, strings.ToLower(signerID), artifact, visibility, status)
 	if err != nil {
 		return
 	}

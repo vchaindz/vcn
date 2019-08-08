@@ -87,11 +87,11 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	org := viper.GetString("org")
 	var keys []string
 	if org != "" {
-		bo, err := api.BlockChainGetOrganisation(org)
+		bo, err := api.GetBlockChainOrganisation(org)
 		if err != nil {
 			return err
 		}
-		keys = bo.MembersKeys()
+		keys = bo.MembersIDs()
 	} else {
 		keys = viper.GetStringSlice("key")
 		// add 0x if missing, lower case, and check if format is correct
@@ -140,12 +140,12 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 	if len(keys) > 0 {
 		if output == "" {
 			if org == "" {
-				fmt.Printf("Looking for blockchain entry matching the passed keys...\n")
+				fmt.Printf("Looking for blockchain entry matching the passed SignerIDs...\n")
 			} else {
 				fmt.Printf("Looking for blockchain entry matching the organization (%s)...\n", org)
 			}
 		}
-		verification, err = api.BlockChainVerifyMatchingPublicKeys(a.Hash, keys)
+		verification, err = api.VerifyMatchingSignerIDs(a.Hash, keys)
 	} else {
 		// if we have an user, check for verification matching user's keys first
 		if hasAuth, _ := user.IsAuthenticated(); hasAuth {
@@ -153,9 +153,9 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 				if output == "" {
 					fmt.Printf("Looking for blockchain entry matching the current user (%s)...\n", user.Email())
 				}
-				verification, err = api.BlockChainVerifyMatchingPublicKey(a.Hash, userKey)
+				verification, err = api.VerifyMatchingSignerID(a.Hash, userKey)
 				if output == "" && verification.Unknown() {
-					fmt.Printf("No blockchain entry matching the current user found\n")
+					fmt.Printf("No blockchain entry matching the current user found.\n")
 				}
 			}
 		}
@@ -163,9 +163,9 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 		// fallback to the last with highest level available verification
 		if verification.Unknown() {
 			if output == "" {
-				fmt.Printf("Looking for the last blockchain entry with highest level...\n")
+				fmt.Printf("Looking for the last blockchain entry with highest level available...\n")
 			}
-			verification, err = api.BlockChainVerify(a.Hash)
+			verification, err = api.Verify(a.Hash)
 		}
 	}
 

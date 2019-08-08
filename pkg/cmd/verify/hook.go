@@ -51,7 +51,7 @@ func (h *hook) finalize(v *api.BlockchainVerification, output string) error {
 				fmt.Printf("Diff is unavailable because '%s' is invalid.\n\n", bundle.ManifestFilename)
 				return nil // ignore bad manifest
 			}
-			v, err := api.BlockChainVerify(oldDigest.Encoded())
+			v, err := api.Verify(oldDigest.Encoded())
 			if err != nil {
 				return err
 			}

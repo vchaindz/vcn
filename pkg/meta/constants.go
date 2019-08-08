@@ -61,7 +61,7 @@ const (
 const (
 	VcnUserEnv          string = "VCN_USER"
 	VcnPasswordEnv      string = "VCN_PASSWORD"
-	KeyStorePasswordEnv string = "KEYSTORE_PASSWORD"
+	VcnSecretPassword string = "VCN_SECRET_PASSWORD"
 )
 
 // UserAgent returns the vcn's User-Agent string

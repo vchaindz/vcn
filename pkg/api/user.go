@@ -159,5 +159,5 @@ func (u User) checkSyncState() (err error) {
 			return fmt.Errorf(errors.AccountNotSynced)
 		}
 	}
-	return fmt.Errorf("public address of local secret does not match your account: %s", address)
+	return fmt.Errorf("the public address (SignerID) of locally stored secret does not match your account (%s), please import your Unique Secret", address)
 }

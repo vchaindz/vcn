@@ -46,7 +46,7 @@ func (v *BlockchainVerification) toMap() map[string]interface{} {
 		return nil
 	}
 	return map[string]interface{}{
-		"owner":     v.Key(),
+		"owner":     v.SignerID(),
 		"level":     v.Level,
 		"status":    v.Status,
 		"timestamp": v.Date(),
@@ -109,8 +109,8 @@ func (v *BlockchainVerification) MetaHash() string {
 	return metahash
 }
 
-// Key returns signer's key as string for v, if any, otherwise an empty string
-func (v *BlockchainVerification) Key() string {
+// SignerID returns the public address derived from signer's public key of v, if any, otherwise an empty string
+func (v *BlockchainVerification) SignerID() string {
 	if v != nil && v.Owner != common.BigToAddress(big.NewInt(0)) {
 		return strings.ToLower(v.Owner.Hex())
 	}
@@ -136,11 +136,11 @@ func (v *BlockchainVerification) Date() string {
 	return ""
 }
 
-// BlockChainVerify returns *BlockchainVerification for the hash
-func BlockChainVerify(hash string) (*BlockchainVerification, error) {
+// Verify returns *BlockchainVerification for the hash
+func Verify(hash string) (*BlockchainVerification, error) {
 	logger().WithFields(logrus.Fields{
 		"hash": hash,
-	}).Trace("BlockChainVerify")
+	}).Trace("Verify")
 	client, err := ethclient.Dial(meta.MainNet())
 	if err != nil {
 		return nil, err
@@ -173,18 +173,18 @@ func BlockChainVerify(hash string) (*BlockchainVerification, error) {
 	}, nil
 }
 
-// BlockChainVerifyMatchingPublicKey returns *BlockchainVerification for hash matching pubKey.
-func BlockChainVerifyMatchingPublicKey(hash string, pubKey string) (*BlockchainVerification, error) {
-	return BlockChainVerifyMatchingPublicKeys(hash, []string{pubKey})
+// VerifyMatchingSignerID returns *BlockchainVerification for hash matching a given SignerID.
+func VerifyMatchingSignerID(hash string, signerID string) (*BlockchainVerification, error) {
+	return VerifyMatchingSignerIDs(hash, []string{signerID})
 }
 
-// BlockChainVerifyMatchingPublicKeys returns *BlockchainVerification for hash
-// matching at least one of pubKeys
-func BlockChainVerifyMatchingPublicKeys(hash string, pubKeys []string) (*BlockchainVerification, error) {
+// VerifyMatchingSignerIDs returns *BlockchainVerification for hash
+// matching at least one of signerIDs
+func VerifyMatchingSignerIDs(hash string, signerIDs []string) (*BlockchainVerification, error) {
 	logger().WithFields(logrus.Fields{
-		"hash": hash,
-		"keys": pubKeys,
-	}).Trace("BlockChainVerifyMatchingPublicKeys")
+		"hash":      hash,
+		"signerIDs": signerIDs,
+	}).Trace("VerifyMatchingSignerIDs")
 
 	// Connect and get verification count
 	client, err := ethclient.Dial(meta.MainNet())
@@ -201,12 +201,12 @@ func BlockChainVerifyMatchingPublicKeys(hash string, pubKeys []string) (*Blockch
 		return nil, err
 	}
 
-	// Make a map to lookup pubKey quickly
+	// Make a map to lookup SignerIDs quickly
 	keysMap := map[string]bool{}
-	for i, pubKey := range pubKeys {
-		pubKey = strings.ToLower(pubKey)
-		pubKeys[i] = pubKey
-		keysMap[pubKey] = true
+	for i, key := range signerIDs {
+		key = strings.ToLower(key)
+		signerIDs[i] = key
+		keysMap[key] = true
 	}
 
 	// Iterate over verifications

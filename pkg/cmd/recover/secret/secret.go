@@ -22,13 +22,14 @@ import (
 func NewCmdSecret() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "secret",
-		Short: "Recover an user secret from a mnemonic code",
-		Long: `Recover the user's secret from a given mnemonic code and,
-if successful, any pre-existing secret will be removed.
-The provided passphrase is used to encrypt the secret.
+		Short: "Recover the user's Unique Secret from a mnemonic code",
+		Long: `Recover Unique Secret of the current user from a given mnemonic code and securely store it into the local vcn installation,
+if successful, any pre-stored Unique Secret will be overwritten.
+A password will be required to encrypt the Unique Secret in order to prevent unauthorized access.
 		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
+			fmt.Println("Please, provide your mnemonic code in order to recover your Unique Secret.")
 			return Execute()
 		},
 		Args: cobra.NoArgs,
@@ -50,7 +51,6 @@ func Execute() error {
 	}
 
 	userCfg := u.Config()
-	fmt.Println("Please, provide your mnemonic code in order to recover your secret.")
 	code, err := cli.PromptMnemonic()
 	if err != nil {
 		return err
@@ -70,8 +70,8 @@ func Execute() error {
 		return err
 	}
 
-	fmt.Println("Secret successfully imported.")
-	fmt.Println("Keystore path:\t", userCfg.KeyStore)
-	fmt.Println("Public address:\t", userCfg.PublicAddress())
+	fmt.Println("Unique Secret successfully imported.")
+	fmt.Println("Secret Storage path:\t", userCfg.KeyStore)
+	fmt.Println("SignerID:\t", userCfg.PublicAddress())
 	return nil
 }

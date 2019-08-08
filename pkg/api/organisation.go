@@ -21,7 +21,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-// BlockchainOrganisation represents the Organization data stored onto the blockchain.
+// BlockchainOrganisation represents the organization data stored onto the blockchain.
 type BlockchainOrganisation struct {
 	Owner     common.Address   `json:"owner"`
 	Members   []common.Address `json:"members"`
@@ -29,16 +29,16 @@ type BlockchainOrganisation struct {
 	Timestamp time.Time        `json:"timestamp"`
 }
 
-// Key returns org owner's key as string for o, if any, otherwise an empty string
-func (o *BlockchainOrganisation) Key() string {
+// OwnerID returns org owner's public address as string for o, if any, otherwise an empty string
+func (o *BlockchainOrganisation) OwnerID() string {
 	if o != nil && o.Owner != common.BigToAddress(big.NewInt(0)) {
 		return strings.ToLower(o.Owner.Hex())
 	}
 	return ""
 }
 
-// MembersKeys returns org members' keys as slice of strings for o, if any, otherwise a zero-len slice
-func (o *BlockchainOrganisation) MembersKeys() []string {
+// MembersIDs returns org members' IDs (SignerIDs) as slice of strings for o, if any, otherwise a zero-len slice
+func (o *BlockchainOrganisation) MembersIDs() []string {
 	if o != nil && o.Owner != common.BigToAddress(big.NewInt(0)) {
 		keys := make([]string, len(o.Members))
 		for i, el := range o.Members {
@@ -49,12 +49,12 @@ func (o *BlockchainOrganisation) MembersKeys() []string {
 	return []string{}
 }
 
-// BlockChainGetOrganisation returns a BlockchainOrganisation for the organization name, if any.
+// GetBlockChainOrganisation returns a BlockchainOrganisation for the organization name, if any.
 // It returns a nil value and an error if the organization is not found.
-func BlockChainGetOrganisation(name string) (*BlockchainOrganisation, error) {
+func GetBlockChainOrganisation(name string) (*BlockchainOrganisation, error) {
 	logger().WithFields(logrus.Fields{
 		"name": name,
-	}).Trace("BlockChainGetOrganisation")
+	}).Trace("GetBlockChainOrganisation")
 
 	// Connect and get organisation data
 	client, err := ethclient.Dial(meta.MainNet())

@@ -78,7 +78,10 @@ func Execute() error {
 	cfg.CurrentContext = user.Email()
 
 	if pubAddr := user.Config().PublicAddress(); pubAddr == "" {
-		fmt.Println("\nYou have no secret set up yet.")
+		fmt.Println(`
+Your CLI tool is not fully set up yet.
+CodeNotary <vcn> will now help you complete your CLI setup.
+		`)
 		secret.Execute()
 		fmt.Println()
 	}

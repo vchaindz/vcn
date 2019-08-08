@@ -70,7 +70,7 @@ func WriteResultTo(r *types.Result, out io.Writer) (n int64, err error) {
 				case "Signer":
 					// todo(leogr): this will not happen anymore with the new platform APIs.
 					// Still retained to accommodate future improvements.
-					if f.Interface() != r.Verification.Key() {
+					if f.Interface() != r.Verification.SignerID() {
 						value = fmt.Sprintf("%s", f.Interface())
 					}
 				default:
@@ -87,8 +87,8 @@ func WriteResultTo(r *types.Result, out io.Writer) (n int64, err error) {
 	}
 
 	if bv := r.Verification; bv != nil {
-		if key := bv.Key(); key != "" {
-			err = printf("Key:\t%s\n", bv.Key())
+		if key := bv.SignerID(); key != "" {
+			err = printf("SignerID:\t%s\n", bv.SignerID())
 			if err != nil {
 				return
 			}

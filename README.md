@@ -101,7 +101,7 @@ Furthermore, check out our list of **integrations**:
 
 Register an account with [codernotary.io](https://codenotary.io) first.
 
-Then start with the `login` command. `vcn` will walk you through login and setting up your secret upon initial use.
+Then start with the `login` command. `vcn` will walk you through login and importing up your Unique Secret upon initial use.
 ```
 vcn login
 ```
@@ -123,7 +123,7 @@ vcn authenticate --output=yaml <asset>
 ```
 > Check out the [user guide](docs/user-guide/formatted-output.md) for further details.
 
-Once your secret is set you can notarize assets:
+Once your Unique Secret is set you can notarize assets:
 
 ```
 vcn notarize <file>
@@ -228,7 +228,7 @@ Then, set up your environment accordingly using the following commands:
 ```
 export VCN_USER=<email>
 export VCN_PASSWORD=<password>
-export KEYSTORE_PASSWORD=<passphrase>
+export VCN_SECRET_PASSWORD=<passphrase>
 ```
 
 Once done, you can use `vcn` in your non-interactive environment using:

@@ -18,12 +18,12 @@ func TestBlockchainOrganisation(t *testing.T) {
 	var bo *BlockchainOrganisation
 
 	// Nil
-	assert.Empty(t, bo.Key())
-	assert.Len(t, bo.MembersKeys(), 0)
+	assert.Empty(t, bo.OwnerID())
+	assert.Len(t, bo.MembersIDs(), 0)
 
 	bo = &BlockchainOrganisation{}
 
 	// Zero value
-	assert.Empty(t, bo.Key())
-	assert.Len(t, bo.MembersKeys(), 0)
+	assert.Empty(t, bo.OwnerID())
+	assert.Len(t, bo.MembersIDs(), 0)
 }

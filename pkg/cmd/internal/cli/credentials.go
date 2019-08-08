@@ -35,9 +35,8 @@ func PromptPassphrase() (passphrase string, err error) {
 
 	color.Set(meta.StyleAffordance())
 	fmt.Print(`
-Attention: Please pick a strong passphrase and keep it safe.
-The passphrase is needed to encrypt your secret that will be stored locally.
-You will have to provide this passphrase everytime you want to notirize an asset.
+Attention: This password protects your local CodeNotary vcn installation against unauthorized access.
+You will need this password every time you want to notarize an asset.
 `)
 	color.Unset()
 	fmt.Println()
@@ -55,12 +54,12 @@ You will have to provide this passphrase everytime you want to notirize an asset
 			return "", fmt.Errorf("too many failed attemps")
 		}
 
-		keystorePassphrase, _ = readPassword("Keystore passphrase: ")
-		keystorePassphrase2, _ = readPassword("Keystore passphrase (reenter): ")
+		keystorePassphrase, _ = readPassword("Unique Secret password: ")
+		keystorePassphrase2, _ = readPassword("Unique Secret password (reenter): ")
 		fmt.Println()
 
 		if keystorePassphrase == "" {
-			fmt.Println("Your passphrase must not be empty.")
+			fmt.Println("Your password must not be empty.")
 		} else if keystorePassphrase != keystorePassphrase2 {
 			fmt.Println("Your two inputs did not match. Please try again.")
 		} else {
@@ -72,16 +71,16 @@ You will have to provide this passphrase everytime you want to notirize an asset
 }
 
 func ProvidePassphrase() (passphrase string, err error) {
-	passphrase = os.Getenv(meta.KeyStorePasswordEnv)
+	passphrase = os.Getenv(meta.VcnSecretPassword)
 	if passphrase != "" {
-		logs.LOG.Trace("Keystore password provided (environment)")
+		logs.LOG.Trace("Secret password provided (environment)")
 		return passphrase, nil
 	}
-	passphrase, err = readPassword("Keystore passphrase: ")
+	passphrase, err = readPassword("Secret passphrase: ")
 	if err != nil {
 		return "", err
 	}
-	logs.LOG.Trace("Keystore password provided (interactive)")
+	logs.LOG.Trace("Secret password provided (interactive)")
 	return passphrase, nil
 }
 
@@ -114,7 +113,7 @@ func ProvidePlatformPassword() (password string, err error) {
 		logs.LOG.Trace("Platform password provided (environment)")
 		return password, nil
 	}
-	password, err = readPassword("Password: ")
+	password, err = readPassword("Login password: ")
 	if err != nil {
 		return "", err
 	}

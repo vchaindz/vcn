@@ -57,7 +57,7 @@ func (u *User) defaultAccount() (acc *accounts.Account, err error) {
 	return &accs[0], nil
 }
 
-// PublicAddress returns the public key address for the User's secret, if any, otherwise an empty string.
+// PublicAddress returns the public address for the User's secret, if any, otherwise an empty string.
 func (u *User) PublicAddress() string {
 	if acc, _ := u.defaultAccount(); acc != nil {
 		return strings.ToLower(acc.Address.Hex())
@@ -69,10 +69,10 @@ func (u *User) PublicAddress() string {
 func (u *User) OpenSecret() (io.Reader, error) {
 	acc, err := u.defaultAccount()
 	if err != nil {
-		return nil, fmt.Errorf("cannot open the keystore: %s", err)
+		return nil, fmt.Errorf("cannot open the secret storage: %s", err)
 	}
 	if acc == nil {
-		return nil, fmt.Errorf("no secret found in the keystore")
+		return nil, fmt.Errorf("no secret found")
 	}
 	return os.Open(acc.URL.Path)
 }

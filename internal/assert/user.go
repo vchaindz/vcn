@@ -48,7 +48,7 @@ func UserLogin() error {
 func UserKeystore() error {
 	u := api.NewUser(store.Config().CurrentContext)
 	if u.Config().PublicAddress() == "" {
-		return fmt.Errorf("You need to import a secret prior to notarize an asset.\n%s", loginMsg)
+		return fmt.Errorf("You need to import your Unique Secret prior to notarize an asset.\n%s", loginMsg)
 	}
 	return nil
 }
