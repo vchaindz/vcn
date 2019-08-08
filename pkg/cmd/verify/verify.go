@@ -27,6 +27,14 @@ var (
 	keyRegExp = regexp.MustCompile("0x[0-9a-z]{40}")
 )
 
+func getSignerIDs() []string {
+	ids := viper.GetStringSlice("signerID")
+	if len(ids) > 0 {
+		return ids
+	}
+	return viper.GetStringSlice("key")
+}
+
 // NewCmdVerify returns the cobra command for `vcn verify`
 func NewCmdVerify() *cobra.Command {
 	cmd := &cobra.Command{
@@ -37,14 +45,14 @@ func NewCmdVerify() *cobra.Command {
 		Long:    ``,
 		RunE:    runVerify,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			// Bind to VCN_KEY and VCN_ORG env vars (after flags were parsed)
-			viper.BindPFlag("key", cmd.Flags().Lookup("key"))
-			viper.BindPFlag("org", cmd.Flags().Lookup("org"))
+			// Bind to all flags to env vars (after flags were parsed),
+			// but only ones retrivied by using viper will be used.
+			viper.BindPFlags(cmd.Flags())
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if org := viper.GetString("org"); org != "" {
-				if keys := viper.GetStringSlice("key"); len(keys) > 0 {
-					return fmt.Errorf("cannot use both --org and other key(s)")
+				if keys := getSignerIDs(); len(keys) > 0 {
+					return fmt.Errorf("cannot use both --org and SignerID(s)")
 				}
 			}
 
@@ -62,8 +70,10 @@ func NewCmdVerify() *cobra.Command {
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ...ARG(s)", 1),
 	)
 
-	cmd.Flags().StringSliceP("key", "k", nil, "accept only authentications matching the passed key(s)")
-	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID, if set no other key(s) can be used")
+	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)")
+	cmd.Flags().StringSliceP("key", "k", nil, "")
+	cmd.Flags().MarkDeprecated("key", "please use --signer-id instead")
+	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID, if set no SignerID can be used")
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no arg(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
 	cmd.Flags().MarkHidden("raw-diff")
@@ -93,7 +103,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		}
 		keys = bo.MembersIDs()
 	} else {
-		keys = viper.GetStringSlice("key")
+		keys = getSignerIDs()
 		// add 0x if missing, lower case, and check if format is correct
 		for i, k := range keys {
 			if !strings.HasPrefix(k, "0x") {
@@ -101,7 +111,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			}
 			keys[i] = strings.ToLower(keys[i])
 			if !keyRegExp.MatchString(keys[i]) {
-				return fmt.Errorf("invalid key format: %s", k)
+				return fmt.Errorf("invalid public address format: %s", k)
 			}
 		}
 	}

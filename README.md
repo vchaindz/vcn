@@ -184,20 +184,21 @@ ls | xargs vcn authenticate
 > The exit code will be `0` only if all the assets in you other command outputs are verified.
 
 #### Authenticate by a specific signer
-By adding `--key`, you can authenticate that your asset has been signed by a specific signer’s public key address.
+By adding `--signerID`, you can authenticate that your asset has been signed by a specific SignerID.
+> A SignerID is the signer public address (represented as a 40 hex characters long string prefixed with `0x`).
 
 ```
-vcn authenticate --key 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
+vcn authenticate --signerID 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
 ```
 
 #### Authenticate by a list of signers
 
 If an asset you or your organization wants to trust needs to be verified against a list of signers as a prerequisite, then use the `vcn authenticate` command and the following syntax:
 
-- Add a `--key` flag in front of each key you want to add  
-(eg. `--key 0x0...1 --key 0x0...2`)
-- Or set the env var `VCN_KEY` correctly by using a space to separate each key (eg. `VCN_KEY=0x0...1 0x0...2`)
-> Be aware that using the `--key` flag will take precedence over `VCN_KEY`.
+- Add a `--signerID` flag in front of each SignerID you want to add  
+(eg. `--signerID 0x0...1 --signerID 0x0...2`)
+- Or set the env var `VCN_SIGNERID` correctly by using a space to separate each SignerID (eg. `VCN_SIGNERID=0x0...1 0x0...2`)
+> Be aware that using the `--signerID` flag will take precedence over `VCN_SIGNERID`.
 
 The asset authentication will succeed only if the asset has been signed by at least one of the signers.
 
@@ -223,7 +224,7 @@ vcn unsupport --hash <asset's hash>
 
 #### Notarization within automated environments
 
-First, you’ll need to make `vcn` have access to the `${HOME}/.vcn` folder that holds your private keys.
+First, you’ll need to make `vcn` have access to the `${HOME}/.vcn` folder that holds your Unique Secret (the private key).
 Then, set up your environment accordingly using the following commands:
 ```
 export VCN_USER=<email>
@@ -235,7 +236,7 @@ Once done, you can use `vcn` in your non-interactive environment using:
 
 ```
 vcn login
-vcn notarize --key <your key> <asset>
+vcn notarize <asset>
 ```
 > Other commands like `untrust` and `unsupport` will also work.
 
