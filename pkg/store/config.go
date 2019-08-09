@@ -136,6 +136,7 @@ func (c *ConfigRoot) RemoveUser(email string) bool {
 	return false
 }
 
+// ClearContext clean up all auth token for all users and set an empty context.
 func (c *ConfigRoot) ClearContext() {
 	if c == nil {
 		return

@@ -30,12 +30,6 @@ func initConfig() {
 	extractor.Register(docker.Scheme, docker.Artifact)
 	extractor.Register(docker.SchemePodman, docker.Artifact)
 
-	// Set ~/.vcn directory
-	if err := store.SetDefaultDir(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 	// Load config
 	if cfgFile != "" {
 		store.SetConfigFile(cfgFile)
@@ -47,5 +41,4 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
 }

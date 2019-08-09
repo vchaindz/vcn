@@ -13,6 +13,7 @@ import (
 	"os"
 
 	"github.com/vchain-us/vcn/pkg/cmd/inspect"
+	"github.com/vchain-us/vcn/pkg/store"
 
 	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
@@ -64,6 +65,12 @@ func init() {
 	viper.SetEnvPrefix("vcn")
 	viper.AutomaticEnv()
 
+	// Set ~/.vcn directory
+	if err := store.SetDefaultDir(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	// Disable default behavior when started through explorer.exe
 	cobra.MousetrapHelpText = ""
 
@@ -95,10 +102,13 @@ func init() {
 	rootCmd.AddCommand(logout.NewCmdLogout())
 	rootCmd.AddCommand(dashboard.NewCmdDashboard())
 	rootCmd.AddCommand(recover.NewCmdRecover())
-
 }
 
 func preExitHook(cmd *cobra.Command) {
+	if output, _ := rootCmd.PersistentFlags().GetString("output"); output == "" {
+		cli.CheckVersion()
+	}
+
 	if quit, _ := cmd.PersistentFlags().GetBool("quit"); !quit || mousetrap.StartedByExplorer() {
 		fmt.Println()
 		fmt.Println("Press 'Enter' to continue...")
