@@ -76,7 +76,7 @@ func ProvidePassphrase() (passphrase string, err error) {
 		logs.LOG.Trace("Secret password provided (environment)")
 		return passphrase, nil
 	}
-	passphrase, err = readPassword("Secret passphrase: ")
+	passphrase, err = readPassword("Unique Secret password: ")
 	if err != nil {
 		return "", err
 	}

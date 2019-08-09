@@ -228,8 +228,8 @@ First, you’ll need to make `vcn` have access to the `${HOME}/.vcn` folder that
 Then, set up your environment accordingly using the following commands:
 ```
 export VCN_USER=<email>
-export VCN_PASSWORD=<password>
-export VCN_SECRET_PASSWORD=<passphrase>
+export VCN_PASSWORD=<login password>
+export VCN_SECRET_PASSWORD=<Unique Secret password>
 ```
 
 Once done, you can use `vcn` in your non-interactive environment using:
