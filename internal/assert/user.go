@@ -48,7 +48,7 @@ func UserLogin() error {
 func UserKeystore() error {
 	u := api.NewUser(store.Config().CurrentContext)
 	if u.Config().PublicAddress() == "" {
-		return fmt.Errorf("You need to import your Unique Secret prior to notarize an asset.\n%s", loginMsg)
+		return fmt.Errorf("your Unique Secret has not been setup yet. Please recover it by using <vcn recover secret> and be sure to have your recovery phrase available.\n%s", loginMsg)
 	}
 	return nil
 }
