@@ -1,6 +1,6 @@
 # Configuration
 
-By default, the `vcn` command line stores its config file (`config.json`) and users' secret keys in a directory called `.vcn` within your `$HOME` directory. 
+By default, the `vcn` command line stores its config file (`config.json`) and users' secret (private key) in a directory called `.vcn` within your `$HOME` directory. 
 > If the `STAGE` environment variable has been set, the default configuration directory can be different. See [environments](environments.md).
 
 However, you can specify a different location for the config file via the `--config` command line option. For example:
@@ -24,10 +24,7 @@ The config file contains paths to keystore directories, and stores credentials o
     {
       "email": "example@example.net",
       "token": "<authentication_bearer_token>",
-      "keystores": [
-        {
-          "path": "/path/to/user/keystore"
-        }
+      "keystore": "/path/to/user/keystore"
       ]
     }
   ]
@@ -46,13 +43,11 @@ The property `users` is an array of objects (one entry per user). Each object ho
 
  - `email` the email address that identifies a specific user
  - `token` a bearer token used obtained by using `vcn login`
- - `keystores` an array of objects containing paths to the actual directory that store private keys
+ - `keystore` path to the actual directory that store private keys
 
 ### Storing secret keys
 
 Secret keys are stored as encrypted JSON files according to the Web3 Secret Storage specification.
 See https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition for more information.
 
-Each user can have multiple keystore's paths. Each path is a directory containing one or more Web3 Secret Storage file.
-
-You can modify the `keystores` property according to your needs in order to store secret keys in different locations.
+You can modify the `keystore` property according to your needs in order to store secret keys in a different location.

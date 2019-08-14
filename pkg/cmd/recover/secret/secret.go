@@ -22,14 +22,14 @@ import (
 func NewCmdSecret() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "secret",
-		Short: "Recover the user's Unique Secret from a mnemonic code",
-		Long: `Recover Unique Secret of the current user from a given mnemonic code and securely store it into the local vcn installation,
-if successful, any pre-stored Unique Secret will be overwritten.
-A password will be required to encrypt the Unique Secret in order to prevent unauthorized access.
+		Short: "Recover the user's secret from a mnemonic code",
+		Long: `Recover secret of the current user from a given mnemonic code and securely store it into the local vcn installation,
+if successful, any pre-stored secret will be overwritten.
+A password will be required to encrypt the secret in order to prevent unauthorized access.
 		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
-			fmt.Println("Please, provide your mnemonic code in order to recover your Unique Secret.")
+			fmt.Println("Please, provide your mnemonic code in order to recover your secret.")
 			return Execute()
 		},
 		Args: cobra.NoArgs,
@@ -70,8 +70,8 @@ func Execute() error {
 		return err
 	}
 
-	fmt.Println("Unique Secret successfully imported.")
-	fmt.Println("Secret Storage path:\t", userCfg.KeyStore)
+	fmt.Println("Secret successfully imported.")
+	fmt.Println("Secret Storage:\t", userCfg.KeyStore)
 	fmt.Println("SignerID:\t", userCfg.PublicAddress())
 	return nil
 }

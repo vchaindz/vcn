@@ -20,14 +20,14 @@ CodeNotary allows users to independently testify to an asset’s trust [status](
 
 When the signer initiates the notarization process, their block of digital data (*the asset*) is input into a [SHA-256](https://en.wikipedia.org/wiki/SHA-2) hashing function in order to produce their asset’s unique digital fingerprint. (The digital fingerprint is also known as the digest or simply *the hash*.)
 
-Then, the hash (not the asset itself, which is never uploaded to nor shared with CodeNotary) along with the desired [status](#Statuses) is cryptographically signed by using the signer's Unique Secret (private key). Signing takes place locally on the signer’s machine. 
+Then, the hash (not the asset itself, which is never uploaded to nor shared with CodeNotary) along with the desired [status](#Statuses) is cryptographically signed by using the signer's secret (private key). Signing takes place locally on the signer’s machine. 
 Once signed, this metadata (i.e. the signed hash and status) is sent to a Smart Contract on the blockchain. The Smart Contract then adds the signer’s trust [level](#Levels) and a timestamp to the already existing metadata. 
 
 In the end, the output of the notarization process is a new entry on the [ZTC](https://zerotrustconsortium.org/) blockchain, where it remains forever and can never be changed. The entry contains the asset’s signed hash, signed [status](#Statuses), [level](#Levels), and timestamp, which are all bound together.  Attribute mapping and descriptions are below:
 
 Field | Label | Description 
 ------------ | ------------- | ------------- 
-`Owner` | **SignerID** | The public address derived from the user's Unique Secret.
+`Owner` | **SignerID** | The public address derived from the user's secret.
 `Level` | **Level** | The signer's [level](#Levels) at the time when the notarization was made. It indicates how the signer verified their identity.
 `Status` | **Status** | The asset's [status](#Statuses) chosen by the signer at the time when the notarization was made.
 `Timestamp` | **Date** | The date and time of the notarization.

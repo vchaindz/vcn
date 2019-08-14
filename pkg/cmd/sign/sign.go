@@ -29,7 +29,21 @@ func NewCmdSign() *cobra.Command {
 		Use:     "notarize",
 		Aliases: []string{"n", "sign", "s"},
 		Short:   "Notarize an asset onto the blockchain",
-		Long:    ``,
+		Long: `
+Notarize an asset onto the blockchain.
+
+Notarization calculates the SHA-256 hash from an asset 
+(file, directory, container's image). 
+The hash (not the asset) and the desired status of TRUSTED are then 
+cryptographically signed by the signer's secret (private key). 
+Next, these signed objects are sent to the blockchain where the signer’s
+trust level and a timestamp are added. 
+When complete, a new blockchain entry is created that binds the asset’s
+signed hash, signed status, level, and timestamp together. 
+
+Assets are referenced by passed arg(s) with notarization only accepting 
+1 arg at a time. 
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runSignWithState(cmd, args, meta.StatusTrusted)
 		},

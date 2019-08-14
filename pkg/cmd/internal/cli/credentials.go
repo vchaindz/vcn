@@ -54,8 +54,8 @@ You will need this password every time you want to notarize an asset.
 			return "", fmt.Errorf("too many failed attemps")
 		}
 
-		keystorePassphrase, _ = readPassword("Unique Secret password: ")
-		keystorePassphrase2, _ = readPassword("Unique Secret password (reenter): ")
+		keystorePassphrase, _ = readPassword("Notarization password: ")
+		keystorePassphrase2, _ = readPassword("Notarization password (reenter): ")
 		fmt.Println()
 
 		if keystorePassphrase == "" {
@@ -73,14 +73,14 @@ You will need this password every time you want to notarize an asset.
 func ProvidePassphrase() (passphrase string, err error) {
 	passphrase = os.Getenv(meta.VcnSecretPassword)
 	if passphrase != "" {
-		logs.LOG.Trace("Secret password provided (environment)")
+		logs.LOG.Trace("Notarization password provided (environment)")
 		return passphrase, nil
 	}
-	passphrase, err = readPassword("Unique Secret password: ")
+	passphrase, err = readPassword("Notarization password: ")
 	if err != nil {
 		return "", err
 	}
-	logs.LOG.Trace("Secret password provided (interactive)")
+	logs.LOG.Trace("Notarization password provided (interactive)")
 	return passphrase, nil
 }
 

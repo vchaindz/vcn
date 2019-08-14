@@ -42,8 +42,23 @@ func NewCmdVerify() *cobra.Command {
 		Example: "  vcn authenticate /bin/vcn",
 		Aliases: []string{"a", "verify", "v"},
 		Short:   "Authenticate assets against the blockchain",
-		Long:    ``,
-		RunE:    runVerify,
+		Long: `
+Authenticate assets against the blockchain.
+
+Authentication is the process of matching the hash of a local asset to 
+a hash on the blockchain. 
+If matched, the returned result (the authentication) is the blockchain 
+stored metadata that’s bound to the matching hash. 
+Otherwise, the returned result status equals UNKNOWN.
+
+Assets are referenced by the passed arg(s), with authentication accepting 
+1 or more arg(s) at a time. Multiple assets can be authenticated at the 
+same time while passing them within arg(s).
+
+The exit code will be 0 only if all assets' statuses are equal to TRUSTED. 
+Otherwise, the exit code will be 1.
+`,
+		RunE: runVerify,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			// Bind to all flags to env vars (after flags were parsed),
 			// but only ones retrivied by using viper will be used.
