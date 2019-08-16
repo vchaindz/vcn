@@ -15,7 +15,6 @@ import (
 
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
-	"github.com/vchain-us/vcn/pkg/cmd/recover/secret"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
 )
@@ -77,15 +76,16 @@ func Execute() error {
 	}
 	cfg.CurrentContext = user.Email()
 
-	if pubAddr := user.Config().PublicAddress(); pubAddr == "" {
-		fmt.Println(`
-Your CLI tool is not fully set up yet.
-CodeNotary <vcn> will now help you complete your CLI setup.
-		`)
-		secret.Execute()
-		fmt.Println()
+	// Sync user's secret
+	secret, err := user.DownloadSecret()
+	if err != nil {
+		return err
+	}
+	if err := user.Config().WriteSecret(secret); err != nil {
+		return err
 	}
 
+	// Store the new config
 	if err := store.SaveConfig(); err != nil {
 		return err
 	}

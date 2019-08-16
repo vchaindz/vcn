@@ -54,7 +54,18 @@ func (u *User) defaultAccount() (acc *accounts.Account, err error) {
 		return
 	}
 
+	d := u.defaultSecretFilepath()
+	for _, a := range accs {
+		if a.URL.Path == d {
+			return &a, nil
+		}
+	}
+
 	return &accs[0], nil
+}
+
+func (u User) defaultSecretFilepath() string {
+	return filepath.Join(u.KeyStore, defaultSecretFile)
 }
 
 // PublicAddress returns the public address for the User's secret, if any, otherwise an empty string.
@@ -75,6 +86,25 @@ func (u *User) OpenSecret() (io.Reader, error) {
 		return nil, fmt.Errorf("no secret found")
 	}
 	return os.Open(acc.URL.Path)
+}
+
+// WriteSecret reads a Web3 Secret Storage JSON file from src and writes to disk into the user's secret storage path.
+func (u *User) WriteSecret(src io.Reader) error {
+	// ensure keystore is ready
+	_, err := u.keystore()
+	if err != nil {
+		return fmt.Errorf("cannot open the keystore: %s", err)
+	}
+
+	dst, err := os.Create(u.defaultSecretFilepath())
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // ImportSecret imports the user's secret from a ECDSA private key and,

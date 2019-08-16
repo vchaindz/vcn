@@ -21,8 +21,8 @@ func NewCmdRecover() *cobra.Command {
 		Example: "  vcn recover secret",
 		Long:    ``,
 		Args:    cobra.NoArgs,
+		Hidden:  true, // todo(leogr): not used atm, left for future use
 	}
-
 	cmd.AddCommand(secret.NewCmdSecret())
 	return cmd
 }

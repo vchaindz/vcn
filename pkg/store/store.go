@@ -22,3 +22,5 @@ const DirPerm os.FileMode = 0700
 const DefaultDirName = ".vcn"
 
 const configFilename = "config.json"
+
+const defaultSecretFile = "secret.json"
