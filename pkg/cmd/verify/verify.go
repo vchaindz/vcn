@@ -57,6 +57,8 @@ same time while passing them within arg(s).
 
 The exit code will be 0 only if all assets' statuses are equal to TRUSTED. 
 Otherwise, the exit code will be 1.
+
+Note that your assets will not be uploaded but processed locally.
 `,
 		RunE: runVerify,
 		PreRun: func(cmd *cobra.Command, args []string) {

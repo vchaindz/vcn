@@ -43,6 +43,8 @@ signed hash, signed status, level, and timestamp together.
 
 Assets are referenced by passed arg(s) with notarization only accepting 
 1 arg at a time. 
+
+Note that your asset will not be uploaded but processed locally.
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runSignWithState(cmd, args, meta.StatusTrusted)
