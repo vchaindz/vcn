@@ -10,7 +10,6 @@ package api
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -103,8 +102,8 @@ func (u User) DownloadSecret() (io.Reader, error) {
 	authError := new(Error)
 	pagedWalletResponse := new(struct {
 		Content []struct {
-			Address  string          `json:"address"`
-			KeyStore json.RawMessage `json:"keyStore"`
+			Address  string `json:"address"`
+			KeyStore string `json:"keyStore"`
 		} `json:"content"`
 	})
 	r, err := newSling(u.token()).
@@ -120,7 +119,7 @@ func (u User) DownloadSecret() (io.Reader, error) {
 	}
 
 	wallets := pagedWalletResponse.Content
-	if len(wallets) == 0 || string(wallets[0].KeyStore) == "null" {
+	if len(wallets) == 0 || wallets[0].KeyStore == "" {
 		return nil, fmt.Errorf("no secret found for %s, please complete the onboarding process at %s", u.Email(), meta.DashboardURL())
 	}
 
