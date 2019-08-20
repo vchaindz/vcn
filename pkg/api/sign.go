@@ -30,6 +30,13 @@ import (
 // The passphrase is required to unlock the local stored secret.
 func (u User) Sign(artifact Artifact, passphrase string, state meta.Status, visibility meta.Visibility) (*BlockchainVerification, error) {
 
+	if artifact.Hash == "" {
+		return nil, makeError("hash is missing", nil)
+	}
+	if artifact.Size < 0 {
+		return nil, makeError("invalid size", nil)
+	}
+
 	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
 		return nil, err
@@ -38,20 +45,12 @@ func (u User) Sign(artifact Artifact, passphrase string, state meta.Status, visi
 		return nil, makeAuthRequiredError()
 	}
 
-	if artifact.Hash == "" {
-		return nil, makeError("hash is missing", nil)
-	}
-	if artifact.Size < 0 {
-		return nil, makeError("invalid size", nil)
-	}
-
-	if err := u.checkSyncState(); err != nil {
-		return nil, err
-	}
-
-	keyin, err := u.cfg.OpenSecret()
+	trialExpired, err := u.trialExpired()
 	if err != nil {
 		return nil, err
+	}
+	if trialExpired {
+		return nil, fmt.Errorf(errors.TrialExpired)
 	}
 
 	opsLeft, err := u.RemainingSignOps()
@@ -61,6 +60,15 @@ func (u User) Sign(artifact Artifact, passphrase string, state meta.Status, visi
 
 	if opsLeft < 1 {
 		return nil, fmt.Errorf(errors.NoRemainingSignOps)
+	}
+
+	if err := u.checkSyncState(); err != nil {
+		return nil, err
+	}
+
+	keyin, err := u.cfg.OpenSecret()
+	if err != nil {
+		return nil, err
 	}
 
 	return u.commitHash(keyin, passphrase, artifact, state, visibility)

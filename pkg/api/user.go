@@ -192,3 +192,26 @@ func (u User) checkSyncState() (err error) {
 	}
 	return fmt.Errorf("the public address (SignerID) of locally stored secret does not match your account (%s)", address)
 }
+
+func (u User) trialExpired() (bool, error) {
+	response := new(struct {
+		TrialExpired bool `json:"trialExpired"`
+	})
+	restError := new(Error)
+	r, err := newSling(u.token()).
+		Get(publisherEndpoint()).
+		Receive(&response, restError)
+	logger().WithFields(logrus.Fields{
+		"response":  response,
+		"err":       err,
+		"restError": restError,
+	}).Trace("trialExpired")
+	if err != nil {
+		return false, err
+	}
+	switch r.StatusCode {
+	case 200:
+		return response.TrialExpired, nil
+	}
+	return false, fmt.Errorf("cannot get user info from platform: %+v", restError)
+}

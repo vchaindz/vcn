@@ -29,6 +29,11 @@ Unfortunately, you have used all your notarizations for this month.
 If you would like to increase the number of monthly notarizations, 
 please email us at support@codenotary.io with your request.`
 
+const TrialExpired = `your trial period has been expired
+
+To continue notarizing assets, please purchase a subscription.
+`
+
 // BlockchainPermission refers to https://github.com/vchain-us/vcn/wiki/Errors#blockchain-permission-403
 const BlockchainPermission = `could not write to blockchain
 
