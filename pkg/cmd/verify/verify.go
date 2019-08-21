@@ -13,6 +13,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/fatih/color"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vchain-us/vcn/pkg/api"
@@ -87,10 +89,10 @@ Note that your assets will not be uploaded but processed locally.
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ...ARG(s)", 1),
 	)
 
-	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)")
+	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)\n(overrides VCN_SIGNERID env var, if any)")
 	cmd.Flags().StringSliceP("key", "k", nil, "")
 	cmd.Flags().MarkDeprecated("key", "please use --signer-id instead")
-	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID, if set no SignerID can be used")
+	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID,\nif set no SignerID can be used\n(overrides VCN_ORG env var, if any)")
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no arg(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
 	cmd.Flags().MarkHidden("raw-diff")
@@ -163,6 +165,12 @@ func runVerify(cmd *cobra.Command, args []string) error {
 func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user *api.User, output string) (err error) {
 	hook := newHook(cmd, a)
 	var verification *api.BlockchainVerification
+	if output == "" {
+		color.Set(meta.StyleAffordance())
+		fmt.Println("Your asset(s) will not be uploaded but processed locally.")
+		color.Unset()
+		fmt.Println()
+	}
 	// if keys have been passed, check for a verification matching them
 	if len(keys) > 0 {
 		if output == "" {

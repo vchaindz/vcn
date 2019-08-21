@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fatih/color"
+
 	"github.com/caarlos0/spin"
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/assert"
@@ -22,6 +24,12 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 	"github.com/vchain-us/vcn/pkg/store"
 )
+
+const longDescFooter = `
+
+VCN_NOTARIZATION_PASSWORD env var can be used to pass the
+required notarization password in a non-interactive environment.
+`
 
 // NewCmdSign returns the cobra command for `vcn sign`
 func NewCmdSign() *cobra.Command {
@@ -137,6 +145,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 func sign(u *api.User, a *api.Artifact, state meta.Status, visibility meta.Visibility, output string) error {
 
 	if output == "" {
+		color.Set(meta.StyleAffordance())
+		fmt.Println("Your asset will not be uploaded but processed locally.")
+		color.Unset()
+		fmt.Println()
 		fmt.Println("Signer:\t" + u.Email())
 	}
 	passphrase, err := cli.ProvidePassphrase()

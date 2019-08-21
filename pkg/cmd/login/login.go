@@ -23,8 +23,12 @@ import (
 func NewCmdLogin() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Sign-in to codenotary.io",
-		Long:  ``,
+		Short: "Log in to codenotary.io",
+		Long: `Log in to codenotary.io.
+
+VCN_USER and VCN_PASSWORD env vars can be used to pass credentials 
+in a non-interactive environment.
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
 			output, err := cmd.Flags().GetString("output")
