@@ -16,7 +16,7 @@ vcn list --output json
 ```
 vcn notarize file.txt
 ```
-> You need to set `VCN_SECRET_PASSWORD` [environment variable](environments.md#other-environment-variables) to make `vcn` work in non-interactive mode
+> You need to set `VCN_NOTARIZATION_PASSWORD` [environment variable](environments.md#other-environment-variables) to make `vcn` work in non-interactive mode
 
 ## Dealing with errors
 

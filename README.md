@@ -229,7 +229,7 @@ Then, set up your environment accordingly using the following commands:
 ```
 export VCN_USER=<email>
 export VCN_PASSWORD=<login password>
-export VCN_SECRET_PASSWORD=<notarization password>
+export VCN_NOTARIZATION_PASSWORD=<notarization password>
 ```
 
 Once done, you can use `vcn` in your non-interactive environment using:

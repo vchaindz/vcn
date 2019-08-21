@@ -71,7 +71,7 @@ You will need this password every time you want to notarize an asset.
 }
 
 func ProvidePassphrase() (passphrase string, err error) {
-	passphrase = os.Getenv(meta.VcnSecretPassword)
+	passphrase = os.Getenv(meta.VcnNotarizationPassword)
 	if passphrase != "" {
 		logs.LOG.Trace("Notarization password provided (environment)")
 		return passphrase, nil

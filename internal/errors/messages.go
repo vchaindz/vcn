@@ -13,8 +13,7 @@ We are finalizing your account configuration. We will complete the
 configuration shortly and we will update you as soon as this is done.
 We are sorry for the inconvenience and would like to thank you for 
 your patience.
-It only takes few seconds. Please try again in 1 minute.
-`
+It only takes few seconds. Please try again in 1 minute.`
 
 const AuthRequired = `authentication required, please login`
 
@@ -31,8 +30,7 @@ please email us at support@codenotary.io with your request.`
 
 const TrialExpired = `your trial period has been expired
 
-To continue notarizing assets, please purchase a subscription.
-`
+To continue notarizing assets, please purchase a subscription.`
 
 // BlockchainPermission refers to https://github.com/vchain-us/vcn/wiki/Errors#blockchain-permission-403
 const BlockchainPermission = `could not write to blockchain
