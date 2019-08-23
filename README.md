@@ -1,6 +1,31 @@
 # vcn - vChain CodeNotary [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=svg)](https://circleci.com/gh/vchain-us/vcn)
 > code signing in 1 simple step
 
+# The Trust and Integrity platform for the Cloud native environment
+Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
+
+When using CodeNotary vcn in source code, release, deployment or at runtime, you allow a continuous trust verification that can be used to detect unusual or unwanted activity in your workload and act on it. 
+Powered by CodeNotary's digital identity infrastructure, vcn lets you notarize all of your digital assets that add a trust level of your choice, custom attributes and a meaningful status without touching or appending anything (unlike digital certificates).
+That allows change and revocation post-release without breaking any customer environment.
+
+Everything is done in a global, collaborative way to break the common silo solution architecture. Leveraging an immutable, always-on DLT platform allows you to avoid complex setup of Certificate authorities or digital certificates (that are unfit for DevOps anyway). 
+
+# DevSecOps in mind
+Codenotary vcn is a solution written by a devops-obsessed engineers for Devops engineers to bring better trust and security to the the CloudNative source to deployment process 
+
+# What kind of behaviors can CodeNotary vcn detect?
+vcn (and its extensions for Docker, Kubernetes, documents or CI/CD) can detect, authenticate and alert on any behavior that involves using unauthentic digital assets. vcn verification can be embedded anywhere and can be used to trigger alerts, updates or workflows.
+
+vcn is so versatile, it can help detecting or acting on the following (but not limited to):
+* Enable application version checks and actions
+* Buggy or rogue libraries can be traced by simple revoke or unsupport
+* Revoke or unsupport your build or build version post-deployment (no complex certificate revocation that includes delivery of newly signed builds)
+* Stop unwanted containers from being launched
+* Make revocation part of the remediation process
+* Use revocation without impairing customer environments
+* Trace source code to build to deployment by integration into CI/CD or manual workflow
+* Tag your applications for specific use cases (alpha, beta - non-commercial aso).
+
 ## How it works
 ![vcn How it works](https://raw.githubusercontent.com/vchain-us/vcn/master/docs/vcn_hiwb.png "How it works")
 
