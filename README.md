@@ -1,5 +1,5 @@
 # vcn - vChain CodeNotary [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=svg)](https://circleci.com/gh/vchain-us/vcn)
-> code signing in 1 simple step
+
 
 # The Trust and Integrity platform for the Cloud native environment
 Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
