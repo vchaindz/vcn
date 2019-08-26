@@ -3,6 +3,34 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- correct `Signer` field semantic
+- **api:** correct secret download content format
+- **verify:** switch to single key for current user
+
+### Changes
+- deprecate `KEYSTORE_PASSWORD` env var in favour of `VCN_NOTARIZATION_PASSWORD`
+- add "your assets will not be uploaded" message
+- deprecate `--key` in favor of `--signerID`
+- improve API and user messages to reflect the new terminology
+- update Smart Contract addresses to latest version
+- removed profile migration from v0.3.x
+- **api:** refactor to single address and code cleanup
+- **help:** add info about assets and env vars
+- **meta:** removed event tracking for keystore creation
+- **sign:** dropping support for multiple keys
+- **store:** switch from multi-key to single secret config
+- **terminology:** switch to `notarize` and `authenticate`
+
+### Code Refactoring
+- reduce artifact API surface
+- **meta:** rationalize config functions
+
+### Features
+- add trial expiration message
+- automatically get secret from platform at login
+- add automatic checking for newer versions
+
 
 <a name="v0.5.4"></a>
 ## [v0.5.4] - 2019-07-30
