@@ -65,11 +65,11 @@ func AssetsRelayContractAddress() string {
 	case StageTest:
 		return os.Getenv("VCN_TEST_CONTRACT")
 	case StageStaging:
-		return "0x05ce69454a13c8ac0bd20fdc48b09068f5c0a5ed"
+		return "0x4eb8d2866da4341796ce64a983786a01b1072939"
 	case StageProduction:
 		fallthrough
 	default:
-		return "0x3222c50e1917c3551c7b6ee10d8e1bb00b84062b"
+		return "0x41a749a79a78b388607df06c25adbc73dbbf1e87"
 	}
 }
 
