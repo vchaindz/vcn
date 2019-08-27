@@ -35,6 +35,10 @@ install: vendor test
 static:
 	$(GO) build -a -tags netgo -ldflags '${LDFLAGS} -extldflags "-static"' ./cmd/vcn
 
+.PHONY: vcn.dll
+vcn.dll:
+	GOOS=windows GOARCH=amd64 $(GO) build -a -tags netgo -ldflags '${LDFLAGS} -extldflags "-static"' -buildmode=c-shared -o vcn.dll ./cmd/vcn
+
 .PHONY: docs/cmd
 docs/cmd:
 	$(GO) run docs/cmd/main.go
@@ -77,6 +81,20 @@ dist: clean/dist build/xgo
 			-v ${PWD}:/source:ro \
 			-e GO111MODULE=on \
 			-e FLAG_LDFLAGS="${LDFLAGS}" \
+			-e TARGETS="${TARGETS}" \
+			-e PACK=cmd/vcn \
+			-e OUT=vcn-v${VERSION} \
+			vcn-xgo .
+
+.PHONY: dist/c-shared
+dist/c-shared: clean/dist build/xgo
+	mkdir -p dist
+	$(DOCKER) run --rm \
+			-v ${PWD}/dist:/dist \
+			-v ${PWD}:/source:ro \
+			-e GO111MODULE=on \
+			-e FLAG_LDFLAGS="${LDFLAGS}" \
+			-e FLAG_BUILDMODE="c-shared" \
 			-e TARGETS="${TARGETS}" \
 			-e PACK=cmd/vcn \
 			-e OUT=vcn-v${VERSION} \
