@@ -181,22 +181,29 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 			}
 		}
 		verification, err = api.VerifyMatchingSignerIDs(a.Hash, keys)
+
 	} else {
-		// if we have an user, check for verification matching user's keys first
+		// if we have an user, check for verification matching user's key first
+		userKey := ""
 		if hasAuth, _ := user.IsAuthenticated(); hasAuth {
-			if userKey := user.Config().PublicAddress(); userKey != "" {
-				if output == "" {
-					fmt.Printf("Looking for blockchain entry matching the current user (%s)...\n", user.Email())
-				}
-				verification, err = api.VerifyMatchingSignerID(a.Hash, userKey)
-				if output == "" && verification.Unknown() {
+			userKey = user.Config().PublicAddress()
+		}
+		if userKey != "" {
+			if output == "" {
+				fmt.Printf("Looking for blockchain entry matching the current user (%s)...\n", user.Email())
+			}
+			verification, err = api.VerifyMatchingSignerIDWithFallback(a.Hash, userKey)
+			if output == "" {
+				if verification.SignerID() != userKey {
 					fmt.Printf("No blockchain entry matching the current user found.\n")
+					if !verification.Unknown() {
+						fmt.Printf("Showing the last blockchain entry with highest level available.\n")
+					}
 				}
 			}
-		}
-		// if no user nor verification matching the user has found,
-		// fallback to the last with highest level available verification
-		if verification.Unknown() {
+		} else {
+			// if no passed keys nor user,
+			// just get the last with highest level available verification
 			if output == "" {
 				fmt.Printf("Looking for the last blockchain entry with highest level available...\n")
 			}

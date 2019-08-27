@@ -136,11 +136,7 @@ func (v *BlockchainVerification) Date() string {
 	return ""
 }
 
-// Verify returns *BlockchainVerification for the hash
-func Verify(hash string) (*BlockchainVerification, error) {
-	logger().WithFields(logrus.Fields{
-		"hash": hash,
-	}).Trace("Verify")
+func callVerifyFunc(f func(*blockchain.AssetsRelay) (common.Address, *big.Int, *big.Int, *big.Int, error)) (*BlockchainVerification, error) {
 	client, err := ethclient.Dial(meta.MainNet())
 	if err != nil {
 		return nil, err
@@ -150,7 +146,7 @@ func Verify(hash string) (*BlockchainVerification, error) {
 	if err != nil {
 		return nil, err
 	}
-	address, level, status, timestamp, err := instance.Verify(nil, hash)
+	address, level, status, timestamp, err := f(instance)
 	if err != nil {
 		return nil, err
 	}
@@ -173,64 +169,51 @@ func Verify(hash string) (*BlockchainVerification, error) {
 	}, nil
 }
 
+// Verify returns the most recent *BlockchainVerification with highest level available for the given hash.
+func Verify(hash string) (*BlockchainVerification, error) {
+	logger().WithFields(logrus.Fields{
+		"hash": hash,
+	}).Trace("Verify")
+
+	return callVerifyFunc(func(instance *blockchain.AssetsRelay) (common.Address, *big.Int, *big.Int, *big.Int, error) {
+		return instance.Verify(nil, hash)
+	})
+}
+
+// VerifyMatchingSignerIDWithFallback returns *BlockchainVerification for the hash matching a given SignerID,
+// if any, otherwise it returns the same result of Verify().
+func VerifyMatchingSignerIDWithFallback(hash string, signerID string) (*BlockchainVerification, error) {
+	logger().WithFields(logrus.Fields{
+		"hash":     hash,
+		"signerID": signerID,
+	}).Trace("VerifyMatchingSignerIDs")
+
+	address := common.HexToAddress(signerID)
+
+	return callVerifyFunc(func(instance *blockchain.AssetsRelay) (common.Address, *big.Int, *big.Int, *big.Int, error) {
+		return instance.VerifyAgainstPublisherWithFallback(nil, hash, address)
+	})
+}
+
 // VerifyMatchingSignerID returns *BlockchainVerification for hash matching a given SignerID.
 func VerifyMatchingSignerID(hash string, signerID string) (*BlockchainVerification, error) {
 	return VerifyMatchingSignerIDs(hash, []string{signerID})
 }
 
 // VerifyMatchingSignerIDs returns *BlockchainVerification for hash
-// matching at least one of signerIDs
+// matching at least one of signerIDs.
 func VerifyMatchingSignerIDs(hash string, signerIDs []string) (*BlockchainVerification, error) {
 	logger().WithFields(logrus.Fields{
 		"hash":      hash,
 		"signerIDs": signerIDs,
 	}).Trace("VerifyMatchingSignerIDs")
 
-	// Connect and get verification count
-	client, err := ethclient.Dial(meta.MainNet())
-	if err != nil {
-		return nil, err
-	}
-	contractAddress := common.HexToAddress(meta.AssetsRelayContractAddress())
-	instance, err := blockchain.NewAssetsRelay(contractAddress, client)
-	if err != nil {
-		return nil, err
-	}
-	count, err := instance.GetAssetCountForHash(nil, hash)
-	if err != nil {
-		return nil, err
+	addresses := make([]common.Address, len(signerIDs))
+	for i, s := range signerIDs {
+		addresses[i] = common.HexToAddress(s)
 	}
 
-	// Make a map to lookup SignerIDs quickly
-	keysMap := map[string]bool{}
-	for i, key := range signerIDs {
-		key = strings.ToLower(key)
-		signerIDs[i] = key
-		keysMap[key] = true
-	}
-
-	// Iterate over verifications
-	for i := count.Int64() - 1; i >= 0; i-- {
-		address, level, status, timestamp, err := instance.VerifyByIndex(nil, hash, big.NewInt(i))
-		if err != nil {
-			return nil, err
-		}
-		if keysMap[strings.ToLower(address.Hex())] {
-			verification := &BlockchainVerification{
-				Owner:     address,
-				Level:     meta.Level(level.Int64()),
-				Status:    meta.Status(status.Int64()),
-				Timestamp: time.Unix(timestamp.Int64(), 0),
-			}
-			logger().
-				WithField("verification", verification).
-				Trace("Blockchain verification found")
-			return verification, nil
-		}
-	}
-
-	logger().Trace("No blockchain verification found")
-	return &BlockchainVerification{
-		Status: meta.StatusUnknown,
-	}, nil
+	return callVerifyFunc(func(instance *blockchain.AssetsRelay) (common.Address, *big.Int, *big.Int, *big.Int, error) {
+		return instance.VerifyAgainstPublishers(nil, hash, addresses)
+	})
 }
