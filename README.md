@@ -17,6 +17,13 @@ Codenotary vcn is a solution written by a devops-obsessed engineers for Devops e
 vcn (and its extensions for Docker, Kubernetes, documents or CI/CD) can detect, authenticate and alert on any behavior that involves using unauthentic digital assets. vcn verification can be embedded anywhere and can be used to trigger alerts, updates or workflows.
 
 vcn is so versatile, it can help detecting or acting on the following (but not limited to):
+* Immutable tagging of source code, builds, and container images with version number, owner, timestamp, organization, trust level, and much more
+* Simple and tamper-proof extraction of notarized tags like version number, owner, timestamp, organization, and trust level from any source code, build and container (based on the related image)
+* Quickly discover and identify untrusted, revoked or obsolete libraries, builds, and containers in your application
+* Prevent untrusted or revoked containers from starting in production
+* Verify the integrity and the publisher of all the data received over any channel
+
+and more 
 * Enable application version checks and actions
 * Buggy or rogue libraries can be traced by simple revoke or unsupport
 * Revoke or unsupport your build or build version post-deployment (no complex certificate revocation that includes delivery of newly signed builds)
