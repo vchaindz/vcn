@@ -49,8 +49,8 @@ Authenticate assets against the blockchain.
 
 Authentication is the process of matching the hash of a local asset to 
 a hash on the blockchain. 
-If matched, the returned result (the authentication) is the blockchain 
-stored metadata that’s bound to the matching hash. 
+If matched, the returned result (the authentication) is the blockchain-stored
+metadata that’s bound to the matching hash. 
 Otherwise, the returned result status equals UNKNOWN.
 
 Assets are referenced by the passed arg(s), with authentication accepting 

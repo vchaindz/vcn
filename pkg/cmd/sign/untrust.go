@@ -25,7 +25,7 @@ func NewCmdUntrust() *cobra.Command {
 	cmd.Long = `
 Change an asset's status so it is equal to UNTRUSTED.
 
-Untrust command calculates the SHA-256 hash from an asset 
+Untrust command calculates the SHA-256 hash of a digital asset 
 (file, directory, container's image). 
 The hash (not the asset) and the desired status of UNTRUSTED are then 
 cryptographically signed by the signer's secret (private key). 

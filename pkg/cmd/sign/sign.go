@@ -40,7 +40,7 @@ func NewCmdSign() *cobra.Command {
 		Long: `
 Notarize an asset onto the blockchain.
 
-Notarization calculates the SHA-256 hash from an asset 
+Notarization calculates the SHA-256 hash of a digital asset 
 (file, directory, container's image). 
 The hash (not the asset) and the desired status of TRUSTED are then 
 cryptographically signed by the signer's secret (private key). 
