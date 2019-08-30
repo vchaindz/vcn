@@ -16,6 +16,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
 	"github.com/vchain-us/vcn/pkg/extractor/docker"
 	"github.com/vchain-us/vcn/pkg/extractor/file"
+	"github.com/vchain-us/vcn/pkg/extractor/git"
 
 	"github.com/vchain-us/vcn/pkg/store"
 )
@@ -29,6 +30,7 @@ func initConfig() {
 	extractor.Register(dir.Scheme, dir.Artifact)
 	extractor.Register(docker.Scheme, docker.Artifact)
 	extractor.Register(docker.SchemePodman, docker.Artifact)
+	extractor.Register(git.Scheme, git.Artifact)
 
 	// Load config
 	if cfgFile != "" {
