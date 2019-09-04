@@ -1,5 +1,9 @@
-# vcn - vChain CodeNotary [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=svg)](https://circleci.com/gh/vchain-us/vcn)
+# vcn  <img align="right" src="docs/img/cn-color.eeadbabe.svg" width="160px"/>
+> **_vChain CodeNotary_**
 
+[![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=shield)](https://circleci.com/gh/vchain-us/vcn)
+[![Go Report Card](https://goreportcard.com/badge/github.com/vchain-us/vcn)](https://goreportcard.com/report/github.com/vchain-us/vcn)
+[![GoDoc](https://godoc.org/github.com/vchain-us/vcn?status.svg)](https://godoc.org/github.com/vchain-us/vcn)
 
 ## The Trust and Integrity platform for the Cloud native environment
 Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
