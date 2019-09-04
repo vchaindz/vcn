@@ -10,7 +10,7 @@ Stage | Directory | Note
 ------------ | ------------- | -------------
 `STAGE=PRODUCTION` | `.vcn` | *default* 
 `STAGE=STAGING` | `.vcn.staging` |
-`STAGE=TEST` | `vcn.test` | *`VCN_TEST_DASHBOARD`, `VCN_TEST_NET`, `VCN_TEST_CONTRACT`, `VCN_TEST_API` must be set accordingly to your test environment*
+`STAGE=TEST` | `.vcn.test` | *`VCN_TEST_DASHBOARD`, `VCN_TEST_NET`, `VCN_TEST_CONTRACT`, `VCN_TEST_API` must be set accordingly to your test environment*
 
 
 ## Other environment variables

@@ -51,7 +51,7 @@ You will need this password every time you want to notarize an asset.
 		counter++
 
 		if counter == 4 {
-			return "", fmt.Errorf("too many failed attemps")
+			return "", fmt.Errorf("too many failed attempts")
 		}
 
 		keystorePassphrase, _ = readPassword("Notarization password: ")

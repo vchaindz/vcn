@@ -66,7 +66,7 @@ func (m *Manifest) MarshalJSON() ([]byte, error) {
 }
 
 // Normalize deduplicates and sorts items and items's paths in accordance with manifest's schema specs.
-// An error is returned when duplicate paths accross different items are found, or if digest's algo
+// An error is returned when duplicate paths across different items are found, or if digest's algo
 // does not match sha256.
 func (m *Manifest) Normalize() error {
 	if m == nil {

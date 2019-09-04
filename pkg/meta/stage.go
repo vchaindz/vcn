@@ -13,7 +13,7 @@ import (
 	"os"
 )
 
-// Stage is the type for all possibile stage values
+// Stage is the type for all possible stage values
 type Stage int64
 
 // Allowed stage values

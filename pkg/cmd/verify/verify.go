@@ -91,7 +91,7 @@ Note that your assets will not be uploaded but processed locally.
 
 	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)\n(overrides VCN_SIGNERID env var, if any)")
 	cmd.Flags().StringSliceP("key", "k", nil, "")
-	cmd.Flags().MarkDeprecated("key", "please use --signer-id instead")
+	cmd.Flags().MarkDeprecated("key", "please use --signerID instead")
 	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID,\nif set no SignerID can be used\n(overrides VCN_ORG env var, if any)")
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no arg(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")

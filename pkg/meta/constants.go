@@ -16,10 +16,10 @@ import (
 	"github.com/fatih/color"
 )
 
-// Level is the type for all possibile signature levels
+// Level is the type for all possible signature levels
 type Level int64
 
-// Status is the type for all possibile asset statuses
+// Status is the type for all possible asset statuses
 type Status int64
 
 // Visibility is the type for all visibility values
