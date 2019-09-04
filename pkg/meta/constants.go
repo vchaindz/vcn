@@ -31,7 +31,7 @@ const (
 	LevelUnknown          Level = 0
 	LevelEmailVerified    Level = 1
 	LevelSocialVerified   Level = 2
-	LevelIdVerified       Level = 3
+	LevelIDVerified       Level = 3
 	LevelLocationVerified Level = 4
 	LevelVchain           Level = 99
 )
@@ -81,7 +81,7 @@ func LevelName(level Level) string {
 		return "1 - EMAIL_VERIFIED"
 	case LevelSocialVerified:
 		return "2 - SOCIAL_VERIFIED"
-	case LevelIdVerified:
+	case LevelIDVerified:
 		return "3 - ID_VERIFIED"
 	case LevelLocationVerified:
 		return "4 - LOCATION_VERIFIED"

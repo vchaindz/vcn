@@ -47,7 +47,7 @@ func TestSaveConfig(t *testing.T) {
 	cfg = &ConfigRoot{
 		CurrentContext: email,
 		Users: []*User{
-			&User{
+			{
 				Email:    email,
 				KeyStore: filepath.Join(tdir, "u", email, "k"),
 			},
@@ -67,7 +67,7 @@ func TestConfigClearContext(t *testing.T) {
 	cfg = &ConfigRoot{
 		CurrentContext: email,
 		Users: []*User{
-			&User{
+			{
 				Email: email,
 				Token: "dummy",
 			},
