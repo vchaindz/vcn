@@ -3,18 +3,22 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.6.0"></a>
+## [v0.6.0] - 2019-09-04
 ### Bug Fixes
+- correct typos
 - correct `Signer` field semantic
 - **api:** correct secret download content format
 - **verify:** switch to single key for current user
 
 ### Changes
-- deprecate `KEYSTORE_PASSWORD` env var in favour of `VCN_NOTARIZATION_PASSWORD`
+- update Smart Contract addresses
+- removed profile migration from v0.3.x
+- renamed `KEYSTORE_PASSWORD` env var to `VCN_NOTARIZATION_PASSWORD`
 - add "your assets will not be uploaded" message
 - deprecate `--key` in favor of `--signerID`
 - improve API and user messages to reflect the new terminology
-- update Smart Contract addresses to latest version
-- removed profile migration from v0.3.x
 - **api:** refactor to single address and code cleanup
 - **help:** add info about assets and env vars
 - **meta:** removed event tracking for keystore creation
@@ -23,6 +27,7 @@ All notable changes to this project will be documented in this file. This projec
 - **terminology:** switch to `notarize` and `authenticate`
 
 ### Code Refactoring
+- gofmt and golint
 - reduce artifact API surface
 - **meta:** rationalize config functions
 
@@ -30,6 +35,30 @@ All notable changes to this project will be documented in this file. This projec
 - add trial expiration message
 - automatically get secret from platform at login
 - add automatic checking for newer versions
+
+### BREAKING CHANGE
+
+Env variable `KEYSTORE_PASSWORD` has been renamed to `VCN_NOTARIZATION_PASSWORD`.
+
+All `api.BlockChainVerify*()` funcs have been renamed to `Verify*()`
+
+`api.BlockchainVerification.Key()` has been renamed to `SignerID()`
+`api.BlockChainOrganisation.MembersKeys()` has been renamed to `MembersIDs()`
+`api.BlockChainGetOrganisation()` has been renamed to `GetBlockChainOrganisation()`
+
+`meta`'s endpoint funcs has been removed in favour of single `meta.APIEndpoint()`. `meta.MainNetEndpoint()` has been renamed to `meta.MainNet()`.
+
+Artifact field `Signer` will not contain the user pub key anymore.
+
+`api.LoadArtifactForHash` has been renamed to `api.LoadArtifact`.
+`api.ArtifactRequest` has been privatized. Artifact shall be created only thru the notarization process.
+
+`--key` has been removed from `vcn sign`
+
+Dropping `LoadAllArtifacts` and `LoadArtifacts` and wallets/keys/keystore related functions from `api.User`.
+`api.Sign` won't accept anymore a pub key as parameter.
+
+support for multiple keystores in config file and related APIs within the `store` have been removed.
 
 
 <a name="v0.5.4"></a>
@@ -330,7 +359,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.5.4...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.0...HEAD
+[v0.6.0]: https://github.com/vchain-us/vcn/compare/v0.5.4...v0.6.0
 [v0.5.4]: https://github.com/vchain-us/vcn/compare/v0.5.3...v0.5.4
 [v0.5.3]: https://github.com/vchain-us/vcn/compare/v0.5.2...v0.5.3
 [v0.5.2]: https://github.com/vchain-us/vcn/compare/v0.5.1...v0.5.2
