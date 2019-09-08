@@ -24,6 +24,7 @@ vcn is so versatile, it can help detecting or acting on the following (but not l
 * Immutable tagging of source code, builds, and container images with version number, owner, timestamp, organization, trust level, and much more
 * Simple and tamper-proof extraction of notarized tags like version number, owner, timestamp, organization, and trust level from any source code, build and container (based on the related image)
 * Quickly discover and identify untrusted, revoked or obsolete libraries, builds, and containers in your application
+* Detect the launch of an authorized or unknown container immediately
 * Prevent untrusted or revoked containers from starting in production
 * Verify the integrity and the publisher of all the data received over any channel
 
