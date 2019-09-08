@@ -38,6 +38,13 @@ and more
 * Trace source code to build to deployment by integration into CI/CD or manual workflow
 * Tag your applications for specific use cases (alpha, beta - non-commercial aso).
 
+not just containers, also virtual machines -  [check out vCenter Connector, in case you running VMware vSphere](https://github.com/openfaas-incubator/vcenter-connector)
+* Newly created or existing virtual machines automatically get a unique identity that can be trusted or untrusted
+* Prevent launch of untrusted VMs
+* Stop or suspend running outdated or untrusted VMs
+* Detect the cloning or export of VMs and alert
+
+
 ## How it works
 ![vcn How it works](https://raw.githubusercontent.com/vchain-us/vcn/master/docs/vcn_hiwb.png "How it works")
 
