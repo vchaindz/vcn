@@ -94,11 +94,11 @@ func ProvidePlatformUsername() (user string, err error) {
 	}
 	fmt.Print("Email address: ")
 	n, err := fmt.Scanln(&user)
+	if n <= 0 {
+		return "", fmt.Errorf("email address must not be empty")
+	}
 	if err != nil {
 		return "", err
-	}
-	if n <= 0 {
-		return "", fmt.Errorf("username must not be empty")
 	}
 	user = strings.TrimSpace(user)
 	logs.LOG.WithFields(logrus.Fields{
