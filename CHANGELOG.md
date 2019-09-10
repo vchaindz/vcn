@@ -4,21 +4,31 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.6.1"></a>
+## [v0.6.1] - 2019-09-10
+### Bug Fixes
+- correct error msg when entering empty email (fixes [#43](https://github.com/vchain-us/vcn/issues/43))
+
+### Features
+- enable git repo notarization and authentication
+- **extractor:** add scheme for git repository
+
+
 <a name="v0.6.0"></a>
 ## [v0.6.0] - 2019-09-04
 ### Bug Fixes
-- correct typos
 - correct `Signer` field semantic
 - **api:** correct secret download content format
 - **verify:** switch to single key for current user
 
 ### Changes
-- update Smart Contract addresses
+- update Smart Contract addresses to latest version
 - removed profile migration from v0.3.x
-- renamed `KEYSTORE_PASSWORD` env var to `VCN_NOTARIZATION_PASSWORD`
+- deprecate `KEYSTORE_PASSWORD` env var in favour of `VCN_NOTARIZATION_PASSWORD`
 - add "your assets will not be uploaded" message
 - deprecate `--key` in favor of `--signerID`
 - improve API and user messages to reflect the new terminology
+- correct typos
 - **api:** refactor to single address and code cleanup
 - **help:** add info about assets and env vars
 - **meta:** removed event tracking for keystore creation
@@ -359,7 +369,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.1...HEAD
+[v0.6.1]: https://github.com/vchain-us/vcn/compare/v0.6.0...v0.6.1
 [v0.6.0]: https://github.com/vchain-us/vcn/compare/v0.5.4...v0.6.0
 [v0.5.4]: https://github.com/vchain-us/vcn/compare/v0.5.3...v0.5.4
 [v0.5.3]: https://github.com/vchain-us/vcn/compare/v0.5.2...v0.5.3
