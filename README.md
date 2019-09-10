@@ -4,6 +4,7 @@
 [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=shield)](https://circleci.com/gh/vchain-us/vcn)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vchain-us/vcn)](https://goreportcard.com/report/github.com/vchain-us/vcn)
 [![GoDoc](https://godoc.org/github.com/vchain-us/vcn?status.svg)](https://godoc.org/github.com/vchain-us/vcn)
+[![Changelog](https://img.shields.io/badge/CHANGELOG-.md-blue)](CHANGELOG.md)
 
 ## The Trust and Integrity platform for the Cloud native environment
 Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
@@ -50,7 +51,7 @@ not just containers, also virtual machines -  [check out vCenter Connector, in c
 
 ## Installation
 
-### Binary (Cross-platform)
+### Download binary
 
 It's easiest to download the latest version for your platform from the [release page](
 https://github.com/vchain-us/vcn/releases).
@@ -67,49 +68,30 @@ brew tap vchain-us/brew
 brew install vcn
 ```
 
-### From Source
+### Build from Source
 
 After having installed [golang](https://golang.org/doc/install) 1.12 or newer clone this 
 repository into your working directory.
 
-#### Build locally
+Now, you can build `vcn` in the working directory by using `make vcn` and the run `./vcn`.
 
-You can build `vcn` in the working directory using the provided `Makefile`.
-
-```
-make vcn
-```
-
-Then run
-```
-./vcn
-```
-
-#### System-wide
-
-This will put the `vcn` executable into `GOBIN` which is
+Alternatively, you can install `vcn` in yor system simpy by running `make install`. This will put the `vcn` executable into `GOBIN` which is
 accessible throughout the system.
-
-```
-make install
-```
 
 ## Usage
 
+Basically, `vcn` can notarize or authenticate any of the following kind of assets:
+
+- a **file**
+- an entire **directory** (by prefixing the directory path with `dir://`)
+- a **git commit** (by prefixing the local git working directory path with `git://`)
+- a **container image** (by using `docker://` or `podman://` followed by the name of an image present in the local registry of docker or podman, respectively)
+
+> It's also possible to provide a hash value directly by using the `--hash` flag.
+
 For detailed **command line usage** see [docs/cmd/vcn.md](docs/cmd/vcn.md) or just run `vcn help`.
 
-
-Furthermore, check out our list of **integrations**:
-
-* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for notarizing and authenticating Docker images.
-* [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
-* [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
-* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous authentication with CodeNotary for Docker.
-* [jsvcn](https://github.com/vchain-us/jsvcn) - CodeNotary JavaScript Client.
-* [jvcn](https://github.com/vchain-us/jvcn) - CodeNotary Java Bindings.
-* [jvcn-maven-plugin](https://github.com/vchain-us/jvcn-maven-plugin) - Maven dependency authentication and enforcement.
-
-### Basic usage
+### Notarization 
 
 Register an account with [codernotary.io](https://codenotary.io) first.
 
@@ -118,30 +100,14 @@ Then start with the `login` command. `vcn` will walk you through login and impor
 vcn login
 ```
 
-You're good to use `authenticate` without the above registration.
-
-```
-vcn authenticate <file>
-vcn authenticate dir://<directory>
-vcn authenticate docker://<imageId>
-vcn authenticate podman://<imageId>
-vcn authenticate --hash <hash>
-```
-
-Output results in `json` or `yaml` formats:
-```
-vcn authenticate --output=json <asset>
-vcn authenticate --output=yaml <asset>
-```
-> Check out the [user guide](docs/user-guide/formatted-output.md) for further details.
-
-Once your secret is set you can notarize assets:
+Once your secret is set you can notarize assets like in the following examples:
 
 ```
 vcn notarize <file>
 vcn notarize dir://<directory>
 vcn notarize docker://<imageId>
 vcn notarize podman://<imageId>
+vcn notarize git://<path_to_git_repo>
 vcn notarize --hash <hash>
 ```
 
@@ -158,19 +124,51 @@ vcn unsupport <asset>
 vcn untrust <asset>
 ```
 
-Fetch all assets you've notarized:
+Finally, to fetch all assets you've notarized:
 
 ```
 vcn list
 ```
 
-Have a look at analytics and extended functionality on the dashboard (browser needed):
+### Authentication
 
 ```
-vcn dashboard
+vcn authenticate <file>
+vcn authenticate dir://<directory>
+vcn authenticate docker://<imageId>
+vcn authenticate podman://<imageId>
+vcn authenticate git://<path_to_git_repo>
+vcn authenticate --hash <hash>
 ```
+> You can use `vcn authenticate` even without a [codernotary.io](https://codenotary.io) account.
 
-### Examples
+To output results in `json` or `yaml` formats:
+```
+vcn authenticate --output=json <asset>
+vcn authenticate --output=yaml <asset>
+```
+> Check out the [user guide](docs/user-guide/formatted-output.md) for further details.
+
+
+### Integrations
+
+* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for notarizing and authenticating Docker images.
+* [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
+* [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
+* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous authentication with CodeNotary for Docker.
+* [jsvcn](https://github.com/vchain-us/jsvcn) - CodeNotary JavaScript Client.
+* [jvcn](https://github.com/vchain-us/jvcn) - CodeNotary Java Bindings.
+* [jvcn-maven-plugin](https://github.com/vchain-us/jvcn-maven-plugin) - Maven dependency authentication and enforcement.
+
+## Documentation
+
+* [Command line usage](docs/cmd/vcn.md)
+* [Configuration](docs/user-guide/configuration.md)
+* [Environments](docs/user-guide/environments.md)
+* [Formatted output (json/yaml)](docs/user-guide/formatted-output.md)
+* [Notarization explained](docs/user-guide/notarization.md)
+
+## Examples
 
 #### Authenticate a Docker image automatically prior to running it
 
@@ -251,22 +249,6 @@ vcn login
 vcn notarize <asset>
 ```
 > Other commands like `untrust` and `unsupport` will also work.
-
-
-#### Working with Docker and Kubernetes
-
-Check out our integrations:
-
-* [Docker](docs/DOCKERINTEGRATION.md)
-* [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog)
-* [vcn-k8s](https://github.com/vchain-us/vcn-k8s)
-
-
-## Configuration
-See [docs/user-guide/configuration.md](docs/user-guide/configuration.md).
-
-## Environments
-See [docs/user-guide/environments.md](docs/user-guide/environments.md).
 
 ## Testing
 ```

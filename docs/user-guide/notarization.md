@@ -53,7 +53,7 @@ Authentication is always free and can be performed by anyone, anywhere, at any t
 
 CodeNotary's `vcn` application allows multiple users to notarize the same asset. The act is known as co-notarization. By default, when running the command `vcn authenticate`, a user’s last blockchain entry for the asset will be returned to them when they are logged in, regardless if the asset was co-notarized. However, all other users will be returned the last blockchain entry made by the user with the highest trust level. 
 
-Alternatively, it is also possible to retrieve the authentication matching a specific signer (a user or an organization) using the flag --key.
+Alternatively, it is also possible to retrieve the authentication matching a specific signer (a user or an organization) using the flag `--signerID`.
 
 ## Statuses
 
