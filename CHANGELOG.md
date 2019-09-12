@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Changes
+- new AssetsRelay smart contract
+
+### Code Refactoring
+- use new smart contract functions
+
 
 <a name="v0.6.1"></a>
 ## [v0.6.1] - 2019-09-10
