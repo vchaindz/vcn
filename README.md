@@ -1,10 +1,10 @@
-# vcn  <img align="right" src="docs/img/cn-color.eeadbabe.svg" width="160px"/>
+# vcn  <img align="right" src="https://raw.githubusercontent.com/vchain-us/vcn/master/docs/img/cn-color.eeadbabe.svg" width="160px"/>
 > **_vChain CodeNotary_**
 
 [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=shield)](https://circleci.com/gh/vchain-us/vcn)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vchain-us/vcn)](https://goreportcard.com/report/github.com/vchain-us/vcn)
 [![GoDoc](https://godoc.org/github.com/vchain-us/vcn?status.svg)](https://godoc.org/github.com/vchain-us/vcn)
-[![Changelog](https://img.shields.io/badge/CHANGELOG-.md-blue)](CHANGELOG.md)
+[![Changelog](https://img.shields.io/badge/CHANGELOG-.md-blue)](https://github.com/vchain-us/vcn/blob/master/CHANGELOG.md)
 
 ## The Trust and Integrity platform for the Cloud native environment
 Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
@@ -73,9 +73,9 @@ brew install vcn
 After having installed [golang](https://golang.org/doc/install) 1.12 or newer clone this 
 repository into your working directory.
 
-Now, you can build `vcn` in the working directory by using `make vcn` and the run `./vcn`.
+Now, you can build `vcn` in the working directory by using `make vcn` and then run `./vcn`.
 
-Alternatively, you can install `vcn` in yor system simpy by running `make install`. This will put the `vcn` executable into `GOBIN` which is
+Alternatively, you can install `vcn` in your system simply by running `make install`. This will put the `vcn` executable into `GOBIN` which is
 accessible throughout the system.
 
 ## Usage
@@ -89,7 +89,7 @@ Basically, `vcn` can notarize or authenticate any of the following kind of asset
 
 > It's also possible to provide a hash value directly by using the `--hash` flag.
 
-For detailed **command line usage** see [docs/cmd/vcn.md](docs/cmd/vcn.md) or just run `vcn help`.
+For detailed **command line usage** see [docs/cmd/vcn.md](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md) or just run `vcn help`.
 
 ### Notarization 
 
@@ -147,12 +147,12 @@ To output results in `json` or `yaml` formats:
 vcn authenticate --output=json <asset>
 vcn authenticate --output=yaml <asset>
 ```
-> Check out the [user guide](docs/user-guide/formatted-output.md) for further details.
+> Check out the [user guide](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/formatted-output.md) for further details.
 
 
 ### Integrations
 
-* [docker](docs/DOCKERINTEGRATION.md) - Out of the box support for notarizing and authenticating Docker images.
+* [docker](https://github.com/vchain-us/vcn/blob/master/docs/DOCKERINTEGRATION.md) - Out of the box support for notarizing and authenticating Docker images.
 * [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
 * [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
 * [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous authentication with CodeNotary for Docker.
@@ -162,11 +162,11 @@ vcn authenticate --output=yaml <asset>
 
 ## Documentation
 
-* [Command line usage](docs/cmd/vcn.md)
-* [Configuration](docs/user-guide/configuration.md)
-* [Environments](docs/user-guide/environments.md)
-* [Formatted output (json/yaml)](docs/user-guide/formatted-output.md)
-* [Notarization explained](docs/user-guide/notarization.md)
+* [Command line usage](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md)
+* [Configuration](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/configuration.md)
+* [Environments](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/environments.md)
+* [Formatted output (json/yaml)](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/formatted-output.md)
+* [Notarization explained](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/notarization.md)
 
 ## Examples
 
