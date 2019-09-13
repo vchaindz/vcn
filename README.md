@@ -1,4 +1,4 @@
-# vcn  <img align="right" src="https://raw.githubusercontent.com/vchain-us/vcn/master/docs/img/cn-color.eeadbabe.svg" width="160px"/>
+# vcn  <img align="right" src="https://github.com/vchain-us/vcn/blob/master/docs/img/cn-color.eeadbabe.svg" width="160px"/>
 > **_vChain CodeNotary_**
 
 [![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=shield)](https://circleci.com/gh/vchain-us/vcn)
