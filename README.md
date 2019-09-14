@@ -15,6 +15,19 @@ That allows change and revocation post-release without breaking any customer env
 
 Everything is done in a global, collaborative way to break the common silo solution architecture. Leveraging an immutable, always-on DLT platform allows you to avoid complex setup of Certificate authorities or digital certificates (that are unfit for DevOps anyway). 
 
+## Table of contents
+
+- [DevSecOps in mind](#devsecops-in-mind)
+- [What kind of behaviors can CodeNotary vcn detect?](#what-kind-of-behaviors-can-codenotary-vcn-detect?)
+- [How it works](#how-it-works)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Integrations](#integrations)
+- [Documentation](#documentation)
+- [Testing](#testing)
+- [Cross-compiling for various platforms](#cross-compiling-for-various-platforms)
+- [License](#license)
+
 ## DevSecOps in mind
 Codenotary vcn is a solution written by a devops-obsessed engineers for Devops engineers to bring better trust and security to the the CloudNative source to deployment process 
 
@@ -150,7 +163,7 @@ vcn authenticate --output=yaml <asset>
 > Check out the [user guide](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/formatted-output.md) for further details.
 
 
-### Integrations
+## Integrations
 
 * [docker](https://github.com/vchain-us/vcn/blob/master/docs/DOCKERINTEGRATION.md) - Out of the box support for notarizing and authenticating Docker images.
 * [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
