@@ -17,8 +17,9 @@ Everything is done in a global, collaborative way to break the common silo solut
 
 ## Table of contents
 
+- [Quick start](#quick-start)
 - [DevSecOps in mind](#devsecops-in-mind)
-- [What kind of behaviors can CodeNotary vcn detect?](#what-kind-of-behaviors-can-codenotary-vcn-detect?)
+- [What kind of behaviors can CodeNotary vcn detect](#what-kind-of-behaviors-can-codenotary-vcn-detect)
 - [How it works](#how-it-works)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -28,10 +29,37 @@ Everything is done in a global, collaborative way to break the common silo solut
 - [Cross-compiling for various platforms](#cross-compiling-for-various-platforms)
 - [License](#license)
 
+## Quick start
+
+1. **Download CodeNotary vcn.** There are releases for different platforms:
+
+- [Download the latest release](https://github.com/vchain-us/vcn/releases/latest) and then read the [Usage](#usage) section below.
+- We recommend storing vcn in your PATH - Linux example:
+   ```bash
+   cp vcn-v0.6.1-linux-amd64 /usr/local/bin/vcn
+   ```
+
+2. **Authenticate digital objects** You can use the command as a starting point.
+
+   ```bash
+   vcn authenticate <file|ds://directory|docker://dockerimage|git://gitdirectory>
+   ```
+
+3. [**Create your identity (free)**](https://dashboard.staging.codenotary.io/auth/signup) You need an identity at CodeNotary to notarize objects yourself (btw. we're a data-minimum company and only ask for data that is really required) 
+
+
+4. **Notarize existing digital objects** Once you have an account you can start notarizing digital assets to give them an identity.
+
+   ```bash
+   vcn login
+   vcn notarize <file|ds://directory|docker://dockerimage|git://gitdirectory>
+   ```
+
+
 ## DevSecOps in mind
 Codenotary vcn is a solution written by a devops-obsessed engineers for Devops engineers to bring better trust and security to the the CloudNative source to deployment process 
 
-## What kind of behaviors can CodeNotary vcn detect?
+## What kind of behaviors can CodeNotary vcn detect
 vcn (and its extensions for Docker, Kubernetes, documents or CI/CD) can detect, authenticate and alert on any behavior that involves using unauthentic digital assets. vcn verification can be embedded anywhere and can be used to trigger alerts, updates or workflows.
 
 vcn is so versatile, it can help detecting or acting on the following (but not limited to):
