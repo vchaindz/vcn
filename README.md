@@ -45,7 +45,7 @@ Everything is done in a global, collaborative way to break the common silo solut
    vcn authenticate <file|ds://directory|docker://dockerimage|git://gitdirectory>
    ```
 
-3. [**Create your identity (free)**](https://dashboard.staging.codenotary.io/auth/signup) You need an identity at CodeNotary to notarize objects yourself (btw. we're a data-minimum company and only ask for data that is really required) 
+3. [**Create your identity (free)**](https://dashboard.codenotary.io/auth/signup) You need an identity at CodeNotary to notarize objects yourself (btw. we're a data-minimum company and only ask for data that is really required) 
 
 
 4. **Notarize existing digital objects** Once you have an account you can start notarizing digital assets to give them an identity.
