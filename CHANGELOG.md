@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.6.2"></a>
+## [v0.6.2] - 2019-09-17
 ### Changes
 - new AssetsRelay smart contract
 
@@ -375,7 +378,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.2...HEAD
+[v0.6.2]: https://github.com/vchain-us/vcn/compare/v0.6.1...v0.6.2
 [v0.6.1]: https://github.com/vchain-us/vcn/compare/v0.6.0...v0.6.1
 [v0.6.0]: https://github.com/vchain-us/vcn/compare/v0.5.4...v0.6.0
 [v0.5.4]: https://github.com/vchain-us/vcn/compare/v0.5.3...v0.5.4
