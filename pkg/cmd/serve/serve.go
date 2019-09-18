@@ -52,6 +52,8 @@ func runServe(cmd *cobra.Command) error {
 	router.HandleFunc("/unsupport", signHander(meta.StatusUnsupported)).Methods("POST")
 	router.HandleFunc("/authenticate/{hash}", verify).Methods("GET")
 
+	logs.LOG.Infof("Log level %s", logs.LOG.GetLevel().String())
+	logs.LOG.Infof("Stage %s", meta.StageName(meta.StageEnvironment()))
 	logs.LOG.Infof("Starting server %s", host)
 	return http.ListenAndServe(host, router)
 }
