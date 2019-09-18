@@ -61,10 +61,6 @@ func (u User) SignWithOptions(artifact Artifact, options ...SignOption) (*Blockc
 		return nil, fmt.Errorf(errors.NoRemainingSignOps)
 	}
 
-	if err := u.checkSyncState(); err != nil {
-		return nil, err
-	}
-
 	return u.commitTransaction(
 		artifact,
 		options...,
@@ -73,13 +69,17 @@ func (u User) SignWithOptions(artifact Artifact, options ...SignOption) (*Blockc
 
 // Sign is invoked by the User to notarize an artifact with a given state and visibility,
 // if successful a BlockchainVerification is returned.
-// The passphrase is required to unlock the local stored secret.
+// The passphrase is required to unlock the platform stored secret.
 func (u User) Sign(artifact Artifact, passphrase string, status meta.Status, visibility meta.Visibility) (*BlockchainVerification, error) {
+	keyin, err := u.DownloadSecret()
+	if err != nil {
+		return nil, err
+	}
 	return u.SignWithOptions(
 		artifact,
 		SignWithStatus(status),
 		SignWithVisibility(visibility),
-		SignWithPassphrase(passphrase),
+		SignWithKey(keyin, passphrase),
 	)
 }
 

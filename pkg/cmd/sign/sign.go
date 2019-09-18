@@ -107,10 +107,6 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 	u := api.NewUser(store.Config().CurrentContext)
 
-	if err := assert.UserKeystore(); err != nil {
-		return err
-	}
-
 	// Make the artifact to be signed
 	var a *api.Artifact
 	if hash != "" {

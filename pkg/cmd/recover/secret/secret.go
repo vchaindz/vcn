@@ -72,6 +72,6 @@ func Execute() error {
 
 	fmt.Println("Secret successfully imported.")
 	fmt.Println("Secret Storage:\t", userCfg.KeyStore)
-	fmt.Println("SignerID:\t", userCfg.PublicAddress())
+	fmt.Println("SignerID:\t", userCfg.SignerIDFromSecret())
 	return nil
 }

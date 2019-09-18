@@ -186,7 +186,7 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 		// if we have an user, check for verification matching user's key first
 		userKey := ""
 		if hasAuth, _ := user.IsAuthenticated(); hasAuth {
-			userKey = user.Config().PublicAddress()
+			userKey, _ = user.SignerID() // todo(leogr): double check this
 		}
 		if userKey != "" {
 			if output == "" {

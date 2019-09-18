@@ -68,8 +68,8 @@ func (u User) defaultSecretFilepath() string {
 	return filepath.Join(u.KeyStore, defaultSecretFile)
 }
 
-// PublicAddress returns the public address for the User's secret, if any, otherwise an empty string.
-func (u *User) PublicAddress() string {
+// SignerIDFromSecret returns the public address for the User's secret, if any, otherwise an empty string.
+func (u *User) SignerIDFromSecret() string {
 	if acc, _ := u.defaultAccount(); acc != nil {
 		return strings.ToLower(acc.Address.Hex())
 	}

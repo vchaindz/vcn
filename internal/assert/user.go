@@ -44,11 +44,3 @@ func UserLogin() error {
 
 	return nil
 }
-
-func UserKeystore() error {
-	u := api.NewUser(store.Config().CurrentContext)
-	if u.Config().PublicAddress() == "" {
-		return fmt.Errorf("your secret has not been setup yet, please run <vcn login>")
-	}
-	return nil
-}

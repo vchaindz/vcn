@@ -101,13 +101,22 @@ func (u User) getSecret() (address, keystore string, err error) {
 	authError := new(Error)
 	pagedWalletResponse := new(struct {
 		Content []struct {
-			Address  string `json:"address"`
-			KeyStore string `json:"keyStore"`
+			Address             string `json:"address"`
+			KeyStore            string `json:"keyStore"`
+			CreatedAt           string `json:"createdAt"`
+			Name                string `json:"name"`
+			PermissionSyncState string `json:"permissionSyncState"`
+			LevelSyncState      string `json:"levelSyncState"`
 		} `json:"content"`
 	})
 	r, err := newSling(u.token()).
 		Get(meta.APIEndpoint("wallet")).
 		Receive(pagedWalletResponse, authError)
+	logger().WithFields(logrus.Fields{
+		"response":  "HIDDEN",
+		"err":       err,
+		"authError": authError,
+	}).Trace("getSecret")
 	if err != nil {
 		return
 	}
@@ -117,9 +126,19 @@ func (u User) getSecret() (address, keystore string, err error) {
 	}
 
 	wallets := pagedWalletResponse.Content
-	if len(wallets) == 0 || wallets[0].KeyStore == "" {
-		err = fmt.Errorf("no secret found for %s, please complete the onboarding process at %s", u.Email(), meta.DashboardURL())
-	} else {
+	for _, wallet := range wallets {
+		if wallet.Address == strings.ToLower(address) {
+			if wallet.PermissionSyncState == "SYNCED" && wallet.LevelSyncState == "SYNCED" {
+				// everything is ok
+				break // currently, the user can have just one wallet
+			}
+			err = fmt.Errorf(errors.AccountNotSynced)
+			return
+		}
+	}
+
+	// currently, the user can have just one wallet
+	if len(wallets) > 0 {
 		address = wallets[0].Address
 		keystore = wallets[0].KeyStore
 	}
@@ -132,12 +151,18 @@ func (u User) DownloadSecret() (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
+	if keystore == "" {
+		return nil, fmt.Errorf("no secret found for %s, please complete the onboarding process at %s", u.Email(), meta.DashboardURL())
+	}
 	return bytes.NewReader([]byte(keystore)), nil
 }
 
 // SignerID retrives the User's SignerID (the public address derived from the secret) from the platform.
 func (u User) SignerID() (id string, err error) {
 	id, _, err = u.getSecret()
+	if err == nil && id == "" {
+		err = fmt.Errorf("no SignerID found for %s", u.Email())
+	}
 	return
 }
 
@@ -163,49 +188,6 @@ func (u User) RemainingSignOps() (uint64, error) {
 		return response.Count, nil
 	}
 	return 0, fmt.Errorf("count remaining sign operations failed: %+v", restError)
-}
-
-func (u User) checkSyncState() (err error) {
-	address := u.cfg.PublicAddress()
-	if address == "" {
-		return fmt.Errorf("no secret has been imported for %s", u.Email())
-	}
-
-	authError := new(Error)
-	pagedWalletResponse := new(struct {
-		Content []struct {
-			Address             string `json:"address"`
-			CreatedAt           string `json:"createdAt"`
-			Name                string `json:"name"`
-			PermissionSyncState string `json:"permissionSyncState"`
-			LevelSyncState      string `json:"levelSyncState"`
-		} `json:"content"`
-	})
-	r, err := newSling(u.token()).
-		Get(meta.APIEndpoint("wallet")).
-		Receive(pagedWalletResponse, authError)
-	if err != nil {
-		return err
-	}
-	if r.StatusCode != 200 {
-		return fmt.Errorf(
-			"request failed: %s (%d)", authError.Message,
-			authError.Status)
-	}
-
-	wallets := pagedWalletResponse.Content
-	if len(wallets) == 0 {
-		return fmt.Errorf("no secret found for %s", u.Email())
-	}
-	for _, wallet := range (*pagedWalletResponse).Content {
-		if wallet.Address == strings.ToLower(address) {
-			if wallet.PermissionSyncState == "SYNCED" && wallet.LevelSyncState == "SYNCED" {
-				return nil // everything is ok
-			}
-			return fmt.Errorf(errors.AccountNotSynced)
-		}
-	}
-	return fmt.Errorf("the public address (SignerID) of locally stored secret does not match your account (%s)", address)
 }
 
 func (u User) trialExpired() (bool, error) {

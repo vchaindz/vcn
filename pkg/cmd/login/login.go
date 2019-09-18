@@ -80,15 +80,6 @@ func Execute() error {
 	}
 	cfg.CurrentContext = user.Email()
 
-	// Sync user's secret
-	secret, err := user.DownloadSecret()
-	if err != nil {
-		return err
-	}
-	if err := user.Config().WriteSecret(secret); err != nil {
-		return err
-	}
-
 	// Store the new config
 	if err := store.SaveConfig(); err != nil {
 		return err
