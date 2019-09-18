@@ -27,7 +27,6 @@ func signHander(state meta.Status) func(w http.ResponseWriter, r *http.Request) 
 
 func sign(status meta.Status, w http.ResponseWriter, r *http.Request) {
 	user, passphrase, err := getCredential(r)
-	fmt.Println(passphrase)
 	if err != nil {
 		writeError(w, http.StatusUnauthorized, err)
 		return
