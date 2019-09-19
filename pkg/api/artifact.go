@@ -86,25 +86,25 @@ type PagedArtifactResponse struct {
 type ArtifactResponse struct {
 	// root fields
 	Kind        string `json:"kind" vcn:"Kind"`
-	Name        string `json:"name" vcn:"Name"`
+	Name        string `json:"name,omitempty" vcn:"Name"`
 	Hash        string `json:"hash" vcn:"Hash"`
-	Size        uint64 `json:"size" vcn:"Size"`
-	ContentType string `json:"contentType" vcn:"ContentType"`
-	URL         string `json:"url" vcn:"URL"`
+	Size        uint64 `json:"size,omitempty" vcn:"Size"`
+	ContentType string `json:"contentType,omitempty" vcn:"ContentType"`
+	URL         string `json:"url,omitempty" vcn:"URL"`
 
 	// custom metadata
-	Metadata Metadata `json:"metadata" vcn:"Metadata"`
+	Metadata Metadata `json:"metadata,omitempty" vcn:"Metadata"`
 
 	// ArtifactResponse specific
-	Level             int64  `json:"level"`
-	Visibility        string `json:"visibility" vcn:"Visibility"`
-	Status            string `json:"status"`
-	CreatedAt         string `json:"createdAt"`
-	VerificationCount uint64 `json:"verificationCount"`
-	SignerCount       uint64 `json:"signerCount"`
-	Signer            string `json:"signer" vcn:"Signer"`
-	Company           string `json:"company" vcn:"Company"`
-	Website           string `json:"website" vcn:"Website"`
+	Level             int64  `json:"level,omitempty"`
+	Visibility        string `json:"visibility,omitempty" vcn:"Visibility"`
+	Status            string `json:"status,omitempty"`
+	CreatedAt         string `json:"createdAt,omitempty"`
+	VerificationCount uint64 `json:"verificationCount,omitempty"`
+	SignerCount       uint64 `json:"signerCount,omitempty"`
+	Signer            string `json:"signer,omitempty" vcn:"Signer"`
+	Company           string `json:"company,omitempty" vcn:"Company"`
+	Website           string `json:"website,omitempty" vcn:"Website"`
 }
 
 func (a ArtifactResponse) String() string {
