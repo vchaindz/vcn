@@ -9,6 +9,7 @@
 package serve
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -31,6 +32,8 @@ func NewCmdServe() *cobra.Command {
 	}
 	cmd.Flags().String("host", "", "host address")
 	cmd.Flags().String("port", "8080", "port")
+	cmd.Flags().String("tls-cert-file", "", "TLS certificate file")
+	cmd.Flags().String("tls-key-file", "", "TLS key file")
 	return cmd
 }
 
@@ -43,7 +46,16 @@ func runServe(cmd *cobra.Command) error {
 	if err != nil {
 		return nil
 	}
-	host += ":" + port
+	addr := host + ":" + port
+
+	certFile, _ := cmd.Flags().GetString("tls-cert-file")
+	keyFile, _ := cmd.Flags().GetString("tls-key-file")
+	if certFile != "" && keyFile == "" {
+		return fmt.Errorf("--tls-key-file is missing")
+	}
+	if certFile == "" && keyFile != "" {
+		return fmt.Errorf("--tls-cert-file is missing")
+	}
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
@@ -52,10 +64,16 @@ func runServe(cmd *cobra.Command) error {
 	router.HandleFunc("/unsupport", signHander(meta.StatusUnsupported)).Methods("POST")
 	router.HandleFunc("/authenticate/{hash}", verify).Methods("GET")
 
-	logs.LOG.Infof("Log level %s", logs.LOG.GetLevel().String())
-	logs.LOG.Infof("Stage %s", meta.StageName(meta.StageEnvironment()))
-	logs.LOG.Infof("Starting server %s", host)
-	return http.ListenAndServe(host, router)
+	logs.LOG.Infof("Log level: %s", logs.LOG.GetLevel().String())
+	logs.LOG.Infof("Stage: %s", meta.StageName(meta.StageEnvironment()))
+
+	if certFile != "" && keyFile != "" {
+		logs.LOG.Infof("Listening on %s (TLS)", addr)
+		return http.ListenAndServeTLS(addr, certFile, keyFile, router)
+	}
+
+	logs.LOG.Infof("Listening on %s", addr)
+	return http.ListenAndServe(addr, router)
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
