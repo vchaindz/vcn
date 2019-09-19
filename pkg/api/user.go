@@ -47,9 +47,19 @@ func (u *User) Authenticate(password string) (err error) {
 		return makeFatal("user not initialized", nil)
 	}
 
-	token, err := authenticateUser(u.Email(), password)
+	email := u.Email()
+
+	ok, err := checkUserExists(email)
 	if err != nil {
-		return err
+		return
+	}
+	if !ok {
+		return fmt.Errorf(`no such user "%s", please create an account at %s`, email, meta.DashboardURL())
+	}
+
+	token, err := authenticateUser(email, password)
+	if err != nil {
+		return
 	}
 
 	u.cfg.Token = token

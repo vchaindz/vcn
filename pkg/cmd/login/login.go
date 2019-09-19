@@ -61,13 +61,6 @@ func Execute() error {
 	}
 
 	user := api.NewUser(email)
-	isExist, err := user.IsExist()
-	if err != nil {
-		return err
-	}
-	if !isExist {
-		return fmt.Errorf("no such user, please create an account at: %s", meta.DashboardURL())
-	}
 
 	password, err := cli.ProvidePlatformPassword()
 	if err != nil {
