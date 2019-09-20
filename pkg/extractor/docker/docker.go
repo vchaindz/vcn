@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/uri"
 )
 
@@ -27,7 +28,7 @@ const SchemePodman = "podman"
 var schemes = map[string]bool{Scheme: true, SchemePodman: true}
 
 // Artifact returns a file *api.Artifact from a given u
-func Artifact(u *uri.URI) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 
 	if !schemes[u.Scheme] {
 		return nil, nil

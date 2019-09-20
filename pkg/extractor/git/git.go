@@ -12,16 +12,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/vchain-us/vcn/pkg/api"
-	"github.com/vchain-us/vcn/pkg/uri"
 	git "gopkg.in/src-d/go-git.v4"
+
+	"github.com/vchain-us/vcn/pkg/api"
+	"github.com/vchain-us/vcn/pkg/extractor"
+	"github.com/vchain-us/vcn/pkg/uri"
 )
 
 // Scheme for git
 const Scheme = "git"
 
 // Artifact returns a git *api.Artifact from a given u
-func Artifact(u *uri.URI) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 
 	if u.Scheme != Scheme {
 		return nil, nil

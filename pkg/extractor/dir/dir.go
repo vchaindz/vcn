@@ -16,6 +16,7 @@ import (
 
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/bundle"
+	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/uri"
 )
 
@@ -29,7 +30,7 @@ const ManifestKey = "manifest"
 const PathKey = "path"
 
 // Artifact returns a file *api.Artifact from a given u
-func Artifact(u *uri.URI) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 
 	if u.Scheme != "" && u.Scheme != Scheme {
 		return nil, nil
