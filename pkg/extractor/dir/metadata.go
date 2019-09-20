@@ -17,6 +17,7 @@ const (
 	manifestFile = ".vcn.manifest.json"
 )
 
+// Metadata extracts dir related info from a.
 func Metadata(a api.Artifact) (manifest *bundle.Manifest, path string) {
 	if a.Kind != Scheme {
 		return
@@ -41,6 +42,7 @@ func Metadata(a api.Artifact) (manifest *bundle.Manifest, path string) {
 	return
 }
 
+// RemoveMetadata removes dir related info from a.
 func RemoveMetadata(a *api.Artifact) {
 	if a == nil || a.Kind != Scheme {
 		return

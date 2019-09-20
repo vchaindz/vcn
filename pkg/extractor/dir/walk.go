@@ -23,7 +23,7 @@ func walk(root string) (files []bundle.Descriptor, err error) {
 		return
 	}
 	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		// ignore irregular files (e.g. dir, symlink, pipe, socket, device...)
+		// skip irregular files (e.g. dir, symlink, pipe, socket, device...)
 		if !info.Mode().IsRegular() {
 			return nil
 		}
@@ -35,7 +35,7 @@ func walk(root string) (files []bundle.Descriptor, err error) {
 		// descriptor's path must be OS agnostic
 		relPath = filepath.ToSlash(relPath)
 
-		// ignore manifest file
+		// skip manifest and files matching the ignore patterns
 		if relPath == bundle.ManifestFilename || ignore.Match(strings.Split(relPath, "/"), false) {
 			return nil
 		}

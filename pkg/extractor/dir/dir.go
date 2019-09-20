@@ -29,11 +29,20 @@ const ManifestKey = "manifest"
 // PathKey is the metadata's key for the directory path
 const PathKey = "path"
 
+type opts struct {
+	initIgnoreFile bool
+}
+
 // Artifact returns a file *api.Artifact from a given u
 func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 
 	if u.Scheme != "" && u.Scheme != Scheme {
 		return nil, nil
+	}
+
+	opts := &opts{}
+	if err := extractor.Options(options).Apply(opts); err != nil {
+		return nil, err
 	}
 
 	path := strings.TrimPrefix(u.Opaque, "//")
@@ -57,8 +66,10 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 		return nil, fmt.Errorf("read %s: is not a directory", path)
 	}
 
-	if err := initIgnoreFile(path); err != nil {
-		return nil, err
+	if opts.initIgnoreFile {
+		if err := initIgnoreFile(path); err != nil {
+			return nil, err
+		}
 	}
 
 	files, err := walk(path)
@@ -84,4 +95,15 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 		Name:     stat.Name(),
 		Metadata: m,
 	}, nil
+}
+
+// WithIgnoreFileInit returns a functional option to instruct the dir's extractor to create the defualt ignore file
+// when not yet present into the targeted directory.
+func WithIgnoreFileInit() extractor.Option {
+	return func(o interface{}) error {
+		if o, ok := o.(*opts); ok {
+			o.initIgnoreFile = true
+		}
+		return nil
+	}
 }

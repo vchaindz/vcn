@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/vchain-us/vcn/pkg/extractor/dir"
+
 	"github.com/fatih/color"
 
 	"github.com/caarlos0/spin"
@@ -73,6 +75,11 @@ Note that your asset will not be uploaded but processed locally.
 
 func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) error {
 
+	// default extractors options
+	extractorOptions := []extractor.Option{
+		dir.WithIgnoreFileInit(),
+	}
+
 	var hash string
 	if hashFlag := cmd.Flags().Lookup("hash"); hashFlag != nil {
 		var err error
@@ -121,7 +128,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		}
 	} else {
 		// Extract artifact from arg
-		a, err = extractor.Extract(args[0])
+		a, err = extractor.Extract(args[0], extractorOptions...)
 		if err != nil {
 			return err
 		}
