@@ -91,8 +91,8 @@ func WriteResultTo(r *types.Result, out io.Writer) (n int64, err error) {
 				return
 			}
 		}
-		if bv.Level > 0 {
-			err = printf("Level:\t%s\n", bv.LevelName())
+		if bv.Level != 0 {
+			err = printf("Level:\t%s\n", bv.Level.String())
 			if err != nil {
 				return
 			}
