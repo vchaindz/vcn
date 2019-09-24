@@ -25,10 +25,10 @@ import (
 
 // BlockchainVerification represents the notarized data onto the blockchain.
 type BlockchainVerification struct {
-	Owner     common.Address `json:"owner"`
-	Level     meta.Level     `json:"level"`
-	Status    meta.Status    `json:"status"`
-	Timestamp time.Time      `json:"timestamp"`
+	Owner     common.Address `json:"owner" yaml:"owner"`
+	Level     meta.Level     `json:"level" yaml:"level"`
+	Status    meta.Status    `json:"status" yaml:"status"`
+	Timestamp time.Time      `json:"timestamp" json:"timestamp"`
 }
 
 // Trusted returns true if v.Status is meta.StatusTrusted

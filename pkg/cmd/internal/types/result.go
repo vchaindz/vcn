@@ -13,9 +13,9 @@ import (
 )
 
 type Result struct {
-	Artifact     *api.ArtifactResponse       `json:"artifact"`
-	Verification *api.BlockchainVerification `json:"verification"`
-	Errors       []error                     `json:"error,omitempty"`
+	Artifact     *api.ArtifactResponse       `json:"artifact" yaml:"artifact"`
+	Verification *api.BlockchainVerification `json:"verification" yaml:"verification"`
+	Errors       []error                     `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
 func (r *Result) AddError(err error) {
@@ -39,6 +39,11 @@ func NewResult(a *api.Artifact, ar *api.ArtifactResponse, v *api.BlockchainVerif
 			Size:     a.Size,
 			Metadata: a.Metadata,
 		}
+	}
+	// Do not show status and level from platform
+	if r.Artifact != nil {
+		r.Artifact.Status = ""
+		r.Artifact.Level = 0
 	}
 	return &r
 }

@@ -85,26 +85,26 @@ type PagedArtifactResponse struct {
 // ArtifactResponse holds artifact values returned by the platform.
 type ArtifactResponse struct {
 	// root fields
-	Kind        string `json:"kind" vcn:"Kind"`
-	Name        string `json:"name,omitempty" vcn:"Name"`
-	Hash        string `json:"hash" vcn:"Hash"`
-	Size        uint64 `json:"size,omitempty" vcn:"Size"`
-	ContentType string `json:"contentType,omitempty" vcn:"ContentType"`
-	URL         string `json:"url,omitempty" vcn:"URL"`
+	Kind        string `json:"kind" yaml:"kind" vcn:"Kind"`
+	Name        string `json:"name" yaml:"name" vcn:"Name"`
+	Hash        string `json:"hash" yaml:"hash" vcn:"Hash"`
+	Size        uint64 `json:"size,omitempty" yaml:"size,omitempty" vcn:"Size"`
+	ContentType string `json:"contentType,omitempty" yaml:"contentType,omitempty" vcn:"ContentType"`
+	URL         string `json:"url,omitempty" yaml:"url,omitempty" vcn:"URL"`
 
 	// custom metadata
-	Metadata Metadata `json:"metadata,omitempty" vcn:"Metadata"`
+	Metadata Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty" vcn:"Metadata"`
 
 	// ArtifactResponse specific
-	Level             int64  `json:"level,omitempty"`
-	Visibility        string `json:"visibility,omitempty" vcn:"Visibility"`
-	Status            string `json:"status,omitempty"`
-	CreatedAt         string `json:"createdAt,omitempty"`
-	VerificationCount uint64 `json:"verificationCount,omitempty"`
-	SignerCount       uint64 `json:"signerCount,omitempty"`
-	Signer            string `json:"signer,omitempty" vcn:"Signer"`
-	Company           string `json:"company,omitempty" vcn:"Company"`
-	Website           string `json:"website,omitempty" vcn:"Website"`
+	Level             int64  `json:"level,omitempty" yaml:"level,omitempty"`
+	Status            string `json:"status,omitempty" yaml:"status,omitempty"`
+	Visibility        string `json:"visibility,omitempty" yaml:"visibility,omitempty" vcn:"Visibility"`
+	CreatedAt         string `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	VerificationCount uint64 `json:"verificationCount" yaml:"verificationCount"`
+	SignerCount       uint64 `json:"signerCount" yaml:"signerCount"`
+	Signer            string `json:"signer,omitempty" yaml:"signer,omitempty" vcn:"Signer"`
+	Company           string `json:"company,omitempty" yaml:"company,omitempty" vcn:"Company"`
+	Website           string `json:"website,omitempty" yaml:"website,omitempty" vcn:"Website"`
 }
 
 func (a ArtifactResponse) String() string {
