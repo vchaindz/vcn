@@ -33,11 +33,12 @@ func NewResult(a *api.Artifact, ar *api.ArtifactResponse, v *api.BlockchainVerif
 		r.Artifact = &arc
 	} else if a != nil {
 		r.Artifact = &api.ArtifactResponse{
-			Name:     a.Name,
-			Kind:     a.Kind,
-			Hash:     a.Hash,
-			Size:     a.Size,
-			Metadata: a.Metadata,
+			Name:        a.Name,
+			Kind:        a.Kind,
+			Hash:        a.Hash,
+			Size:        a.Size,
+			ContentType: a.ContentType,
+			Metadata:    a.Metadata,
 		}
 	}
 	// Do not show status and level from platform
