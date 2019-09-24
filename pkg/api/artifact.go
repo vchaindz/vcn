@@ -100,8 +100,8 @@ type ArtifactResponse struct {
 	Status            string `json:"status,omitempty" yaml:"status,omitempty"`
 	Visibility        string `json:"visibility,omitempty" yaml:"visibility,omitempty" vcn:"Visibility"`
 	CreatedAt         string `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	VerificationCount uint64 `json:"verificationCount" yaml:"verificationCount"`
-	SignerCount       uint64 `json:"signerCount" yaml:"signerCount"`
+	VerificationCount uint64 `json:"verificationCount,omitempty" yaml:"verificationCount,omitempty"`
+	SignerCount       uint64 `json:"signerCount,omitempty" yaml:"signerCount,omitempty"`
 	Signer            string `json:"signer,omitempty" yaml:"signer,omitempty" vcn:"Signer"`
 	Company           string `json:"company,omitempty" yaml:"company,omitempty" vcn:"Company"`
 	Website           string `json:"website,omitempty" yaml:"website,omitempty" vcn:"Website"`

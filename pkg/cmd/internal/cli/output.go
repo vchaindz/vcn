@@ -41,46 +41,44 @@ func WriteResultTo(r *types.Result, out io.Writer) (n int64, err error) {
 		return err
 	}
 
-	if a := r.Artifact; a != nil {
+	s := reflect.ValueOf(r).Elem()
+	s = s.FieldByName("ArtifactResponse")
+	typeOfT := s.Type()
 
-		s := reflect.ValueOf(a).Elem()
-		typeOfT := s.Type()
-
-		for i, l := 0, s.NumField(); i < l; i++ {
-			f := s.Field(i)
-			if key, ok := typeOfT.Field(i).Tag.Lookup("vcn"); ok {
-				var value string
-				switch key {
-				case "Size":
-					if size, ok := f.Interface().(uint64); ok && size > 0 {
-						value = humanize.Bytes(size)
-					}
-				case "Metadata":
-					if metadata, ok := f.Interface().(api.Metadata); ok {
-						for k, v := range metadata {
-							if v == "" {
-								continue
-							}
-							if vv, err := json.MarshalIndent(v, "\t", "    "); err == nil {
-								value += fmt.Sprintf("\n\t\t%s=%s", k, string(vv))
-							}
+	for i, l := 0, s.NumField(); i < l; i++ {
+		f := s.Field(i)
+		if key, ok := typeOfT.Field(i).Tag.Lookup("vcn"); ok {
+			var value string
+			switch key {
+			case "Size":
+				if size, ok := f.Interface().(uint64); ok && size > 0 {
+					value = humanize.Bytes(size)
+				}
+			case "Metadata":
+				if metadata, ok := f.Interface().(api.Metadata); ok {
+					for k, v := range metadata {
+						if v == "" {
+							continue
 						}
-						value = strings.TrimPrefix(value, "\n")
+						if vv, err := json.MarshalIndent(v, "\t", "    "); err == nil {
+							value += fmt.Sprintf("\n\t\t%s=%s", k, string(vv))
+						}
 					}
-				case "Signer":
-					// todo(leogr): this will not happen anymore with the new platform APIs.
-					// Still retained to accommodate future improvements.
-					if f.Interface() != r.Verification.SignerID() {
-						value = fmt.Sprintf("%s", f.Interface())
-					}
-				default:
+					value = strings.TrimPrefix(value, "\n")
+				}
+			case "Signer":
+				// todo(leogr): this will not happen anymore with the new platform APIs.
+				// Still retained to accommodate future improvements.
+				if f.Interface() != r.Verification.SignerID() {
 					value = fmt.Sprintf("%s", f.Interface())
 				}
-				if value != "" {
-					err = printf("%s:\t%s\n", key, value)
-					if err != nil {
-						return
-					}
+			default:
+				value = fmt.Sprintf("%s", f.Interface())
+			}
+			if value != "" {
+				err = printf("%s:\t%s\n", key, value)
+				if err != nil {
+					return
 				}
 			}
 		}

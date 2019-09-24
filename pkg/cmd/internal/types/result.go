@@ -13,9 +13,9 @@ import (
 )
 
 type Result struct {
-	Artifact     *api.ArtifactResponse       `json:"artifact" yaml:"artifact"`
-	Verification *api.BlockchainVerification `json:"verification" yaml:"verification"`
-	Errors       []error                     `json:"error,omitempty" yaml:"error,omitempty"`
+	api.ArtifactResponse `yaml:",inline"`
+	Verification         *api.BlockchainVerification `json:"verification" yaml:"verification"`
+	Errors               []error                     `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
 func (r *Result) AddError(err error) {
@@ -23,28 +23,35 @@ func (r *Result) AddError(err error) {
 }
 
 func NewResult(a *api.Artifact, ar *api.ArtifactResponse, v *api.BlockchainVerification) *Result {
-	r := Result{}
+
+	var vv *api.BlockchainVerification
 	if v != nil {
 		vCopy := *v
-		r.Verification = &vCopy
+		vv = &vCopy
 	}
-	if ar != nil {
-		arc := *ar
-		r.Artifact = &arc
-	} else if a != nil {
-		r.Artifact = &api.ArtifactResponse{
+
+	var r Result
+
+	switch true {
+	case ar != nil:
+		r = Result{*ar, vv, nil}
+	case a != nil:
+		r = Result{api.ArtifactResponse{
 			Name:        a.Name,
 			Kind:        a.Kind,
 			Hash:        a.Hash,
 			Size:        a.Size,
 			ContentType: a.ContentType,
 			Metadata:    a.Metadata,
-		}
+		}, vv, nil}
+	default:
+		r = Result{}
+		r.Verification = vv
 	}
+
 	// Do not show status and level from platform
-	if r.Artifact != nil {
-		r.Artifact.Status = ""
-		r.Artifact.Level = 0
-	}
+	r.Status = ""
+	r.Level = 0
+
 	return &r
 }
