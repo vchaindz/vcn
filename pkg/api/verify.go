@@ -121,7 +121,7 @@ func (v *BlockchainVerification) MetaHash() string {
 	return metahash
 }
 
-// SignerID returns the public address derived from signer's public key of v, if any, otherwise an empty string
+// SignerID returns the public address derived from owner's public key (v.Owner), if any, otherwise an empty string.
 func (v *BlockchainVerification) SignerID() string {
 	if v != nil && v.Owner != common.BigToAddress(big.NewInt(0)) {
 		return strings.ToLower(v.Owner.Hex())
@@ -129,15 +129,7 @@ func (v *BlockchainVerification) SignerID() string {
 	return ""
 }
 
-// LevelName returns the level's label for v
-func (v *BlockchainVerification) LevelName() string {
-	if v != nil {
-		return v.Level.String()
-	}
-	return ""
-}
-
-// Date returns a RFC3339 formatted string of v's timestamp, if any, otherwise an empty string
+// Date returns a RFC3339 formatted string of verification time (v.Timestamp), if any, otherwise an empty string.
 func (v *BlockchainVerification) Date() string {
 	if v != nil {
 		ut := v.Timestamp.UTC()
