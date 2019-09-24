@@ -76,7 +76,7 @@ func TestBlockchainVerification(t *testing.T) {
 	assert.NotEqual(t, emptyYAML, string(y))
 }
 
-func TestUnmarshalBlockchainVerification(t *testing.T) {
+func TestJSONUnmarshalBlockchainVerification(t *testing.T) {
 	v := BlockchainVerification{}
 
 	data := []byte(`{
@@ -102,6 +102,39 @@ func TestUnmarshalBlockchainVerification(t *testing.T) {
 	timestamp, _ := time.Parse(time.RFC3339, "2019-06-26T16:20:25Z")
 
 	err = json.Unmarshal(data, &v)
+	assert.NoError(t, err)
+	assert.Equal(t, BlockchainVerification{
+		Level:     meta.Level(3),
+		Owner:     common.HexToAddress("0x0123456789abcdef0123456789abcdef01234567"),
+		Status:    meta.Status(0),
+		Timestamp: timestamp,
+	}, v)
+}
+
+func TestYAMLUnmarshalBlockchainVerification(t *testing.T) {
+	v := BlockchainVerification{}
+
+	data := []byte(`level: 0
+owner: ""
+status: 2
+timestamp: ""
+`)
+
+	err := yaml.Unmarshal(data, &v)
+	assert.NoError(t, err)
+	assert.Equal(t, BlockchainVerification{Status: meta.Status(2)}, v)
+
+	v = BlockchainVerification{}
+
+	data = []byte(`level: 3
+owner: "0x0123456789abcdef0123456789abcdef01234567"
+status: 0
+timestamp: "2019-06-26T16:20:25Z"
+`)
+
+	timestamp, _ := time.Parse(time.RFC3339, "2019-06-26T16:20:25Z")
+
+	err = yaml.Unmarshal(data, &v)
 	assert.NoError(t, err)
 	assert.Equal(t, BlockchainVerification{
 		Level:     meta.Level(3),

@@ -28,7 +28,7 @@ type BlockchainVerification struct {
 	Owner     common.Address `json:"owner" yaml:"owner"`
 	Level     meta.Level     `json:"level" yaml:"level"`
 	Status    meta.Status    `json:"status" yaml:"status"`
-	Timestamp time.Time      `json:"timestamp" json:"timestamp"`
+	Timestamp time.Time      `json:"timestamp" yaml:"timestamp"`
 }
 
 // Trusted returns true if v.Status is meta.StatusTrusted
@@ -53,13 +53,7 @@ func (v *BlockchainVerification) toMap() map[string]interface{} {
 	}
 }
 
-// MarshalJSON implements the json.Marshaler interface.
-func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.toMap())
-}
-
-// UnmarshalJSON implements the json.Unmarshaler interface.
-func (v *BlockchainVerification) UnmarshalJSON(b []byte) error {
+func (v *BlockchainVerification) fromUnmarshaler(unmarshal func(interface{}) error) error {
 	if v == nil {
 		v = &BlockchainVerification{}
 	}
@@ -69,10 +63,11 @@ func (v *BlockchainVerification) UnmarshalJSON(b []byte) error {
 		Status    int64
 		Timestamp string
 	}{}
-	err := json.Unmarshal(b, &data)
-	if err != nil {
+
+	if err := unmarshal(&data); err != nil {
 		return err
 	}
+
 	if data.Owner != "" {
 		v.Owner = common.HexToAddress(data.Owner)
 	}
@@ -84,9 +79,26 @@ func (v *BlockchainVerification) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// MarshalJSON implements the json.Marshaler interface.
+func (v *BlockchainVerification) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.toMap())
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (v *BlockchainVerification) UnmarshalJSON(b []byte) error {
+	return v.fromUnmarshaler(func(value interface{}) error {
+		return json.Unmarshal(b, value)
+	})
+}
+
 // MarshalYAML implements the yaml.Marshaler interface.
 func (v *BlockchainVerification) MarshalYAML() (interface{}, error) {
 	return v.toMap(), nil
+}
+
+// UnmarshalYAML implements the yaml.Unmarshaler interface.
+func (v *BlockchainVerification) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	return v.fromUnmarshaler(unmarshal)
 }
 
 // MetaHash returns the SHA256 digest of BlockchainVerification's data.
