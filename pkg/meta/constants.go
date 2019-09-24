@@ -70,9 +70,9 @@ func UserAgent() string {
 	return fmt.Sprintf("vcn/%s (%s; %s)", Version(), runtime.GOOS, runtime.GOARCH)
 }
 
-// LevelName returns the name of the given level as string
-func LevelName(level Level) string {
-	switch level {
+// String returns the name of the given level as string.
+func (l Level) String() string {
+	switch l {
 	case LevelDisabled:
 		return "DISABLED"
 	case LevelUnknown:
@@ -88,14 +88,14 @@ func LevelName(level Level) string {
 	case LevelVchain:
 		return "99 - VCHAIN"
 	default:
-		log.Fatal("unsupported level", level)
+		log.Fatal("unsupported level: ", int64(l))
 		return ""
 	}
 }
 
-// StatusName returns the name of the given status as string
-func StatusName(status Status) string {
-	switch status {
+// String returns the name of the given status as string
+func (s Status) String() string {
+	switch s {
 	case StatusTrusted:
 		return "TRUSTED"
 	case StatusUntrusted:
@@ -105,7 +105,7 @@ func StatusName(status Status) string {
 	case StatusUnsupported:
 		return "UNSUPPORTED"
 	default:
-		log.Fatal("unsupported status", status)
+		log.Fatal("unsupported status: ", int64(s))
 		return ""
 	}
 }
@@ -113,18 +113,18 @@ func StatusName(status Status) string {
 // StatusNameStyled returns the colorized name of the given status as string
 func StatusNameStyled(status Status) string {
 	c, s := StatusColor(status)
-	return color.New(c, s).Sprintf(StatusName(status))
+	return color.New(c, s).Sprintf(status.String())
 }
 
-// VisibilityName returns the name of the given visibility as string
-func VisibilityName(visibility Visibility) string {
-	switch visibility {
+// String returns the name of the given visibility as string
+func (v Visibility) String() string {
+	switch v {
 	case VisibilityPublic:
 		return "PUBLIC"
 	case VisibilityPrivate:
 		return "PRIVATE"
 	default:
-		log.Fatal("unsupported visibility", visibility)
+		log.Fatal("unsupported visibility: ", int(64))
 		return ""
 	}
 }

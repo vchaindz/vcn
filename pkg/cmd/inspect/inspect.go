@@ -11,8 +11,6 @@ package inspect
 import (
 	"fmt"
 
-	"github.com/vchain-us/vcn/pkg/meta"
-
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 
 	"github.com/spf13/cobra"
@@ -105,9 +103,9 @@ func inspect(hash string, u *api.User, output string) error {
 		}
 		// check if artifact is synced, if any
 		if ar != nil {
-			if meta.StatusName(v.Status) != ar.Status {
+			if v.Status.String() != ar.Status {
 				results[i].AddError(fmt.Errorf(
-					"status not in sync (blockchain: %s, platform: %s)", meta.StatusName(v.Status), ar.Status,
+					"status not in sync (blockchain: %s, platform: %s)", v.Status.String(), ar.Status,
 				))
 			}
 			if int64(v.Level) != ar.Level {

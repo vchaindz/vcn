@@ -91,7 +91,7 @@ func TrackSign(user *User, hash string, filename string, status meta.Status) (er
 	r, err := newSling(user.token()).
 		Post(trackingEvent()+"/sign").
 		BodyJSON(signArtifactTrackingEventRequest{
-			Name:     meta.StatusName(status),
+			Name:     status.String(),
 			Hash:     hash,
 			Filename: filename,
 		}).Receive(nil, restError)

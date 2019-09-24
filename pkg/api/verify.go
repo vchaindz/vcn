@@ -132,7 +132,7 @@ func (v *BlockchainVerification) SignerID() string {
 // LevelName returns the level's label for v
 func (v *BlockchainVerification) LevelName() string {
 	if v != nil {
-		return meta.LevelName(v.Level)
+		return v.Level.String()
 	}
 	return ""
 }

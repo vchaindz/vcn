@@ -139,8 +139,8 @@ func (u User) createArtifact(verification *BlockchainVerification, walletAddress
 	}
 
 	aR := artifact.toRequest()
-	aR.Visibility = meta.VisibilityName(visibility)
-	aR.Status = meta.StatusName(status)
+	aR.Visibility = visibility.String()
+	aR.Status = status.String()
 	aR.MetaHash = verification.MetaHash()
 
 	restError := new(Error)
