@@ -162,7 +162,7 @@ func (u User) DownloadSecret() (io.Reader, error) {
 		return nil, err
 	}
 	if keystore == "" {
-		return nil, fmt.Errorf("no secret found for %s, please complete the onboarding process at %s", u.Email(), meta.DashboardURL())
+		return nil, fmt.Errorf("no secret found for %s", u.Email())
 	}
 	return bytes.NewReader([]byte(keystore)), nil
 }
