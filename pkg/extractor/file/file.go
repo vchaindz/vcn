@@ -61,7 +61,9 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 	}
 
 	// Infer version from filename
-	m["version"] = inferVer(stat.Name())
+	if version := inferVer(stat.Name()); version != "" {
+		m["version"] = version
+	}
 
 	// Sniff executable info, if any
 	if ok, data, _ := xInfo(f, &ct); ok {

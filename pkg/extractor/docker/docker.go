@@ -48,8 +48,12 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 	m := api.Metadata{
 		"architecture": i.Architecture,
 		"platform":     i.Os,
-		"version":      i.inferVer(),
 	}
+
+	if version := i.inferVer(); version != "" {
+		m["version"] = version
+	}
+
 	m[u.Scheme] = i
 	return &api.Artifact{
 		Kind:     u.Scheme,
