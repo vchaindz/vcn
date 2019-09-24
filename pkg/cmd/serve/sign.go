@@ -15,17 +15,22 @@ import (
 
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
+	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
 func signHander(state meta.Status) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s := state
-		sign(s, w, r)
+		k := make(map[string]bool)
+		for _, scheme := range extractor.Schemes() {
+			k[scheme] = true
+		}
+		sign(s, k, w, r)
 	}
 }
 
-func sign(status meta.Status, w http.ResponseWriter, r *http.Request) {
+func sign(status meta.Status, kinds map[string]bool, w http.ResponseWriter, r *http.Request) {
 	user, passphrase, err := getCredential(r)
 	if err != nil {
 		writeError(w, http.StatusUnauthorized, err)
@@ -62,6 +67,11 @@ func sign(status meta.Status, w http.ResponseWriter, r *http.Request) {
 
 	if artifact.Name == "" {
 		writeError(w, http.StatusBadRequest, fmt.Errorf("name cannot be empty"))
+		return
+	}
+
+	if !kinds[artifact.Kind] {
+		writeError(w, http.StatusBadRequest, fmt.Errorf(`"%s" is not a valid value for kind`, artifact.Kind))
 		return
 	}
 

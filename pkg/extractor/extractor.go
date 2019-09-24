@@ -25,6 +25,17 @@ func Register(scheme string, e Extractor) {
 	extractors[scheme] = e
 }
 
+// Schemes returns the list of registered schemes.
+func Schemes() []string {
+	schemes := make([]string, len(extractors))
+	i := 0
+	for scheme := range extractors {
+		schemes[i] = scheme
+		i++
+	}
+	return schemes
+}
+
 // Extract returns an api.Artifact for the given rawURI.
 func Extract(rawURI string, options ...Option) (*api.Artifact, error) {
 	u, err := uri.Parse(rawURI)
