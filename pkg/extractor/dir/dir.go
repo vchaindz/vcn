@@ -9,6 +9,7 @@
 package dir
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,7 +53,7 @@ func Artifact(u *uri.URI) (*api.Artifact, error) {
 		return nil, err
 	}
 	if !stat.IsDir() {
-		return nil, nil
+		return nil, fmt.Errorf("read %s: is not a directory", path)
 	}
 
 	if err := initIgnoreFile(path); err != nil {
