@@ -107,7 +107,7 @@ dist/NSIS: build/makensis
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist/NSIS/:/app \
 			vcn-makensis /app/setup.nsi
-	mv -f ./dist/NSIS/*_setup.exe ./dist/
+	cp ./dist/NSIS/*_setup.exe ./dist/
 	rm -Rf ./dist/NSIS
 
 .PHONY: dist/sign
