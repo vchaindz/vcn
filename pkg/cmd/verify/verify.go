@@ -154,6 +154,9 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
+		if a == nil {
+			return fmt.Errorf("unable to process the input asset provided: %s", arg)
+		}
 		if err := verify(cmd, a, keys, org, user, output); err != nil {
 			return err
 		}

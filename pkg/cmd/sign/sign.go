@@ -134,6 +134,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		}
 	}
 
+	if a == nil {
+		return fmt.Errorf("unable to process the input asset provided")
+	}
+
 	// Override the asset's name, if provided by --name
 	if name != "" {
 		a.Name = name

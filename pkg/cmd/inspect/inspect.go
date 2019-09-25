@@ -63,9 +63,12 @@ func runInspect(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
+		if a == nil {
+			return fmt.Errorf("unable to process the input asset provided: %s", args[0])
+		}
 		hash = a.Hash
 		if output == "" {
-			fmt.Printf("Inferred data for: %s\n\n", args[0])
+			fmt.Printf("Inferred info for: %s\n\n", args[0])
 			cli.Print("", types.NewResult(a, nil, nil))
 			fmt.Println()
 		}
