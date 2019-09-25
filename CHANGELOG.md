@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.6.3"></a>
+## [v0.6.3] - 2019-09-25
+### Bug Fixes
+- **extractor/dir:** runtime error when passing a regular file instead of a directory (fixes [#56](https://github.com/vchain-us/vcn/issues/56))
+
+
 <a name="v0.6.2"></a>
 ## [v0.6.2] - 2019-09-17
 ### Changes
@@ -106,14 +112,18 @@ support for multiple keystores in config file and related APIs within the `store
 - **bundle:** descriptor test
 - **bundle:** rework diff
 - **cmd:** always show local extracted metadata
+- **dir/extractor:** ignore irregular files
 
 ### Features
 - directory signing and verify with manifest
 - **api:** list assets grouped by hash with pagination
 - **bundle:** enforce manifest specs
-- **bundle:** diff
 - **bundle:** arrange multiple items in a Merkle Directed Acyclic Graph
+- **bundle:** diff
 - **extractor:** scheme for directories
+- **extractor/dir:** default ignore file
+- **extractor/dir:** .vcnignore file support
+- **verify/dir:** automatically check manifest integrity
 
 
 <a name="v0.5.1"></a>
@@ -378,7 +388,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.3...HEAD
+[v0.6.3]: https://github.com/vchain-us/vcn/compare/v0.6.2...v0.6.3
 [v0.6.2]: https://github.com/vchain-us/vcn/compare/v0.6.1...v0.6.2
 [v0.6.1]: https://github.com/vchain-us/vcn/compare/v0.6.0...v0.6.1
 [v0.6.0]: https://github.com/vchain-us/vcn/compare/v0.5.4...v0.6.0
