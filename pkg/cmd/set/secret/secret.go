@@ -18,14 +18,14 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 )
 
-// NewCommand returns the cobra command for `vcn recover secret`
+// NewCommand returns the cobra command for `vcn set secret`
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "secret",
-		Short: "Recover the user's secret from a mnemonic code",
-		Long: `Recover secret of the current user from a given mnemonic code and securely store it into the local vcn installation,
+		Short: "Import the user's secret",
+		Long: `Import a secret for the current user from a given mnemonic code and securely store it into the local vcn installation,
 if successful, any pre-stored secret will be overwritten.
-A password will be required to encrypt the secret in order to prevent unauthorized access.
+This feature is for advanced user only.
 		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true

@@ -21,8 +21,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/cmd/list"
 	"github.com/vchain-us/vcn/pkg/cmd/login"
 	"github.com/vchain-us/vcn/pkg/cmd/logout"
-	"github.com/vchain-us/vcn/pkg/cmd/recover"
 	"github.com/vchain-us/vcn/pkg/cmd/serve"
+	"github.com/vchain-us/vcn/pkg/cmd/set"
 	"github.com/vchain-us/vcn/pkg/cmd/sign"
 	"github.com/vchain-us/vcn/pkg/cmd/verify"
 	"github.com/vchain-us/vcn/pkg/meta"
@@ -102,7 +102,9 @@ func init() {
 	rootCmd.AddCommand(login.NewCommand())
 	rootCmd.AddCommand(logout.NewCommand())
 	rootCmd.AddCommand(dashboard.NewCommand())
-	rootCmd.AddCommand(recover.NewCommand())
+
+	// Set command
+	rootCmd.AddCommand(set.NewCommand())
 
 	// Serve command
 	rootCmd.AddCommand(serve.NewCommand())

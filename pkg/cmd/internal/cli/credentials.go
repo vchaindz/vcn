@@ -35,8 +35,9 @@ func PromptPassphrase() (passphrase string, err error) {
 
 	color.Set(meta.StyleAffordance())
 	fmt.Print(`
-Attention: This password protects your local CodeNotary vcn installation against unauthorized access.
-You will need this password every time you want to notarize an asset.
+Attention: If you lose this password you will not able to recover it anymore.
+This password protects your secret against unauthorized access.
+You will need it every time you want to notarize an asset.
 `)
 	color.Unset()
 	fmt.Println()
@@ -81,6 +82,15 @@ func ProvidePassphrase() (passphrase string, err error) {
 		return "", err
 	}
 	logs.LOG.Trace("Notarization password provided (interactive)")
+	return passphrase, nil
+}
+
+func ProvidePasswordWithMessage(message string) (passphrase string, err error) {
+	passphrase, err = readPassword(message)
+	if err != nil {
+		return "", err
+	}
+	logs.LOG.Trace("Password provided (interactive)")
 	return passphrase, nil
 }
 
