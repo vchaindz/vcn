@@ -16,8 +16,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NewCmdLogout returns the cobra command for `vcn logout`
-func NewCmdLogout() *cobra.Command {
+// NewCommand returns the cobra command for `vcn logout`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "logout",
 		Short: "Logout the current user",

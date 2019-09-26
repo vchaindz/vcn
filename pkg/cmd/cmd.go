@@ -89,23 +89,23 @@ func init() {
 	rootCmd.Flags().BoolP("version", "v", false, "version for vcn") // needed for -v shorthand
 
 	// Verification group
-	rootCmd.AddCommand(verify.NewCmdVerify())
-	rootCmd.AddCommand(inspect.NewCmdInspect())
-	rootCmd.AddCommand(list.NewCmdList())
+	rootCmd.AddCommand(verify.NewCommand())
+	rootCmd.AddCommand(inspect.NewCommand())
+	rootCmd.AddCommand(list.NewCommand())
 
 	// Signing group
-	rootCmd.AddCommand(sign.NewCmdSign())
-	rootCmd.AddCommand(sign.NewCmdUntrust())
-	rootCmd.AddCommand(sign.NewCmdUnsupport())
+	rootCmd.AddCommand(sign.NewCommand())
+	rootCmd.AddCommand(sign.NewUntrustCommand())
+	rootCmd.AddCommand(sign.NewUnsupportCommand())
 
 	// User group
-	rootCmd.AddCommand(login.NewCmdLogin())
-	rootCmd.AddCommand(logout.NewCmdLogout())
-	rootCmd.AddCommand(dashboard.NewCmdDashboard())
-	rootCmd.AddCommand(recover.NewCmdRecover())
+	rootCmd.AddCommand(login.NewCommand())
+	rootCmd.AddCommand(logout.NewCommand())
+	rootCmd.AddCommand(dashboard.NewCommand())
+	rootCmd.AddCommand(recover.NewCommand())
 
 	// Serve command
-	rootCmd.AddCommand(serve.NewCmdServe())
+	rootCmd.AddCommand(serve.NewCommand())
 
 }
 

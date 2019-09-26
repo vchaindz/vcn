@@ -18,8 +18,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 )
 
-// NewCmdSecret returns the cobra command for `vcn recover secret`
-func NewCmdSecret() *cobra.Command {
+// NewCommand returns the cobra command for `vcn recover secret`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "secret",
 		Short: "Recover the user's secret from a mnemonic code",

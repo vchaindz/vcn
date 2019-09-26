@@ -19,8 +19,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 )
 
-// NewCmdLogin returns the cobra command for `vcn login`
-func NewCmdLogin() *cobra.Command {
+// NewCommand returns the cobra command for `vcn login`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Log in to codenotary.io",

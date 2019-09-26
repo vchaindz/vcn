@@ -20,8 +20,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 )
 
-// NewCmdInspect returns the cobra command for `vcn inspect`
-func NewCmdInspect() *cobra.Command {
+// NewCommand returns the cobra command for `vcn inspect`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "inspect",
 		Aliases: []string{"i"},

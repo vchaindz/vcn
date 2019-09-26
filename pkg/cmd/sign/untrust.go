@@ -13,9 +13,9 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-// NewCmdUntrust returns the cobra command for `vcn untrust`
-func NewCmdUntrust() *cobra.Command {
-	cmd := NewCmdSign()
+// NewUntrustCommand returns the cobra command for `vcn untrust`
+func NewUntrustCommand() *cobra.Command {
+	cmd := NewCommand()
 	cmd.Use = "untrust"
 	cmd.Aliases = []string{"ut"}
 	cmd.Short = "Untrust an asset"

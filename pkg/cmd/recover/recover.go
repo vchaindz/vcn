@@ -13,8 +13,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/cmd/recover/secret"
 )
 
-// NewCmdRecover returns the cobra command for `vcn recover`
-func NewCmdRecover() *cobra.Command {
+// NewCommand returns the cobra command for `vcn recover`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "recover",
 		Short:   "Recover the user's secret",
@@ -23,6 +23,6 @@ func NewCmdRecover() *cobra.Command {
 		Args:    cobra.NoArgs,
 		Hidden:  true, // todo(leogr): not used atm, left for future use
 	}
-	cmd.AddCommand(secret.NewCmdSecret())
+	cmd.AddCommand(secret.NewCommand())
 	return cmd
 }

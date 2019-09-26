@@ -17,8 +17,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NewCmdDashboard returns the cobra command for `vcn dashboard`
-func NewCmdDashboard() *cobra.Command {
+// NewCommand returns the cobra command for `vcn dashboard`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "dashboard",
 		Aliases: []string{"d"},

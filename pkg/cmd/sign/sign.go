@@ -33,8 +33,8 @@ VCN_NOTARIZATION_PASSWORD env var can be used to pass the
 required notarization password in a non-interactive environment.
 `
 
-// NewCmdSign returns the cobra command for `vcn sign`
-func NewCmdSign() *cobra.Command {
+// NewCommand returns the cobra command for `vcn sign`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "notarize",
 		Aliases: []string{"n", "sign", "s"},

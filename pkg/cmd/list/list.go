@@ -19,8 +19,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 )
 
-// NewCmdList returns the cobra command for `vcn list`
-func NewCmdList() *cobra.Command {
+// NewCommand returns the cobra command for `vcn list`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},

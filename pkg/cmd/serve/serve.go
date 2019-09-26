@@ -18,8 +18,8 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-// NewCmdServe returns the cobra command for `vcn serve`
-func NewCmdServe() *cobra.Command {
+// NewCommand returns the cobra command for `vcn serve`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "serve",
 		Short: "Start an API server",

@@ -37,8 +37,8 @@ func getSignerIDs() []string {
 	return viper.GetStringSlice("key")
 }
 
-// NewCmdVerify returns the cobra command for `vcn verify`
-func NewCmdVerify() *cobra.Command {
+// NewCommand returns the cobra command for `vcn verify`
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "authenticate",
 		Example: "  vcn authenticate /bin/vcn",

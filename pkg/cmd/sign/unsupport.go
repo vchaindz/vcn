@@ -13,9 +13,9 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-// NewCmdUnsupport returns the cobra command for `vcn unsupport`
-func NewCmdUnsupport() *cobra.Command {
-	cmd := NewCmdSign()
+// NewUnsupportCommand returns the cobra command for `vcn unsupport`
+func NewUnsupportCommand() *cobra.Command {
+	cmd := NewCommand()
 	cmd.Use = "unsupport"
 	cmd.Aliases = []string{"us"}
 	cmd.Short = "Unsupport an asset"
