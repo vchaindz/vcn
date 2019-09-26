@@ -10,10 +10,13 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/internal/errors"
 	"github.com/vchain-us/vcn/pkg/meta"
@@ -172,6 +175,49 @@ func (u User) SignerID() (id string, err error) {
 	id, _, err = u.getSecret()
 	if err == nil && id == "" {
 		err = fmt.Errorf("no SignerID found for %s", u.Email())
+	}
+	return
+}
+
+// UploadSecret uploads the User's secret to the platform.
+func (u User) UploadSecret(secret io.Reader, passphrase string) (err error) {
+	var buf bytes.Buffer
+	tee := io.TeeReader(secret, &buf)
+	transactor, err := bind.NewTransactor(tee, passphrase)
+	if err != nil {
+		return
+	}
+	address := strings.ToLower(transactor.From.Hex())
+
+	b, err := ioutil.ReadAll(&buf)
+	if err != nil {
+		return err
+	}
+	content := &struct {
+		KeyStore string `json:"keyStore"`
+	}{string(b)}
+	b, err = json.Marshal(content)
+	if err != nil {
+		return
+	}
+
+	authError := new(Error)
+	r, err := newSling(u.token()).
+		Patch(meta.APIEndpoint("wallet")+"?wallet-address="+address).
+		Body(bytes.NewReader(b)).
+		Add("Content-Type", "application/json").
+		Receive(nil, authError)
+	logger().WithFields(logrus.Fields{
+		"err":       err,
+		"authError": authError,
+	}).Trace("UploadSecret")
+
+	if err != nil {
+		return
+	}
+	if r.StatusCode != 200 {
+		err = fmt.Errorf("request failed: %s (%d)", authError.Message, authError.Status)
+		return
 	}
 	return
 }
