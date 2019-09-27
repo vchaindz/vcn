@@ -65,7 +65,7 @@ func runServe(cmd *cobra.Command) error {
 	router.HandleFunc("/authenticate/{hash}", verify).Methods("GET")
 
 	logs.LOG.Infof("Log level: %s", logs.LOG.GetLevel().String())
-	logs.LOG.Infof("Stage: %s", meta.StageName(meta.StageEnvironment()))
+	logs.LOG.Infof("Stage: %s", meta.StageEnvironment().String())
 
 	if certFile != "" && keyFile != "" {
 		logs.LOG.Infof("Listening on %s (TLS)", addr)

@@ -37,9 +37,9 @@ func StageEnvironment() Stage {
 	}
 }
 
-// StageName returns the name of the given stage as string
-func StageName(stage Stage) string {
-	switch stage {
+// String returns the name of the stage as string
+func (s Stage) String() string {
+	switch s {
 	case StageProduction:
 		return "PRODUCTION"
 	case StageStaging:
@@ -47,7 +47,7 @@ func StageName(stage Stage) string {
 	case StageTest:
 		return "TEST"
 	default:
-		log.Fatal("unsupported stage", stage)
+		log.Fatal("unsupported stage", int64(s))
 		return ""
 	}
 }
