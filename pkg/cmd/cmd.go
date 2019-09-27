@@ -16,6 +16,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/store"
 
 	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
+	"github.com/vchain-us/vcn/pkg/cmd/info"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
@@ -102,6 +103,7 @@ func init() {
 	rootCmd.AddCommand(login.NewCommand())
 	rootCmd.AddCommand(logout.NewCommand())
 	rootCmd.AddCommand(dashboard.NewCommand())
+	rootCmd.AddCommand(info.NewCommand())
 
 	// Set command
 	rootCmd.AddCommand(set.NewCommand())
