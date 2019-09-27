@@ -88,23 +88,23 @@ type ArtifactResponse struct {
 	Kind        string `json:"kind" yaml:"kind" vcn:"Kind"`
 	Name        string `json:"name" yaml:"name" vcn:"Name"`
 	Hash        string `json:"hash" yaml:"hash" vcn:"Hash"`
-	Size        uint64 `json:"size,omitempty" yaml:"size,omitempty" vcn:"Size"`
-	ContentType string `json:"contentType,omitempty" yaml:"contentType,omitempty" vcn:"ContentType"`
-	URL         string `json:"url,omitempty" yaml:"url,omitempty" vcn:"URL"`
+	Size        uint64 `json:"size" yaml:"size" vcn:"Size"`
+	ContentType string `json:"contentType" yaml:"contentType" vcn:"ContentType"`
+	URL         string `json:"url" yaml:"url" vcn:"URL"`
 
 	// custom metadata
-	Metadata Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty" vcn:"Metadata"`
+	Metadata Metadata `json:"metadata" yaml:"metadata" vcn:"Metadata"`
 
 	// ArtifactResponse specific
 	Level             int64  `json:"level,omitempty" yaml:"level,omitempty"`
 	Status            string `json:"status,omitempty" yaml:"status,omitempty"`
-	Visibility        string `json:"visibility,omitempty" yaml:"visibility,omitempty" vcn:"Visibility"`
-	CreatedAt         string `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	VerificationCount uint64 `json:"verificationCount,omitempty" yaml:"verificationCount,omitempty"`
-	SignerCount       uint64 `json:"signerCount,omitempty" yaml:"signerCount,omitempty"`
-	Signer            string `json:"signer,omitempty" yaml:"signer,omitempty" vcn:"Signer"`
-	Company           string `json:"company,omitempty" yaml:"company,omitempty" vcn:"Company"`
-	Website           string `json:"website,omitempty" yaml:"website,omitempty" vcn:"Website"`
+	Visibility        string `json:"visibility" yaml:"visibility" vcn:"Visibility"`
+	CreatedAt         string `json:"createdAt" yaml:"createdAt"`
+	VerificationCount uint64 `json:"verificationCount" yaml:"verificationCount"`
+	SignerCount       uint64 `json:"signerCount" yaml:"signerCount"`
+	Signer            string `json:"signer" yaml:"signer" vcn:"Signer"`
+	Company           string `json:"company" yaml:"company" vcn:"Company"`
+	Website           string `json:"website" yaml:"website" vcn:"Website"`
 }
 
 func (a ArtifactResponse) String() string {
