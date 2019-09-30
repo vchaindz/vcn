@@ -36,7 +36,7 @@ Everything is done in a global, collaborative way to break the common silo solut
 - [Download the latest release](https://github.com/vchain-us/vcn/releases/latest) and then read the [Usage](#usage) section below.
 - We recommend storing `vcn` in your `PATH` - Linux example:
    ```bash
-   cp vcn-v0.6.1-linux-amd64 /usr/local/bin/vcn
+   cp vcn-v<version>-linux-amd64 /usr/local/bin/vcn
    ```
 
 2. **Authenticate digital objects** You can use the command as a starting point.
