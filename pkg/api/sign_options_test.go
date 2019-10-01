@@ -29,6 +29,7 @@ func TestMakeSignOpts(t *testing.T) {
 		u,
 		SignWithKey(reader, pass),
 	)
+	assert.NoError(t, err)
 
 	assert.Equal(t, reader, o.keyin)
 	assert.Equal(t, pass, o.passphrase)
@@ -36,10 +37,6 @@ func TestMakeSignOpts(t *testing.T) {
 	// test defaults
 	assert.Equal(t, meta.StatusTrusted, o.status)
 	assert.Equal(t, meta.VisibilityPrivate, o.visibility)
-
-	// test error (when opening default secret, but the user has not it yet)
-	o, err = makeSignOpts(u)
-	assert.Error(t, err)
 }
 
 func TestSignWithStatus(t *testing.T) {

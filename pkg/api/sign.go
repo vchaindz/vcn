@@ -24,11 +24,11 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-// SignWithOptions is invoked by the User to notarize an artifact using the given functional options,
+// Sign is invoked by the User to notarize an artifact using the given functional options,
 // if successful a BlockchainVerification is returned.
 // By default, the artifact is notarized using status = meta.StatusTrusted, visibility meta.VisibilityPrivate.
-// At least the passphrase must be provided using SignWithPassphrase().
-func (u User) SignWithOptions(artifact Artifact, options ...SignOption) (*BlockchainVerification, error) {
+// At least the key (secret) must be provided using SignWithKey().
+func (u User) Sign(artifact Artifact, options ...SignOption) (*BlockchainVerification, error) {
 	if artifact.Hash == "" {
 		return nil, makeError("hash is missing", nil)
 	}
@@ -64,25 +64,6 @@ func (u User) SignWithOptions(artifact Artifact, options ...SignOption) (*Blockc
 	return u.commitTransaction(
 		artifact,
 		options...,
-	)
-}
-
-// Sign is invoked by the User to notarize an artifact with a given state and visibility,
-// if successful a BlockchainVerification is returned.
-// The passphrase is required to unlock the platform stored secret.
-func (u User) Sign(artifact Artifact, passphrase string, status meta.Status, visibility meta.Visibility) (*BlockchainVerification, error) {
-	keyin, _, offline, err := u.Secret()
-	if offline {
-		return nil, fmt.Errorf("offline secret is not supported by the current vcn version")
-	}
-	if err != nil {
-		return nil, err
-	}
-	return u.SignWithOptions(
-		artifact,
-		SignWithStatus(status),
-		SignWithVisibility(visibility),
-		SignWithKey(keyin, passphrase),
 	)
 }
 

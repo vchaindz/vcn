@@ -66,11 +66,3 @@ func SignWithKey(keyin io.Reader, passphrase string) SignOption {
 		return nil
 	}
 }
-
-// SignWithPassphrase returns the functional option for the given passphrase.
-func SignWithPassphrase(passphrase string) SignOption {
-	return func(o *signOpts) error {
-		o.passphrase = passphrase
-		return nil
-	}
-}

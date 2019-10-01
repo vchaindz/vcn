@@ -113,6 +113,9 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		return err
 	}
 	u := api.NewUser(store.Config().CurrentContext)
+	if u == nil {
+		return fmt.Errorf("cannot load the current user")
+	}
 
 	// Make the artifact to be signed
 	var a *api.Artifact
@@ -146,10 +149,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(u, a, state, meta.VisibilityForFlag(public), output)
+	return sign(*u, *a, state, meta.VisibilityForFlag(public), output)
 }
 
-func sign(u *api.User, a *api.Artifact, state meta.Status, visibility meta.Visibility, output string) error {
+func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string) error {
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
@@ -162,18 +165,32 @@ func sign(u *api.User, a *api.Artifact, state meta.Status, visibility meta.Visib
 	if err != nil {
 		return err
 	}
+
 	s := spin.New("%s Notarization in progress...")
 	if output == "" {
 		s.Set(spin.Spin1)
 		s.Start()
 	}
 
-	hook := newHook(a)
-	verification, err := u.Sign(*a, passphrase, state, visibility)
+	keyin, _, offline, err := u.Secret()
+	if err != nil {
+		return err
+	}
+	if offline {
+		return fmt.Errorf("offline secret is not supported by the current vcn version")
+	}
+
+	hook := newHook(&a)
+	verification, err := u.Sign(
+		a,
+		api.SignWithStatus(state),
+		api.SignWithVisibility(visibility),
+		api.SignWithKey(keyin, passphrase),
+	)
 
 	// todo(ameingast): redundant tracking events?
-	api.TrackPublisher(u, meta.VcnSignEvent)
-	api.TrackSign(u, a.Hash, a.Name, state)
+	api.TrackPublisher(&u, meta.VcnSignEvent)
+	api.TrackSign(&u, a.Hash, a.Name, state)
 
 	if output == "" {
 		s.Stop()
@@ -190,6 +207,6 @@ func sign(u *api.User, a *api.Artifact, state meta.Status, visibility meta.Visib
 	if output == "" {
 		fmt.Println()
 	}
-	cli.Print(output, types.NewResult(a, nil, verification))
+	cli.Print(output, types.NewResult(&a, nil, verification))
 	return nil
 }

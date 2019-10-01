@@ -79,7 +79,7 @@ func sign(status meta.Status, kinds map[string]bool, w http.ResponseWriter, r *h
 		return
 	}
 
-	verification, err := user.SignWithOptions(
+	verification, err := user.Sign(
 		artifact,
 		opts...,
 	)
