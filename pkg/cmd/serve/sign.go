@@ -41,9 +41,13 @@ func sign(status meta.Status, kinds map[string]bool, w http.ResponseWriter, r *h
 		return
 	}
 
-	keyin, err := user.DownloadSecret()
+	keyin, _, offline, err := user.Secret()
 	if err != nil {
 		writeError(w, http.StatusConflict, err)
+		return
+	}
+	if offline {
+		writeError(w, http.StatusConflict, fmt.Errorf("offline secret is not yet supported"))
 		return
 	}
 

@@ -44,12 +44,17 @@ func runPasshphrase(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	u := api.NewUser(store.Config().CurrentContext)
-	fmt.Printf("User: %s\n", u.Email())
+	fmt.Printf("User:	%s\n", u.Email())
 
-	secret, err := u.DownloadSecret()
+	secret, id, offline, err := u.Secret()
 	if err != nil {
 		return err
 	}
+	if offline {
+		return fmt.Errorf("offline secret is not supported by the current vcn version")
+	}
+	fmt.Printf("SignerID:	%s\n", id)
+
 	pass, err := cli.ProvidePasswordWithMessage("Enter your current notarization password: ")
 	if err != nil {
 		return err

@@ -39,13 +39,6 @@ func makeSignOpts(u User, opts ...SignOption) (o *signOpts, err error) {
 		}
 	}
 
-	if o.keyin == nil {
-		o.keyin, err = u.cfg.OpenSecret()
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return
 }
 

@@ -110,7 +110,7 @@ func (u User) Config() *store.User {
 	return nil
 }
 
-func (u User) getSecret() (address, keystore string, err error) {
+func (u User) getWallet() (address, keystore string, offline bool, err error) {
 	authError := new(Error)
 	pagedWalletResponse := new(struct {
 		Content []struct {
@@ -129,7 +129,7 @@ func (u User) getSecret() (address, keystore string, err error) {
 		"response":  "HIDDEN",
 		"err":       err,
 		"authError": authError,
-	}).Trace("getSecret")
+	}).Trace("getWallet")
 	if err != nil {
 		return
 	}
@@ -158,21 +158,29 @@ func (u User) getSecret() (address, keystore string, err error) {
 	return
 }
 
-// DownloadSecret downloads the User's secret from the platform and return io.Reader for reading it.
-func (u User) DownloadSecret() (io.Reader, error) {
-	_, keystore, err := u.getSecret()
-	if err != nil {
-		return nil, err
+// Secret fetches the User's secret and returns an io.Reader for reading it.
+func (u User) Secret() (reader io.Reader, id string, offline bool, err error) {
+	id, keystore, offline, err := u.getWallet()
+
+	switch true {
+	case err != nil:
+		// passthru error
+	case id == "":
+		err = fmt.Errorf("no secret found for %s", u.Email())
+	case offline:
+		// passthru offline
+	case keystore == "":
+		err = fmt.Errorf("no secret found for %s", u.Email())
+	default:
+		reader = bytes.NewReader([]byte(keystore))
 	}
-	if keystore == "" {
-		return nil, fmt.Errorf("no secret found for %s", u.Email())
-	}
-	return bytes.NewReader([]byte(keystore)), nil
+
+	return
 }
 
 // SignerID retrives the User's SignerID (the public address derived from the secret) from the platform.
 func (u User) SignerID() (id string, err error) {
-	id, _, err = u.getSecret()
+	id, _, _, err = u.getWallet()
 	if err == nil && id == "" {
 		err = fmt.Errorf("no SignerID found for %s", u.Email())
 	}

@@ -26,8 +26,8 @@ import (
 
 // SignWithOptions is invoked by the User to notarize an artifact using the given functional options,
 // if successful a BlockchainVerification is returned.
-// By default, the artifact is notarized using status = meta.StatusTrusted, visibility meta.VisibilityPrivate,
-// and using the local stored secret, thus at least the passphrase must be provided using SignWithPassphrase().
+// By default, the artifact is notarized using status = meta.StatusTrusted, visibility meta.VisibilityPrivate.
+// At least the passphrase must be provided using SignWithPassphrase().
 func (u User) SignWithOptions(artifact Artifact, options ...SignOption) (*BlockchainVerification, error) {
 	if artifact.Hash == "" {
 		return nil, makeError("hash is missing", nil)
@@ -71,7 +71,10 @@ func (u User) SignWithOptions(artifact Artifact, options ...SignOption) (*Blockc
 // if successful a BlockchainVerification is returned.
 // The passphrase is required to unlock the platform stored secret.
 func (u User) Sign(artifact Artifact, passphrase string, status meta.Status, visibility meta.Visibility) (*BlockchainVerification, error) {
-	keyin, err := u.DownloadSecret()
+	keyin, _, offline, err := u.Secret()
+	if offline {
+		return nil, fmt.Errorf("offline secret is not supported by the current vcn version")
+	}
 	if err != nil {
 		return nil, err
 	}
