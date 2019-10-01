@@ -1,19 +1,19 @@
-## vcn dashboard
+## vcn info
 
-Open https://dashboard.codenotary.io in browser
+Show info
 
 ### Synopsis
 
-Open https://dashboard.codenotary.io in browser
+Show info
 
 ```
-vcn dashboard [flags]
+vcn info [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for dashboard
+  -h, --help   help for info
 ```
 
 ### Options inherited from parent commands

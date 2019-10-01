@@ -3,6 +3,48 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- correct cross compile deps
+- trust level was not shown when equals to DISABLED
+- contentType was not shown when `ArtifactResponse` was not present
+- make fields name consistent across output formats (json, yaml)
+- **api:** correct tracing log label for `VerifyMatchingSignerIDWithFallback`
+
+### Changes
+- promote artifact fields to root
+- use go v1.13 for the building system
+- update dependencies
+- platform managed secret is not stored locally anymore
+- remove onboarding message (closes [#52](https://github.com/vchain-us/vcn/issues/52))
+- move tracking call outside api pkg
+- **api:** omit empy field in `ArtifactResponse`
+- **api:** removed `BlockchainVerification.LevelName()` method
+- **api:** add `BlockchainVerification.UnmarshalYAML`
+- **cmd:** gracefully print error message if artifact is nil (fixes [#57](https://github.com/vchain-us/vcn/issues/57))
+- **cmd/serve:** notarization API will allow only registered schemes for the kind field (closes [#51](https://github.com/vchain-us/vcn/issues/51))
+- **extractor:** do not store version in metadata when empty
+- **extractor/dir:** do not create `.vcnignore` on directory authentication (refs [#45](https://github.com/vchain-us/vcn/issues/45))
+- **meta:** use Stringer interface for status, level, and visibility
+- **meta:** use Stringer interface for stage environment
+
+### Code Refactoring
+- functional options for signing method
+- improve secret handling API
+- **api:** always check for user existence when login
+- **cmd:** simplify cobra commands naming
+
+### Features
+- **api:** add `SignerID()` method
+- **api:** added ability to upload the secret to the platform
+- **api:** add functional options for signing
+- **cmd:** added `vcn info` command
+- **cmd:** add `vcn serve` command
+- **cmd:** added command for setting a custom notarization password (closes [#53](https://github.com/vchain-us/vcn/issues/53))
+- **cmd/serve:** TLS support (closes [#48](https://github.com/vchain-us/vcn/issues/48))
+- **cmd/serve:** print environment info at startup
+- **cmd/serve:** allow to pass credentials via HTTP
+- **extractor:** add functional options
+
 
 <a name="v0.6.3"></a>
 ## [v0.6.3] - 2019-09-25

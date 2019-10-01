@@ -1,19 +1,23 @@
-## vcn dashboard
+## vcn serve
 
-Open https://dashboard.codenotary.io in browser
+Start an API server
 
 ### Synopsis
 
-Open https://dashboard.codenotary.io in browser
+Start an API server
 
 ```
-vcn dashboard [flags]
+vcn serve [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for dashboard
+  -h, --help                   help for serve
+      --host string            host address
+      --port string            port (default "8080")
+      --tls-cert-file string   TLS certificate file
+      --tls-key-file string    TLS key file
 ```
 
 ### Options inherited from parent commands
