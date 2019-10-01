@@ -61,14 +61,19 @@ Contract Addr.: %s
 		return nil
 	}
 	u := api.NewUser(context)
+	fmt.Printf("\nUser:		%s\n", u.Email())
+	hasAuth, err := u.IsAuthenticated()
+	if err != nil {
+		return err
+	}
+	if !hasAuth {
+		fmt.Println("\nUser not authenticated (token expired).")
+		return nil
+	}
 	id, err := u.SignerID()
 	if err != nil {
 		return err
 	}
-	fmt.Printf(`
-User:		%s
-SignerID:	%s
-
-`, u.Email(), id)
+	fmt.Printf("SignerID:	%s\n", id)
 	return nil
 }
