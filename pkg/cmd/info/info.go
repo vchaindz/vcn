@@ -37,6 +37,7 @@ func runInfo(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf(`
 Version:        %s
+Git Rev:        %s
 UserAgent:      %s
 Config file:    %s
 Stage:          %s
@@ -46,6 +47,7 @@ MainNet:        %s
 Contract Addr.: %s
 `,
 		meta.Version(),
+		meta.GitRevision(),
 		meta.UserAgent(),
 		store.ConfigFile(),
 		meta.StageEnvironment().String(),
