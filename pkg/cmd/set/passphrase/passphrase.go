@@ -64,6 +64,9 @@ func runPasshphrase(cmd *cobra.Command, args []string) error {
 	buf.ReadFrom(secret)
 	key, err := keystore.DecryptKey(buf.Bytes(), pass)
 	if err != nil {
+		if err.Error() == "could not decrypt key with given passphrase" {
+			return fmt.Errorf("incorrect password")
+		}
 		return err
 	}
 

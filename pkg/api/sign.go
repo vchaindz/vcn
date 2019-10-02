@@ -79,6 +79,9 @@ func (u User) commitTransaction(
 
 	transactor, err := bind.NewTransactor(o.keyin, o.passphrase)
 	if err != nil {
+		if err.Error() == "could not decrypt key with given passphrase" {
+			err = fmt.Errorf("incorrect password")
+		}
 		return
 	}
 
