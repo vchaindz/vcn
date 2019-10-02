@@ -21,5 +21,5 @@ func noArgsWhenHash(cmd *cobra.Command, args []string) error {
 		}
 		return nil
 	}
-	return cobra.MinimumNArgs(1)(cmd, args)
+	return cobra.ExactArgs(1)(cmd, args)
 }
