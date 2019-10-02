@@ -19,13 +19,13 @@ vChain CodeNotary - Notarize and authenticate, from code to production
 
 * [vcn authenticate](vcn_authenticate.md)	 - Authenticate assets against the blockchain
 * [vcn dashboard](vcn_dashboard.md)	 - Open https://dashboard.codenotary.io in browser
-* [vcn info](vcn_info.md)	 - Show info
+* [vcn info](vcn_info.md)	 - Display vcn information
 * [vcn inspect](vcn_inspect.md)	 - Return the asset history with low-level information
 * [vcn list](vcn_list.md)	 - List your notarized assets
 * [vcn login](vcn_login.md)	 - Log in to codenotary.io
 * [vcn logout](vcn_logout.md)	 - Logout the current user
 * [vcn notarize](vcn_notarize.md)	 - Notarize an asset onto the blockchain
-* [vcn serve](vcn_serve.md)	 - Start an API server
+* [vcn serve](vcn_serve.md)	 - Start an local API server
 * [vcn set](vcn_set.md)	 - Set specific features options
 * [vcn unsupport](vcn_unsupport.md)	 - Unsupport an asset
 * [vcn untrust](vcn_untrust.md)	 - Untrust an asset

@@ -13,7 +13,7 @@ vcn inspect [flags]
 ### Options
 
 ```
-      --hash string   specify a hash to inspect, if set no arg can be used
+      --hash string   specify a hash to inspect, if set no ARG can be used
   -h, --help          help for inspect
 ```
 

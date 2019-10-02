@@ -16,11 +16,20 @@ trust level and a timestamp are added.
 When complete, a new blockchain entry is created that binds the asset’s
 signed hash, signed status, level, and timestamp together. 
 
-Assets are referenced by passed arg(s) with unsupport command only accepting 
-1 arg at a time. 
-
 Note that your asset will not be uploaded but processed locally.
-	
+
+Assets are referenced by passed ARG(s) with unsupport command only accepting 
+1 ARG at a time. 
+
+
+ARG must be one of:
+  <file>
+  file://<file>
+  dir://<directory>
+  git://<repository>
+  docker://<image>
+  podman://<image>
+
 
 ```
 vcn unsupport [flags]
@@ -30,7 +39,7 @@ vcn unsupport [flags]
 
 ```
   -a, --attr list     add user defined attributes (format: --attr key=value)
-      --hash string   specify the hash instead of using an asset, if set no arg(s) can be used
+      --hash string   specify the hash instead of using an asset, if set no ARG(s) can be used
   -h, --help          help for unsupport
   -n, --name string   set the asset name
   -p, --public        when notarized as public, the asset name and metadata will be visible to everyone

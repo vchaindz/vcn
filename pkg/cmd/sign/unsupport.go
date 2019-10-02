@@ -34,10 +34,11 @@ trust level and a timestamp are added.
 When complete, a new blockchain entry is created that binds the asset’s
 signed hash, signed status, level, and timestamp together. 
 
-Assets are referenced by passed arg(s) with unsupport command only accepting 
-1 arg at a time. 
-
 Note that your asset will not be uploaded but processed locally.
-	`
+
+Assets are referenced by passed ARG(s) with unsupport command only accepting 
+1 ARG at a time. 
+
+` + helpMsgFooter
 	return cmd
 }

@@ -10,6 +10,7 @@ package inspect
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 
@@ -31,7 +32,7 @@ func NewCommand() *cobra.Command {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if hash, _ := cmd.Flags().GetString("hash"); hash != "" {
 				if len(args) > 0 {
-					return fmt.Errorf("cannot use arg(s) with --hash")
+					return fmt.Errorf("cannot use ARG(s) with --hash")
 				}
 				return nil
 			}
@@ -39,7 +40,11 @@ func NewCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("hash", "", "specify a hash to inspect, if set no arg can be used")
+	cmd.SetUsageTemplate(
+		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
+	)
+
+	cmd.Flags().String("hash", "", "specify a hash to inspect, if set no ARG can be used")
 
 	return cmd
 }

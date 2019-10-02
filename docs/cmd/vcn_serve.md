@@ -1,10 +1,10 @@
 ## vcn serve
 
-Start an API server
+Start an local API server
 
 ### Synopsis
 
-Start an API server
+Start an local API server
 
 ```
 vcn serve [flags]

@@ -53,14 +53,22 @@ If matched, the returned result (the authentication) is the blockchain-stored
 metadata that’s bound to the matching hash. 
 Otherwise, the returned result status equals UNKNOWN.
 
-Assets are referenced by the passed arg(s), with authentication accepting 
-1 or more arg(s) at a time. Multiple assets can be authenticated at the 
-same time while passing them within arg(s).
+Note that your assets will not be uploaded but processed locally.
 
 The exit code will be 0 only if all assets' statuses are equal to TRUSTED. 
 Otherwise, the exit code will be 1.
 
-Note that your assets will not be uploaded but processed locally.
+Assets are referenced by the passed ARG(s), with authentication accepting 
+1 or more ARG(s) at a time. Multiple assets can be authenticated at the 
+same time while passing them within ARG(s).
+
+ARG must be one of:
+  <file>
+  file://<file>
+  dir://<directory>
+  git://<repository>
+  docker://<image>
+  podman://<image>
 `,
 		RunE: runVerify,
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -77,7 +85,7 @@ Note that your assets will not be uploaded but processed locally.
 
 			if hash, _ := cmd.Flags().GetString("hash"); hash != "" {
 				if len(args) > 0 {
-					return fmt.Errorf("cannot use arg(s) with --hash")
+					return fmt.Errorf("cannot use ARG(s) with --hash")
 				}
 				return nil
 			}
@@ -86,14 +94,14 @@ Note that your assets will not be uploaded but processed locally.
 	}
 
 	cmd.SetUsageTemplate(
-		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ...ARG(s)", 1),
+		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG(s)", 1),
 	)
 
 	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)\n(overrides VCN_SIGNERID env var, if any)")
 	cmd.Flags().StringSliceP("key", "k", nil, "")
 	cmd.Flags().MarkDeprecated("key", "please use --signerID instead")
 	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID,\nif set no SignerID can be used\n(overrides VCN_ORG env var, if any)")
-	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no arg(s) can be used")
+	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no ARG(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
 	cmd.Flags().MarkHidden("raw-diff")
 

@@ -1,10 +1,10 @@
 ## vcn info
 
-Show info
+Display vcn information
 
 ### Synopsis
 
-Show info
+Display vcn information
 
 ```
 vcn info [flags]

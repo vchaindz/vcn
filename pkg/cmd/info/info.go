@@ -23,7 +23,7 @@ import (
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "info",
-		Short: "Show info",
+		Short: "Display vcn information",
 		Long:  ``,
 		RunE:  runInfo,
 		Args:  cobra.NoArgs,

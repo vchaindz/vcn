@@ -33,6 +33,16 @@ VCN_NOTARIZATION_PASSWORD env var can be used to pass the
 required notarization password in a non-interactive environment.
 `
 
+const helpMsgFooter = `
+ARG must be one of:
+  <file>
+  file://<file>
+  dir://<directory>
+  git://<repository>
+  docker://<image>
+  podman://<image>
+`
+
 // NewCommand returns the cobra command for `vcn sign`
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -51,21 +61,21 @@ trust level and a timestamp are added.
 When complete, a new blockchain entry is created that binds the asset’s
 signed hash, signed status, level, and timestamp together. 
 
-Assets are referenced by passed arg(s) with notarization only accepting 
-1 arg at a time. 
-
 Note that your asset will not be uploaded but processed locally.
-`,
+
+Assets are referenced by passed ARG with notarization only accepting 
+1 ARG at a time.
+` + helpMsgFooter,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runSignWithState(cmd, args, meta.StatusTrusted)
 		},
 		Args: noArgsWhenHash,
 	}
 
-	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (format: --attr key=value)")
+	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (repeat --attr for multiple entries)")
 	cmd.Flags().StringP("name", "n", "", "set the asset name")
 	cmd.Flags().BoolP("public", "p", false, "when notarized as public, the asset name and metadata will be visible to everyone")
-	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no arg(s) can be used")
+	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
 	)

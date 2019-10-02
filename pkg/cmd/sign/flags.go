@@ -17,7 +17,7 @@ import (
 func noArgsWhenHash(cmd *cobra.Command, args []string) error {
 	if hash, _ := cmd.Flags().GetString("hash"); hash != "" {
 		if len(args) > 0 {
-			return fmt.Errorf("cannot use arg(s) with --hash")
+			return fmt.Errorf("cannot use ARG(s) with --hash")
 		}
 		return nil
 	}
