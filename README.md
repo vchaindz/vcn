@@ -1,11 +1,12 @@
 # vcn  <img align="right" src="https://github.com/vchain-us/vcn/blob/master/docs/img/cn-color.eeadbabe.svg" width="160px"/>
 > **_vChain CodeNotary_**
 
-[![CircleCI](https://circleci.com/gh/vchain-us/vcn.svg?style=shield)](https://circleci.com/gh/vchain-us/vcn)
-[![Go Report Card](https://goreportcard.com/badge/github.com/vchain-us/vcn)](https://goreportcard.com/report/github.com/vchain-us/vcn)
-[![GoDoc](https://godoc.org/github.com/vchain-us/vcn?status.svg)](https://godoc.org/github.com/vchain-us/vcn)
-[![Changelog](https://img.shields.io/badge/CHANGELOG-.md-blue)](https://github.com/vchain-us/vcn/blob/master/CHANGELOG.md)
-
+[![CircleCI](https://img.shields.io/circleci/build/github/vchain-us/vcn/master?style=flat-square)](https://circleci.com/gh/vchain-us/vcn)
+[![Go Report Card](https://goreportcard.com/badge/github.com/vchain-us/vcn?style=flat-square)](https://goreportcard.com/report/github.com/vchain-us/vcn)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/vchain-us/vcn)
+[![Docker pulls](https://img.shields.io/docker/pulls/codenotary/vcn?style=flat-square)](https://hub.docker.com/r/codenotary/vcn)
+[![Changelog](https://img.shields.io/badge/CHANGELOG-.md-blue?style=flat-square)](https://github.com/vchain-us/vcn/blob/master/CHANGELOG.md)
+[![Release](https://img.shields.io/github/release/vchain-us/vcn.svg?style=flat-square)](https://github.com/vchain-us/vcn/releases/latest)
 ## The Trust and Integrity platform for the Cloud native environment
 Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
 
