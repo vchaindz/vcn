@@ -19,10 +19,13 @@ func getCredential(r *http.Request) (user *api.User, passphrase string, err erro
 		user = api.NewUser(email)
 		err = user.Authenticate(password)
 		if err == nil {
-			passphrase = r.Header.Get("x-notarization-password")
-			if passphrase == "" {
-				passphrase = password
+			if empty := r.Header.Get("x-notarization-password-empty"); empty == "" {
+				passphrase = r.Header.Get("x-notarization-password")
+				if passphrase == "" {
+					passphrase = password
+				}
 			}
+			// else use empty passphrase
 		}
 	}
 	return

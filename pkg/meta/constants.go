@@ -59,9 +59,10 @@ const (
 
 // vcn environment variable names
 const (
-	VcnUserEnv              string = "VCN_USER"
-	VcnPasswordEnv          string = "VCN_PASSWORD"
-	VcnNotarizationPassword string = "VCN_NOTARIZATION_PASSWORD"
+	VcnUserEnv                   string = "VCN_USER"
+	VcnPasswordEnv               string = "VCN_PASSWORD"
+	VcnNotarizationPassword      string = "VCN_NOTARIZATION_PASSWORD"
+	VcnNotarizationPasswordEmpty string = "VCN_NOTARIZATION_PASSWORD_EMPTY"
 )
 
 // UserAgent returns the vcn's User-Agent string

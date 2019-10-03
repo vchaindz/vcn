@@ -59,9 +59,7 @@ You will need it every time you want to notarize an asset.
 		keystorePassphrase2, _ = readPassword("Notarization password (reenter): ")
 		fmt.Println()
 
-		if keystorePassphrase == "" {
-			fmt.Println("Your password must not be empty.")
-		} else if keystorePassphrase != keystorePassphrase2 {
+		if keystorePassphrase != keystorePassphrase2 {
 			fmt.Println("Your two inputs did not match. Please try again.")
 		} else {
 			match = true
@@ -72,8 +70,12 @@ You will need it every time you want to notarize an asset.
 }
 
 func ProvidePassphrase() (passphrase string, err error) {
-	passphrase = os.Getenv(meta.VcnNotarizationPassword)
-	if passphrase != "" {
+	if _, empty := os.LookupEnv(meta.VcnNotarizationPasswordEmpty); empty {
+		logs.LOG.Trace("Empty notarization password provided (environment)")
+		return "", nil
+	}
+	passphrase, ok := os.LookupEnv(meta.VcnNotarizationPassword)
+	if ok {
 		logs.LOG.Trace("Notarization password provided (environment)")
 		return passphrase, nil
 	}
