@@ -1,7 +1,13 @@
 # Web API
 
-All endpoints accepts Basic Auth with user credentials (mantatory for notarization).
-If a custom notarization password is needed, add the `x-notarization-password` header, otherwise the login password will be used instead.
+Notarization and authentication can also be used via a simple HTTP API. You can use:
+
+- the CodeNotary hosted API at https://api.codenotary.it/
+- or a local web server exposing the same API by running the `vcn serve` command
+
+All endpoints accept *Basic Auth* with user credentials (mantatory for notarization).
+By default the login password is used as notarization password too.
+If a custom notarization password is needed add the `x-notarization-password: <your_password>` header, otherwise if you have set an empty notarization password add the `x-notarization-password-empty: yes` header instead.
 
 ## Notarization
 
@@ -13,14 +19,13 @@ If a custom notarization password is needed, add the `x-notarization-password` h
 **Query params**
 - `public` (if present and not empy will set the visibility to public, otherwise private)
 
-
 **Body request**
-```json
+```js
 {
   "kind": "file", // string, optional
   "name": "filename.pdf", // string
   "hash": "......", // string
-  "size": 4096, // int, optional, cannot be < 0
+  "size": 4096, // int, optional, must be equal or greater than zero
   "contentType": "application/pdf", // string, optional
   "metadata": { // object, optional
     // ...
@@ -39,16 +44,30 @@ Same as authentication, see below.
 **Query params**
 - `signers` comma-separated list of SignerID(s)
 - `org` organization ID
-> `org`, if present, takes precedence over `signers`
+> `org` if present, takes precedence over `signers`
 
 **Body response**
-> Results are indentical to `vcn authenticate ... --output=json` ones.
-- example of unverified asset:
+
+Results are indentical to ones of `vcn authenticate <asset> --output=json`.
+> Status and level codes explanation can be found [here](notarization.md#Statuses)
+
+Example of unverified asset:
 ```json
 {
   "kind": "",
   "name": "",
-  "hash": "non-existing-hash",
+  "hash": "",
+  "size": 0,
+  "contentType": "",
+  "url": "",
+  "metadata": null,
+  "visibility": "",
+  "createdAt": "",
+  "verificationCount": 0,
+  "signerCount": 0,
+  "signer": "",
+  "company": "",
+  "website": "",
   "verification": {
     "level": 0,
     "owner": "",
@@ -58,31 +77,7 @@ Same as authentication, see below.
 }
 ```
 
-- example of trusted asset with some fields omitted (because empty)
-```json
-{
-  "kind": "",
-  "name": "Test vector",
-  "hash": "test",
-  "metadata": {
-    "note": "This hash was signed for testing purpose"
-  },
-  "visibility": "PUBLIC",
-  "createdAt": "2019-06-28T22:46:46.317819",
-  "verificationCount": 28,
-  "signerCount": 1,
-  "signer": "leonardo@vchain.us",
-  "company": "vChain",
-  "verification": {
-    "level": 3,
-    "owner": "0x7f66cb537c27251d007bd3c8ec731690c744f5e4",
-    "status": 0,
-    "timestamp": "2019-06-28T22:46:45Z"
-  }
-}
-```
-
-- example with all field populated
+Example of a trusted asset with all field populated:
 ```json
 {
   "kind": "file",
@@ -118,4 +113,3 @@ Same as authentication, see below.
   }
 }
 ```
-
