@@ -194,7 +194,7 @@ vcn authenticate --output=yaml <asset>
 
 ## Integrations
 
-* [docker](https://github.com/vchain-us/vcn/blob/master/docs/DOCKERINTEGRATION.md) - Out of the box support for notarizing and authenticating Docker images.
+* [docker](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/docker.md) - Out of the box support for notarizing and authenticating Docker images.
 * [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
 * [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
 * [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous authentication with CodeNotary for Docker.

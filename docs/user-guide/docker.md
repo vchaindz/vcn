@@ -1,6 +1,9 @@
 # Default Docker Integration
 
-`vcn` support local docker installations out of the box using `docker://` as a location. You just need to point to the correct container image name or the container image id.
+`vcn` supports local docker installations out of the box using `docker://` as a location. You just need to point to the correct container image name or the container image id.
+
+If you prefer [podman](https://podman.io/), just use `podman://` instead.
+
 
 ### Notarize a local docker image
 
