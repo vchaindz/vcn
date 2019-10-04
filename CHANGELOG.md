@@ -3,29 +3,37 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.7.0"></a>
+## [v0.7.0] - 2019-10-04
 ### Bug Fixes
+- simplied error message when wrong notarization password is provided
 - correct cross compile deps
 - trust level was not shown when equals to DISABLED
 - contentType was not shown when `ArtifactResponse` was not present
 - make fields name consistent across output formats (json, yaml)
 - **api:** correct tracing log label for `VerifyMatchingSignerIDWithFallback`
+- **cmd/sign:** command must accept exactly one arg
 
 ### Changes
-- promote artifact fields to root
-- use go v1.13 for the building system
+- update messages
 - update dependencies
 - platform managed secret is not stored locally anymore
 - remove onboarding message (closes [#52](https://github.com/vchain-us/vcn/issues/52))
+- use go v1.13 for the building system
+- promote artifact fields to root
 - move tracking call outside api pkg
-- **api:** omit empy field in `ArtifactResponse`
 - **api:** removed `BlockchainVerification.LevelName()` method
 - **api:** add `BlockchainVerification.UnmarshalYAML`
+- **api:** omit empy field in `ArtifactResponse`
 - **cmd:** gracefully print error message if artifact is nil (fixes [#57](https://github.com/vchain-us/vcn/issues/57))
+- **cmd:** added ability to use empty notarization password
+- **cmd/info:** improved message for expired tokens
 - **cmd/serve:** notarization API will allow only registered schemes for the kind field (closes [#51](https://github.com/vchain-us/vcn/issues/51))
 - **extractor:** do not store version in metadata when empty
 - **extractor/dir:** do not create `.vcnignore` on directory authentication (refs [#45](https://github.com/vchain-us/vcn/issues/45))
-- **meta:** use Stringer interface for status, level, and visibility
 - **meta:** use Stringer interface for stage environment
+- **meta:** use Stringer interface for status, level, and visibility
 
 ### Code Refactoring
 - functional options for signing method
@@ -37,6 +45,7 @@ All notable changes to this project will be documented in this file. This projec
 - **api:** add `SignerID()` method
 - **api:** added ability to upload the secret to the platform
 - **api:** add functional options for signing
+- **cmd:** improved help messages
 - **cmd:** added `vcn info` command
 - **cmd:** add `vcn serve` command
 - **cmd:** added command for setting a custom notarization password (closes [#53](https://github.com/vchain-us/vcn/issues/53))
@@ -44,6 +53,25 @@ All notable changes to this project will be documented in this file. This projec
 - **cmd/serve:** print environment info at startup
 - **cmd/serve:** allow to pass credentials via HTTP
 - **extractor:** add functional options
+
+### BREAKING CHANGE
+
+`api.Sign` method signature has been changed.
+
+`meta.StageName` has been removed; please use the `.String()` on value instead.
+
+All command's factory methods have been renamed.
+
+`BlockchainVerification.LevelName()` has been removed, please use `BlockchainVerification.Level.String()` instead.
+
+`meta.StatusName`, `meta.LevelName`, `meta.VisibilityName` have been removed; please use the `.String()` on values instead.
+
+`artifact` field is not present anymore in json/yaml results.
+
+Extractors method signature have changed to accomodate functional options.
+
+Secret storage is not used anymore for platform managed secrets.
+`store.PublicAddress()` has been renamed to `store.SignerIDFromSecret()`, and will return a value only when a local secret is available
 
 
 <a name="v0.6.3"></a>
@@ -430,7 +458,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.6.3...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.0...HEAD
+[v0.7.0]: https://github.com/vchain-us/vcn/compare/v0.6.3...v0.7.0
 [v0.6.3]: https://github.com/vchain-us/vcn/compare/v0.6.2...v0.6.3
 [v0.6.2]: https://github.com/vchain-us/vcn/compare/v0.6.1...v0.6.2
 [v0.6.1]: https://github.com/vchain-us/vcn/compare/v0.6.0...v0.6.1
