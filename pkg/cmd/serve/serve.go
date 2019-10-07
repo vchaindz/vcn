@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/internal/logs"
@@ -67,13 +68,19 @@ func runServe(cmd *cobra.Command) error {
 	logs.LOG.Infof("Log level: %s", logs.LOG.GetLevel().String())
 	logs.LOG.Infof("Stage: %s", meta.StageEnvironment().String())
 
+	handler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"POST", "GET", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"content-type", "authorization", "x-notarization-password", "x-notarization-password-empty"}),
+	)(router)
+
 	if certFile != "" && keyFile != "" {
 		logs.LOG.Infof("Listening on %s (TLS)", addr)
-		return http.ListenAndServeTLS(addr, certFile, keyFile, router)
+		return http.ListenAndServeTLS(addr, certFile, keyFile, handler)
 	}
 
 	logs.LOG.Infof("Listening on %s", addr)
-	return http.ListenAndServe(addr, router)
+	return http.ListenAndServe(addr, handler)
 }
 
 func index(w http.ResponseWriter, r *http.Request) {

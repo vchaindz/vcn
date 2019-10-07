@@ -20,6 +20,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/fjl/memsize v0.0.0-20190710130421-bcb5799ab5e5 // indirect
 	github.com/google/go-cmp v0.3.1
+	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/h2non/filetype v1.0.10
 	github.com/hashicorp/golang-lru v0.5.3 // indirect

@@ -24,7 +24,6 @@ type errorResponse struct {
 
 func writeResponse(w http.ResponseWriter, code int, b []byte) {
 	headers := w.Header()
-	headers.Set("Access-Control-Allow-Origin", "*")
 	headers.Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	_, err := w.Write(b)
