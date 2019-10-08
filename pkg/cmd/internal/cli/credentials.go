@@ -79,7 +79,7 @@ func ProvidePassphrase() (passphrase string, err error) {
 		logs.LOG.Trace("Notarization password provided (environment)")
 		return passphrase, nil
 	}
-	fmt.Println("Please enter your password for notarizing your asset. If you did not set a separate notarization password, please use your login one.")
+	fmt.Println("Please enter you notarization password to notarize your asset.\nIf you did not set a separate notarization password, use the one used to log in.")
 	passphrase, err = readPassword("Password: ")
 	if err != nil {
 		return "", err

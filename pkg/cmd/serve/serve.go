@@ -23,7 +23,7 @@ import (
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "serve",
-		Short: "Start an local API server",
+		Short: "Start a local API server",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
