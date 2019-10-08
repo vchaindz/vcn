@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.7.1"></a>
+## [v0.7.1] - 2019-10-08
+### Bug Fixes
+- added ability to do not write on read only dir (fixes [#45](https://github.com/vchain-us/vcn/issues/45))
+- **cmd:** typo and language improvement
+- **cmd/serve:** CORS preflight (fixes [#60](https://github.com/vchain-us/vcn/issues/60))
+
+
 <a name="v0.7.0"></a>
 ## [v0.7.0] - 2019-10-04
 ### Bug Fixes
@@ -458,7 +466,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.1...HEAD
+[v0.7.1]: https://github.com/vchain-us/vcn/compare/v0.7.0...v0.7.1
 [v0.7.0]: https://github.com/vchain-us/vcn/compare/v0.6.3...v0.7.0
 [v0.6.3]: https://github.com/vchain-us/vcn/compare/v0.6.2...v0.6.3
 [v0.6.2]: https://github.com/vchain-us/vcn/compare/v0.6.1...v0.6.2
