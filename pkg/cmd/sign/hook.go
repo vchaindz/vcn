@@ -35,7 +35,8 @@ func (h *hook) finalize(v *api.BlockchainVerification) error {
 	if h != nil && !v.Unknown() {
 		manifest, path := dir.Metadata(h.a)
 		if manifest != nil && path != "" {
-			return bundle.WriteManifest(*manifest, filepath.Join(path, bundle.ManifestFilename))
+			// manifest is optional, we can ignore errors
+			bundle.WriteManifest(*manifest, filepath.Join(path, bundle.ManifestFilename))
 		}
 	}
 	return nil
