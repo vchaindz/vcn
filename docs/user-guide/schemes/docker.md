@@ -1,11 +1,11 @@
-# Default Docker Integration
+# Docker Integration
 
 `vcn` supports local docker installations out of the box using `docker://` as a location. You just need to point to the correct container image name or the container image id.
 
 If you prefer [podman](https://podman.io/), just use `podman://` instead.
 
 
-### Notarize a local docker image
+## Notarize a local docker image
 
 `vcn` uses docker default schemes, so the latest tag is automatically used, if no tag is given
 
@@ -21,7 +21,7 @@ vcn notarize docker://hello-world:v1
 
 To be able to notarize, you need to register at [CodeNotary](https://dashboard.codenotary.io) and get an account.
 
-### Authenticate a local docker image
+## Authenticate a local docker image
 
 ```
 vcn authenticate docker://hello-world
@@ -33,7 +33,7 @@ or using a tag
 vcn authenticate docker://hello-world:v1
 ```
 
-# Docker Sidecar Integration
+## Docker Sidecar Integration
 
 `vcn` also offers a sidecar project, you can use to automatically authenticate used container images during runtime.
 
