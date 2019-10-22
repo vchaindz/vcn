@@ -146,7 +146,7 @@ func (u User) commitTransaction(
 		return
 	}
 
-	err = u.createArtifact(verification, strings.ToLower(signerID), artifact, o.visibility, o.status)
+	err = u.createArtifact(verification, strings.ToLower(signerID), artifact, o.visibility, o.status, tx.Hash())
 	return
 }
 

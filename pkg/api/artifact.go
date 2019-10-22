@@ -11,6 +11,7 @@ package api
 import (
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
@@ -70,6 +71,7 @@ type artifactRequest struct {
 	Visibility string `json:"visibility"`
 	Status     string `json:"status"`
 	MetaHash   string `json:"metaHash"`
+	TxHash     string `json:"txHash"`
 }
 
 // PagedArtifactResponse holds a page of ArtifactResponse(s) returned by the platform.
@@ -128,7 +130,7 @@ func (a ArtifactResponse) Artifact() *Artifact {
 }
 
 func (u User) createArtifact(verification *BlockchainVerification, walletAddress string,
-	artifact Artifact, visibility meta.Visibility, status meta.Status) error {
+	artifact Artifact, visibility meta.Visibility, status meta.Status, txHash common.Hash) error {
 
 	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
@@ -142,6 +144,7 @@ func (u User) createArtifact(verification *BlockchainVerification, walletAddress
 	aR.Visibility = visibility.String()
 	aR.Status = status.String()
 	aR.MetaHash = verification.MetaHash()
+	aR.TxHash = txHash.String()
 
 	restError := new(Error)
 	r, err := newSling(u.token()).
