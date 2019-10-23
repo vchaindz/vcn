@@ -83,6 +83,11 @@ func sign(status meta.Status, kinds map[string]bool, w http.ResponseWriter, r *h
 		artifact,
 		opts...,
 	)
+
+	// todo(ameingast/leogr): remove reduntat event - need backend improvement
+	api.TrackPublisher(user, meta.VcnSignEvent)
+	api.TrackSign(user, artifact.Hash, artifact.Name, status)
+
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err)
 		return
