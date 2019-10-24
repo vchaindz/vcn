@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- **cmd/serve:** add missing event tracking
+
+### Changes
+- **ci:** github action for docs
+- **cmd/sign:** return full output when notarizing
+
+### Features
+- store TX hash
+- **cmd/inspect:** add ability to print only locally extracted info
+
 
 <a name="v0.7.1"></a>
 ## [v0.7.1] - 2019-10-08
