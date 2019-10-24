@@ -224,6 +224,12 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 	if output == "" {
 		fmt.Println()
 	}
-	cli.Print(output, types.NewResult(&a, nil, verification))
+
+	artifact, err := api.LoadArtifact(&u, a.Hash, verification.MetaHash())
+	if err != nil {
+		return err
+	}
+
+	cli.Print(output, types.NewResult(&a, artifact, verification))
 	return nil
 }
