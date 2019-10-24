@@ -3,10 +3,14 @@ All notable changes to this project will be documented in this file. This projec
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.7.2"></a>
+## [v0.7.2] - 2019-10-24
 ### Bug Fixes
 - **cmd/serve:** add missing event tracking
 
 ### Changes
+- **ci:** add verify-commit action
 - **ci:** github action for docs
 - **cmd/sign:** return full output when notarizing
 
@@ -477,7 +481,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.2...HEAD
+[v0.7.2]: https://github.com/vchain-us/vcn/compare/v0.7.1...v0.7.2
 [v0.7.1]: https://github.com/vchain-us/vcn/compare/v0.7.0...v0.7.1
 [v0.7.0]: https://github.com/vchain-us/vcn/compare/v0.6.3...v0.7.0
 [v0.6.3]: https://github.com/vchain-us/vcn/compare/v0.6.2...v0.6.3
