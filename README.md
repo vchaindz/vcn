@@ -196,6 +196,7 @@ vcn authenticate --output=yaml <asset>
 
 ## Integrations
 
+* [Github Action](https://github.com/marketplace/actions/verify-commit) - An action to verify the authenticity of your commits within your Github workflow
 * [docker](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/schemes/docker.md) - Out of the box support for notarizing and authenticating Docker images.
 * [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
 * [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
