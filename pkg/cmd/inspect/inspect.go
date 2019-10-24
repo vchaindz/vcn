@@ -45,6 +45,7 @@ func NewCommand() *cobra.Command {
 	)
 
 	cmd.Flags().String("hash", "", "specify a hash to inspect, if set no ARG can be used")
+	cmd.Flags().Bool("extract-only", false, "if set, print only locally extracted info")
 
 	return cmd
 }
@@ -58,25 +59,26 @@ func runInspect(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	extractOnly, err := cmd.Flags().GetBool("extract-only")
+	if err != nil {
+		return err
+	}
 	cmd.SilenceUsage = true
 
 	if hash == "" {
 		if len(args) < 1 {
 			return fmt.Errorf("no argument")
 		}
-		a, err := extractor.Extract(args[0])
-		if err != nil {
+		if hash, err = extractInfo(args[0], output); err != nil {
 			return err
 		}
-		if a == nil {
-			return fmt.Errorf("unable to process the input asset provided: %s", args[0])
-		}
-		hash = a.Hash
 		if output == "" {
-			fmt.Printf("Inferred info for: %s\n\n", args[0])
-			cli.Print("", types.NewResult(a, nil, nil))
-			fmt.Println()
+			fmt.Print("\n\n")
 		}
+	}
+
+	if extractOnly {
+		return nil
 	}
 
 	u := api.NewUser(store.Config().CurrentContext)
@@ -85,6 +87,24 @@ func runInspect(cmd *cobra.Command, args []string) error {
 	}
 
 	return inspect(hash, u, output)
+}
+
+func extractInfo(arg string, output string) (hash string, err error) {
+	a, err := extractor.Extract(arg)
+	if err != nil {
+		return "", err
+	}
+	if a == nil {
+		return "", fmt.Errorf("unable to process the input asset provided: %s", arg)
+	}
+
+	hash = a.Hash
+
+	if output == "" {
+		fmt.Printf("Extracted info from: %s\n\n", arg)
+	}
+	cli.Print(output, types.NewResult(a, nil, nil))
+	return
 }
 
 func inspect(hash string, u *api.User, output string) error {
