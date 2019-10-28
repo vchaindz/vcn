@@ -11,12 +11,13 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"syscall"
 
-	"github.com/vchain-us/vcn/pkg/cmd/inspect"
-	"github.com/vchain-us/vcn/pkg/store"
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
 	"github.com/vchain-us/vcn/pkg/cmd/info"
+	"github.com/vchain-us/vcn/pkg/cmd/inspect"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
 	"github.com/vchain-us/vcn/pkg/cmd/list"
@@ -27,6 +28,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/cmd/sign"
 	"github.com/vchain-us/vcn/pkg/cmd/verify"
 	"github.com/vchain-us/vcn/pkg/meta"
+	"github.com/vchain-us/vcn/pkg/store"
 
 	"github.com/inconshreveable/mousetrap"
 	"github.com/spf13/cobra"
@@ -121,6 +123,6 @@ func preExitHook(cmd *cobra.Command) {
 	if quit, _ := cmd.PersistentFlags().GetBool("quit"); !quit || mousetrap.StartedByExplorer() {
 		fmt.Println()
 		fmt.Println("Press 'Enter' to continue...")
-		fmt.Scanln()
+		terminal.ReadPassword(int(syscall.Stdin))
 	}
 }
