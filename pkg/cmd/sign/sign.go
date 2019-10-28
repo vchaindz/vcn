@@ -138,6 +138,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Make the artifact to be signed
 	var a *api.Artifact
 	if hash != "" {
+		hash = strings.ToLower(hash)
 		// Load existing artifact, if any, otherwise use an empty artifact
 		if ar, err := u.LoadArtifact(hash); err == nil && ar != nil {
 			a = ar.Artifact()

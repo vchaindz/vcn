@@ -148,7 +148,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	// by hash
 	if hash != "" {
 		a := &api.Artifact{
-			Hash: hash,
+			Hash: strings.ToLower(hash),
 		}
 		if err := verify(cmd, a, keys, org, user, output); err != nil {
 			return err
