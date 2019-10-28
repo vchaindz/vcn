@@ -21,7 +21,7 @@ import (
 
 func verify(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	hash := vars["hash"]
+	hash := strings.ToLower(vars["hash"])
 
 	var keys []string
 	org := r.URL.Query().Get("org")

@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
@@ -78,6 +79,8 @@ func sign(status meta.Status, kinds map[string]bool, w http.ResponseWriter, r *h
 		writeError(w, http.StatusBadRequest, fmt.Errorf(`"%s" is not a valid value for kind`, artifact.Kind))
 		return
 	}
+
+	artifact.Hash = strings.ToLower(artifact.Hash)
 
 	verification, err := user.Sign(
 		artifact,
