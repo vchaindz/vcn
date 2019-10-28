@@ -10,6 +10,7 @@ package sign
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
@@ -178,32 +179,56 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 		fmt.Println()
 		fmt.Println("Signer:\t" + u.Email())
 	}
-	passphrase, err := cli.ProvidePassphrase()
-	if err != nil {
-		return err
-	}
-
-	s := spin.New("%s Notarization in progress...")
-	if output == "" {
-		s.Set(spin.Spin1)
-		s.Start()
-	}
-
-	keyin, _, offline, err := u.Secret()
-	if err != nil {
-		return err
-	}
-	if offline {
-		return fmt.Errorf("offline secret is not supported by the current vcn version")
-	}
 
 	hook := newHook(&a)
-	verification, err := u.Sign(
-		a,
-		api.SignWithStatus(state),
-		api.SignWithVisibility(visibility),
-		api.SignWithKey(keyin, passphrase),
-	)
+
+	s := spin.New("%s Notarization in progress...")
+	s.Set(spin.Spin1)
+
+	var verification *api.BlockchainVerification
+	var err error
+
+	for i := 1; true; i++ {
+		var passphrase string
+		var interactive bool
+		passphrase, interactive, err = cli.ProvidePassphrase()
+		if err != nil {
+			return err
+		}
+
+		if output == "" {
+			s.Start()
+		}
+
+		var keyin io.Reader
+		var offline bool
+		keyin, _, offline, err = u.Secret()
+		if err != nil {
+			return err
+		}
+		if offline {
+			return fmt.Errorf("offline secret is not supported by the current vcn version")
+		}
+
+		verification, err = u.Sign(
+			a,
+			api.SignWithStatus(state),
+			api.SignWithVisibility(visibility),
+			api.SignWithKey(keyin, passphrase),
+		)
+
+		if err != nil && i >= 3 {
+			s.Stop()
+			return fmt.Errorf("too many failed attempts: %s", err)
+		}
+
+		if interactive && err == api.WrongPassphraseErr {
+			s.Stop()
+			fmt.Printf("\nError: %s, please try again\n\n", err.Error())
+			continue
+		}
+		break
+	}
 
 	// todo(ameingast/leogr): remove reduntat event - need backend improvement
 	api.TrackPublisher(&u, meta.VcnSignEvent)

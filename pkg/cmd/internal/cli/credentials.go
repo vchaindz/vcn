@@ -69,23 +69,23 @@ You will need it every time you want to notarize an asset.
 	return keystorePassphrase, nil
 }
 
-func ProvidePassphrase() (passphrase string, err error) {
+func ProvidePassphrase() (passphrase string, interactive bool, err error) {
 	if _, empty := os.LookupEnv(meta.VcnNotarizationPasswordEmpty); empty {
 		logs.LOG.Trace("Empty notarization password provided (environment)")
-		return "", nil
+		return "", false, nil
 	}
 	passphrase, ok := os.LookupEnv(meta.VcnNotarizationPassword)
 	if ok {
 		logs.LOG.Trace("Notarization password provided (environment)")
-		return passphrase, nil
+		return passphrase, false, nil
 	}
 	fmt.Println("Please enter you notarization password to notarize your asset.\nIf you did not set a separate notarization password, use the one used to log in.")
 	passphrase, err = readPassword("Password: ")
 	if err != nil {
-		return "", err
+		return "", true, err
 	}
 	logs.LOG.Trace("Notarization password provided (interactive)")
-	return passphrase, nil
+	return passphrase, true, nil
 }
 
 func ProvidePasswordWithMessage(message string) (passphrase string, err error) {

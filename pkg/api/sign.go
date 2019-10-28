@@ -10,6 +10,7 @@ package api
 
 import (
 	"context"
+	goErr "errors"
 	"fmt"
 	"math/big"
 	"strings"
@@ -23,6 +24,9 @@ import (
 	"github.com/vchain-us/vcn/internal/errors"
 	"github.com/vchain-us/vcn/pkg/meta"
 )
+
+//
+var WrongPassphraseErr = goErr.New("incorrect notarization password")
 
 // Sign is invoked by the User to notarize an artifact using the given functional options,
 // if successful a BlockchainVerification is returned.
@@ -80,7 +84,7 @@ func (u User) commitTransaction(
 	transactor, err := bind.NewTransactor(o.keyin, o.passphrase)
 	if err != nil {
 		if err.Error() == "could not decrypt key with given passphrase" {
-			err = fmt.Errorf("incorrect notarization password")
+			err = WrongPassphraseErr
 		}
 		return
 	}
