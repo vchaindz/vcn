@@ -59,6 +59,8 @@ func runInspect(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	hash = strings.ToLower(hash)
+
 	extractOnly, err := cmd.Flags().GetBool("extract-only")
 	if err != nil {
 		return err
