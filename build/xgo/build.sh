@@ -330,7 +330,35 @@ for TARGET in $TARGETS; do
       CC=mipsel-linux-gnu-gcc-6 CXX=mipsel-linux-gnu-g++-6 GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mipsle`extension linux`" $PACK_RELPATH
     fi
   fi
+  if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "s390x" ]); then
+    if [ "$GO_VERSION" -lt 170 ]; then
+      echo "Go version too low, skipping linux/s390x..."
+    else
+      echo "Compiling for linux/s390x..."
+      CC=s390x-linux-gnu-gcc-6 CXX=s390x-linux-gnu-g++-6 HOST=s390x-linux-gnu PREFIX=/usr/s390x-linux-gnu $BUILD_DEPS /deps ${DEPS_ARGS[@]}
+      export PKG_CONFIG_PATH=/usr/s390x-linux-gnu/lib/pkgconfig
+
+      if [[ "$USEMODULES" == false ]]; then
+        CC=s390x-linux-gnu-gcc-6 CXX=s390x-linux-gnu-g++-6 GOOS=linux GOARCH=s390x CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+      fi
+      CC=s390x-linux-gnu-gcc-6 CXX=s390x-linux-gnu-g++-6 GOOS=linux GOARCH=s390x CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-s390x`extension linux`" $PACK_RELPATH
+    fi
+  fi
   # Check and build for Windows targets
+  if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "ppc64le" ]); then
+    if [ "$GO_VERSION" -lt 170 ]; then
+      echo "Go version too low, skipping linux/powerpc64le..."
+    else
+      echo "Compiling for linux/ppc64le..."
+      CC=powerpc64le-linux-gnu-gcc-6 CXX=powerpc64le-linux-gnu-g++-6 HOST=ppc64le-linux-gnu PREFIX=/usr/ppc64le-linux-gnu $BUILD_DEPS /deps ${DEPS_ARGS[@]}
+      export PKG_CONFIG_PATH=/usr/ppc64le-linux-gnu/lib/pkgconfig
+
+      if [[ "$USEMODULES" == false ]]; then
+        CC=powerpc64le-linux-gnu-gcc-6 CXX=powerpc64le-linux-gnu-g++-6 GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+      fi
+      CC=powerpc64le-linux-gnu-gcc-6 CXX=powerpc64le-linux-gnu-g++-6 GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-ppc64le`extension linux`" $PACK_RELPATH
+    fi
+  fi
   if [ $XGOOS == "." ] || [[ $XGOOS == windows* ]]; then
     # Split the platform version and configure the Windows NT version
     PLATFORM=`echo $XGOOS | cut -d '-' -f 2`
