@@ -1,4 +1,4 @@
-FROM debian:experimental
+FROM debian:10
 
 ENV NSIS 3.04-1
 
