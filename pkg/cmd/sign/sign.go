@@ -231,16 +231,16 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 		break
 	}
 
-	// todo(ameingast/leogr): remove reduntat event - need backend improvement
-	api.TrackPublisher(&u, meta.VcnSignEvent)
-	api.TrackSign(&u, a.Hash, a.Name, state)
-
 	if output == "" {
 		s.Stop()
 	}
 	if err != nil {
 		return err
 	}
+
+	// todo(ameingast/leogr): remove redundant event - need backend improvement
+	api.TrackPublisher(&u, meta.VcnSignEvent)
+	api.TrackSign(&u, a.Hash, a.Name, state)
 
 	err = hook.finalize(verification)
 	if err != nil {
