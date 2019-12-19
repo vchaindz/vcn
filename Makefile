@@ -79,6 +79,9 @@ CHANGELOG.md.next-tag:
 .PHONY: dist
 dist: clean/dist build/xgo
 	mkdir -p dist
+	$(GO) build -a -tags netgo -ldflags '${LDFLAGS} -extldflags "-static"' \
+			-o ./dist/vcn-v${VERSION}-linux-amd64-static \
+			./cmd/vcn 
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist:/dist \
 			-v ${PWD}:/source:ro \
