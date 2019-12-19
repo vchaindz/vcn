@@ -4,8 +4,23 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.7.4"></a>
+## [v0.7.4] - 2019-12-19
+### Bug Fixes
+- **build/makensis:** correct debian image version for NSIS
+- **cmd:** correct flags collision
+- **cmd/sign:** do not track events when errored
+
+### Changes
+- **build:** enforce xgo image digest
+
+### Features
+- Add builds for linux/s390x and linux/ppc64le architectures It is required to refresh the techknowlogick/xgo docker images before this can work as a specific patch has been applied for s390x and ppc64le support
+- **cmd:** added --silent flag
+
+
 <a name="v0.7.3"></a>
-## [v0.7.3] - 2019-10-29
+## [v0.7.3] - 2019-10-30
 ### Bug Fixes
 - **cmd:** enforce lowercase hash string (fixes [#67](https://github.com/vchain-us/vcn/issues/67))
 - **cmd/inspect:** enforce lowercase hash string
@@ -246,11 +261,11 @@ support for multiple keystores in config file and related APIs within the `store
 - **sign:** `VCN_KEY` env variable for signing
 
 
-<a name="v0.5.0"></a>
-## [v0.5.0] - 2019-06-25
-
 <a name="0.5.0"></a>
 ## [0.5.0] - 2019-06-25
+
+<a name="v0.5.0"></a>
+## [v0.5.0] - 2019-06-25
 ### Bug Fixes
 - ca-certificates for Dockerfile
 - clean other context when user logs in
@@ -493,7 +508,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.3...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.4...HEAD
+[v0.7.4]: https://github.com/vchain-us/vcn/compare/v0.7.3...v0.7.4
 [v0.7.3]: https://github.com/vchain-us/vcn/compare/v0.7.2...v0.7.3
 [v0.7.2]: https://github.com/vchain-us/vcn/compare/v0.7.1...v0.7.2
 [v0.7.1]: https://github.com/vchain-us/vcn/compare/v0.7.0...v0.7.1
@@ -505,9 +521,9 @@ this commit introduce the config file with multi-keys support, and a huge refact
 [v0.5.4]: https://github.com/vchain-us/vcn/compare/v0.5.3...v0.5.4
 [v0.5.3]: https://github.com/vchain-us/vcn/compare/v0.5.2...v0.5.3
 [v0.5.2]: https://github.com/vchain-us/vcn/compare/v0.5.1...v0.5.2
-[v0.5.1]: https://github.com/vchain-us/vcn/compare/v0.5.0...v0.5.1
-[v0.5.0]: https://github.com/vchain-us/vcn/compare/0.5.0...v0.5.0
-[0.5.0]: https://github.com/vchain-us/vcn/compare/0.4.3...0.5.0
+[v0.5.1]: https://github.com/vchain-us/vcn/compare/0.5.0...v0.5.1
+[0.5.0]: https://github.com/vchain-us/vcn/compare/v0.5.0...0.5.0
+[v0.5.0]: https://github.com/vchain-us/vcn/compare/0.4.3...v0.5.0
 [0.4.3]: https://github.com/vchain-us/vcn/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/vchain-us/vcn/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/vchain-us/vcn/compare/0.4.0...0.4.1
