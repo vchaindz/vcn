@@ -117,6 +117,11 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		return err
 	}
 
+	silentMode, err := cmd.Flags().GetBool("silent")
+	if err != nil {
+		return err
+	}
+
 	name, err := cmd.Flags().GetString("name")
 	if err != nil {
 		return err
@@ -168,10 +173,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(*u, *a, state, meta.VisibilityForFlag(public), output)
+	return sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode)
 }
 
-func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string) error {
+func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool) error {
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
@@ -197,7 +202,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 			return err
 		}
 
-		if output == "" {
+		if output == "" && !silent {
 			s.Start()
 		}
 
@@ -231,9 +236,8 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 		break
 	}
 
-	if output == "" {
-		s.Stop()
-	}
+	s.Stop()
+
 	if err != nil {
 		return err
 	}
