@@ -22,13 +22,14 @@ type alert struct {
 	UUID             string   `json:"uuid,omitempty"`
 }
 
-type alertNotification struct {
-	AlertUUID string   `json:"alertUUID"`
-	Metadata  Metadata `json:"metadata,omitempty"`
+// AlertConfig represents a platform alert configuration.
+type AlertConfig struct {
+	AlertUUID string   `json:"alertUUID" yaml:"alertUUID"`
+	Metadata  Metadata `json:"metadata,omitempty" yaml:"metadata"`
 }
 
 // CreateAlert creates a platform alert and returns its UUID.
-func (u *User) CreateAlert(a Artifact, v BlockchainVerification, m Metadata) (uuid string, err error) {
+func (u *User) CreateAlert(a Artifact, v BlockchainVerification, m Metadata) (alertConfig *AlertConfig, err error) {
 
 	restError := new(Error)
 	alertResponse := &alert{}
@@ -45,7 +46,10 @@ func (u *User) CreateAlert(a Artifact, v BlockchainVerification, m Metadata) (uu
 		return
 	}
 	if r.StatusCode == 200 {
-		uuid = alertResponse.UUID
+		alertConfig = &AlertConfig{
+			AlertUUID: alertResponse.UUID,
+			Metadata:  m,
+		}
 	} else {
 		err = fmt.Errorf("request failed: %s (%d)", restError.Message,
 			restError.Status)
@@ -54,18 +58,21 @@ func (u *User) CreateAlert(a Artifact, v BlockchainVerification, m Metadata) (uu
 }
 
 // ModifyAlert modifies the settings of an already existing alert.
-func (u *User) ModifyAlert(uuid string, enabled bool, m *Metadata) error {
+func (u *User) ModifyAlert(config *AlertConfig, enabled bool) error {
+
+	if config == nil {
+		return fmt.Errorf("alert config cannot be nil")
+	}
 
 	restError := new(Error)
 	alertResponse := &alert{}
 	alertRequest := alert{
-		Enabled: enabled,
+		Enabled:  enabled,
+		Metadata: config.Metadata,
 	}
-	if m != nil {
-		alertRequest.Metadata = *m
-	}
+
 	r, err := newSling(u.token()).
-		Patch(meta.APIEndpoint("alert")+"?uuid="+uuid).
+		Patch(meta.APIEndpoint("alert")+"?uuid="+config.AlertUUID).
 		BodyJSON(alertRequest).Receive(alertResponse, restError)
 
 	if err != nil {
@@ -78,20 +85,18 @@ func (u *User) ModifyAlert(uuid string, enabled bool, m *Metadata) error {
 	case 403:
 		return fmt.Errorf("illegal alert access: %s", restError.Message)
 	case 404:
-		return fmt.Errorf(`no such alert found matching "%s"`, uuid)
+		return fmt.Errorf(`no such alert found matching "%s"`, config.AlertUUID)
 	default:
 		return fmt.Errorf("request failed: %s (%d)", restError.Message,
 			restError.Status)
 	}
 }
 
-func (u *User) alertMessage(uuid string, what string) (err error) {
+func (u *User) alertMessage(config AlertConfig, what string) (err error) {
 	restError := new(Error)
 	r, err := newSling(u.token()).
 		Post(meta.APIEndpoint("alert/"+what)).
-		BodyJSON(alertNotification{
-			AlertUUID: uuid,
-		}).Receive(nil, restError)
+		BodyJSON(config).Receive(nil, restError)
 
 	if err != nil {
 		return
@@ -103,23 +108,23 @@ func (u *User) alertMessage(uuid string, what string) (err error) {
 	case 403:
 		return fmt.Errorf("illegal alert access: %s", restError.Message)
 	case 404:
-		return fmt.Errorf(`no such alert found matching "%s"`, uuid)
+		return fmt.Errorf(`no such alert found matching "%s"`, config.AlertUUID)
 	case 412:
-		return fmt.Errorf(`notification already triggered for "%s"`, uuid)
+		return fmt.Errorf(`notification already triggered for "%s"`, config.AlertUUID)
 	default:
 		return fmt.Errorf("request failed: %s (%d)", restError.Message,
 			restError.Status)
 	}
 }
 
-// PingAlert sends a ping for the given alert _uuid_.
+// PingAlert sends a ping for the given alert _config_.
 // Once the first ping goes through, the platform starts a server-side watcher and will trigger a notification
-// after some amount of time if no further pings for _uuid_ are received.
-func (u *User) PingAlert(uuid string) error {
-	return u.alertMessage(uuid, "ping")
+// after some amount of time if no further pings for the alert are received.
+func (u *User) PingAlert(config AlertConfig) error {
+	return u.alertMessage(config, "ping")
 }
 
-// TriggerAlert triggers a notification immediately for the given alert _uuid_.
-func (u *User) TriggerAlert(uuid string) error {
-	return u.alertMessage(uuid, "notify")
+// TriggerAlert triggers a notification immediately for the given alert _config_.
+func (u *User) TriggerAlert(config AlertConfig) error {
+	return u.alertMessage(config, "notify")
 }
