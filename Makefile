@@ -1,6 +1,6 @@
 SHELL=/bin/bash -o pipefail
 
-VERSION=0.7.4
+VERSION=0.8.0
 TARGETS=linux/amd64 windows/amd64 darwin/amd64 linux/s390x linux/ppc64le linux/arm-5 linux/arm-6 linux/arm-7 linux/arm64
 
 GO ?= go
