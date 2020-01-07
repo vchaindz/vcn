@@ -78,7 +78,7 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().StringP("name", "n", "", "set the asset name")
 	cmd.Flags().BoolP("public", "p", false, "when notarized as public, the asset name and metadata will be visible to everyone")
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
-	cmd.Flags().String("create-alert", "", "specify the path to store the config of a newly created alert")
+	cmd.Flags().String("create-alert", "", "specify the path to store the config file of a newly created alert")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir")
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
