@@ -62,7 +62,7 @@ trust level and a timestamp are added.
 When complete, a new blockchain entry is created that binds the asset’s
 signed hash, signed status, level, and timestamp together. 
 
-Note that your asset will not be uploaded but processed locally.
+Note that your assets will not be uploaded. They will be processed locally.
 
 Assets are referenced by passed ARG with notarization only accepting 
 1 ARG at a time.
@@ -180,7 +180,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
-		fmt.Println("Your asset will not be uploaded but processed locally.")
+		fmt.Println("Your assets will not be uploaded. They will be processed locally.")
 		color.Unset()
 		fmt.Println()
 		fmt.Println("Signer:\t" + u.Email())
