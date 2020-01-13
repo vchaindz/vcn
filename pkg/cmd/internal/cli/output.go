@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"reflect"
 	"strings"
 	"text/tabwriter"
@@ -197,7 +198,7 @@ func PrintError(output string, err *types.Error) error {
 	}
 	switch output {
 	case "":
-		fmt.Printf("Error: %s\n", err)
+		fmt.Fprintf(os.Stderr, "\nError: %s\n", err)
 	case "yaml":
 		b, err := yaml.Marshal(err)
 		if err != nil {
@@ -210,6 +211,20 @@ func PrintError(output string, err *types.Error) error {
 			return err
 		}
 		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}
+
+func PrintWarning(output string, message string) error {
+	switch output {
+	case "":
+		fallthrough
+	case "yaml":
+		fallthrough
+	case "json":
+		fmt.Fprintf(os.Stderr, "\nWarning: %s\n", message)
 	default:
 		return outputNotSupportedErr(output)
 	}

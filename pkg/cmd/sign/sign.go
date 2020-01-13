@@ -255,13 +255,15 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 		return err
 	}
 
+	// once transaction is confirmed we don't want to show errors, just print warnings instead.
+
 	// todo(ameingast/leogr): remove redundant event - need backend improvement
 	api.TrackPublisher(&u, meta.VcnSignEvent)
 	api.TrackSign(&u, a.Hash, a.Name, state)
 
 	err = hook.finalize(verification)
 	if err != nil {
-		return err
+		return cli.PrintWarning(output, err.Error())
 	}
 
 	if output == "" {
@@ -270,7 +272,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 
 	artifact, err := api.LoadArtifact(&u, a.Hash, verification.MetaHash())
 	if err != nil {
-		return err
+		return cli.PrintWarning(output, err.Error())
 	}
 
 	cli.Print(output, types.NewResult(&a, artifact, verification))
@@ -278,7 +280,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 	if alertConfigFile != "" {
 		alertConfig, err := u.CreateAlert(a, *verification, api.Metadata{})
 		if err != nil {
-			return err
+			return cli.PrintWarning(output, err.Error())
 		}
 
 		if output == "" {
@@ -286,7 +288,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 		}
 
 		if err := cli.WriteYAML(alertConfig, alertConfigFile); err != nil {
-			return err
+			return cli.PrintWarning(output, err.Error())
 		}
 		if output == "" {
 			fmt.Printf("Alert configuration saved to %s.\n", alertConfigFile)
