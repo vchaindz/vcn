@@ -10,6 +10,7 @@ package sign
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
@@ -20,7 +21,14 @@ func handleAlert(alertConfigFile string, u api.User, a api.Artifact, v api.Block
 		return nil
 	}
 
-	alertConfig, err := u.CreateAlert(a, v, api.Metadata{})
+	m := api.Metadata{}
+
+	hostname, _ := os.Hostname()
+	if hostname != "" {
+		m["hostname"] = hostname
+	}
+
+	alertConfig, err := u.CreateAlert(a, v, m)
 	if err != nil {
 		return err
 	}
