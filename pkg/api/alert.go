@@ -24,7 +24,7 @@ type alert struct {
 
 // AlertConfig represents a platform alert configuration.
 type AlertConfig struct {
-	AlertUUID string   `json:"alertUUID" yaml:"alertUUID"`
+	AlertUUID string   `json:"alertUuid" yaml:"alertUUID"`
 	Metadata  Metadata `json:"metadata,omitempty" yaml:"metadata"`
 }
 
