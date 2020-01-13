@@ -51,7 +51,7 @@ func (u *User) CreateAlert(a Artifact, v BlockchainVerification, m Metadata) (al
 			Metadata:  m,
 		}
 	} else {
-		err = fmt.Errorf("request failed: %s (%d)", restError.Message,
+		err = fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
 			restError.Status)
 	}
 	return
@@ -87,7 +87,7 @@ func (u *User) ModifyAlert(config *AlertConfig, enabled bool) error {
 	case 404:
 		return fmt.Errorf(`no such alert found matching "%s"`, config.AlertUUID)
 	default:
-		return fmt.Errorf("request failed: %s (%d)", restError.Message,
+		return fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
 			restError.Status)
 	}
 }
@@ -110,9 +110,9 @@ func (u *User) alertMessage(config AlertConfig, what string) (err error) {
 	case 404:
 		return fmt.Errorf(`no such alert found matching "%s"`, config.AlertUUID)
 	case 412:
-		return fmt.Errorf(`notification already triggered for "%s"`, config.AlertUUID)
+		return fmt.Errorf(`notification already triggered for alert "%s"`, config.AlertUUID)
 	default:
-		return fmt.Errorf("request failed: %s (%d)", restError.Message,
+		return fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
 			restError.Status)
 	}
 }
