@@ -278,20 +278,8 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 	cli.Print(output, types.NewResult(&a, artifact, verification))
 
 	if alertConfigFile != "" {
-		alertConfig, err := u.CreateAlert(a, *verification, api.Metadata{})
-		if err != nil {
+		if err := handleAlert(alertConfigFile, u, a, *verification, output); err != nil {
 			return cli.PrintWarning(output, err.Error())
-		}
-
-		if output == "" {
-			fmt.Printf("\nAlert %s has been created.\n", alertConfig.AlertUUID)
-		}
-
-		if err := cli.WriteYAML(alertConfig, alertConfigFile); err != nil {
-			return cli.PrintWarning(output, err.Error())
-		}
-		if output == "" {
-			fmt.Printf("Alert configuration saved to %s.\n", alertConfigFile)
 		}
 	}
 
