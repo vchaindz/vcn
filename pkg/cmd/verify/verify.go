@@ -282,9 +282,9 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 
 	if alertConfig != nil {
 		if verification.Trusted() {
-			user.PingAlert(*alertConfig)
+			err = user.PingAlert(*alertConfig)
 		} else {
-			user.TriggerAlert(*alertConfig)
+			err = user.TriggerAlert(*alertConfig)
 		}
 		if err != nil {
 			return err
