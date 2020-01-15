@@ -19,6 +19,7 @@ type alert struct {
 	ArtifactMetaHash string   `json:"artifactMetaHash,omitempty"`
 	Enabled          bool     `json:"enabled"`
 	Metadata         Metadata `json:"metadata,omitempty"`
+	Name             string   `json:"name"`
 	UUID             string   `json:"uuid,omitempty"`
 }
 
@@ -29,7 +30,7 @@ type AlertConfig struct {
 }
 
 // CreateAlert creates a platform alert and returns its UUID.
-func (u *User) CreateAlert(a Artifact, v BlockchainVerification, m Metadata) (alertConfig *AlertConfig, err error) {
+func (u *User) CreateAlert(name string, a Artifact, v BlockchainVerification, m Metadata) (alertConfig *AlertConfig, err error) {
 
 	restError := new(Error)
 	alertResponse := &alert{}
@@ -40,6 +41,7 @@ func (u *User) CreateAlert(a Artifact, v BlockchainVerification, m Metadata) (al
 			ArtifactMetaHash: v.MetaHash(),
 			Enabled:          true,
 			Metadata:         m,
+			Name:             name,
 		}).Receive(alertResponse, restError)
 
 	if err != nil {
