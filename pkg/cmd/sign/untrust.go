@@ -15,7 +15,7 @@ import (
 
 // NewUntrustCommand returns the cobra command for `vcn untrust`
 func NewUntrustCommand() *cobra.Command {
-	cmd := NewCommand()
+	cmd := makeCommand()
 	cmd.Use = "untrust"
 	cmd.Aliases = []string{"ut"}
 	cmd.Short = "Untrust an asset"

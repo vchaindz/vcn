@@ -11,14 +11,39 @@ package sign
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/vchain-us/vcn/pkg/store"
+
+	"github.com/vchain-us/vcn/pkg/extractor/dir"
+	"github.com/vchain-us/vcn/pkg/extractor/file"
+	"github.com/vchain-us/vcn/pkg/extractor/git"
+	"github.com/vchain-us/vcn/pkg/uri"
 
 	"github.com/vchain-us/vcn/pkg/api"
-	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 )
 
-func handleAlert(alertConfigFile string, u api.User, a api.Artifact, v api.BlockchainVerification, output string) error {
-	if alertConfigFile == "" {
-		return nil
+func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.BlockchainVerification, output string) error {
+
+	// make path absolute
+	aURI, err := uri.Parse(arg)
+	if err != nil {
+		return fmt.Errorf("invalid argument for alert: %s", arg)
+	}
+
+	switch a.Kind {
+	case file.Scheme:
+		fallthrough
+	case dir.Scheme:
+		fallthrough
+	case git.Scheme:
+		absPath, err := filepath.Abs(strings.TrimPrefix(aURI.Opaque, "//"))
+		if err != nil {
+			return err
+		}
+		aURI.Opaque = "//" + absPath
+		arg = aURI.String()
 	}
 
 	m := api.Metadata{}
@@ -28,20 +53,31 @@ func handleAlert(alertConfigFile string, u api.User, a api.Artifact, v api.Block
 		m["hostname"] = hostname
 	}
 
-	alertConfig, err := u.CreateAlert(a, v, m)
+	if name == "" {
+		name = hostname
+	}
+
+	alertConfig, err := u.CreateAlert(name, a, v, m)
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot create alert: %s", err)
 	}
 
 	if output == "" {
 		fmt.Printf("\nAlert %s has been created.\n", alertConfig.AlertUUID)
 	}
 
-	if err := cli.WriteYAML(alertConfig, alertConfigFile); err != nil {
-		return err
+	if err := store.SaveAlert(u.Email(), alertConfig.AlertUUID, store.Alert{
+		Name:   name,
+		Arg:    arg,
+		Config: alertConfig,
+	}); err != nil {
+		return fmt.Errorf("cannot save alert: %s", err)
 	}
+
 	if output == "" {
-		fmt.Printf("Alert configuration saved to %s.\n", alertConfigFile)
+		configPath, _ := store.AlertFilepath(u.Email())
+		fmt.Printf("\nThe alert configuration has been added to %s.\n", configPath)
 	}
+
 	return nil
 }

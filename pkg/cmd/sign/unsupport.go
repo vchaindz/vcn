@@ -15,7 +15,7 @@ import (
 
 // NewUnsupportCommand returns the cobra command for `vcn unsupport`
 func NewUnsupportCommand() *cobra.Command {
-	cmd := NewCommand()
+	cmd := makeCommand()
 	cmd.Use = "unsupport"
 	cmd.Aliases = []string{"us"}
 	cmd.Short = "Unsupport an asset"

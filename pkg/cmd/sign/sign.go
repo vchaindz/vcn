@@ -11,7 +11,6 @@ package sign
 import (
 	"fmt"
 	"io"
-	"path/filepath"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
@@ -47,6 +46,13 @@ ARG must be one of:
 
 // NewCommand returns the cobra command for `vcn sign`
 func NewCommand() *cobra.Command {
+	cmd := makeCommand()
+	cmd.Flags().Bool("create-alert", false, "if set, an alert will be created (config will be stored into the .vcn dir)")
+	cmd.Flags().String("alert-name", "", "set the alert name (will be ignored if --create-alert is not set)")
+	return cmd
+}
+
+func makeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "notarize",
 		Aliases: []string{"n", "sign", "s"},
@@ -78,7 +84,6 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().StringP("name", "n", "", "set the asset name")
 	cmd.Flags().BoolP("public", "p", false, "when notarized as public, the asset name and metadata will be visible to everyone")
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
-	cmd.Flags().String("create-alert", "", "specify the path to store the config file of a newly created alert")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir")
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
@@ -99,13 +104,14 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	if !noIgnoreFile {
 		extractorOptions = append(extractorOptions, dir.WithIgnoreFileInit())
 	}
-
-	alertConfigFile, err := cmd.Flags().GetString("create-alert")
-	if err != nil {
-		return err
-	}
-	if alertConfigFile != "" {
-		alertConfigFile, err = filepath.Abs(alertConfigFile)
+	var createAlert bool
+	var alertName string
+	if hasCreateAlert := cmd.Flags().Lookup("create-alert"); hasCreateAlert != nil {
+		createAlert, err = cmd.Flags().GetBool("create-alert")
+		if err != nil {
+			return err
+		}
+		alertName, _ = cmd.Flags().GetString("alert-name")
 		if err != nil {
 			return err
 		}
@@ -156,6 +162,9 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Make the artifact to be signed
 	var a *api.Artifact
 	if hash != "" {
+		if createAlert {
+			return fmt.Errorf("cannot use --create-alert with --hash")
+		}
 		hash = strings.ToLower(hash)
 		// Load existing artifact, if any, otherwise use an empty artifact
 		if ar, err := u.LoadArtifact(hash); err == nil && ar != nil {
@@ -186,10 +195,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, alertConfigFile)
+	return sign(args[0], *u, *a, state, meta.VisibilityForFlag(public), output, silentMode, createAlert, alertName)
 }
 
-func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, alertConfigFile string) error {
+func sign(arg string, u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, createAlert bool, alertName string) error {
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
@@ -277,8 +286,8 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 
 	cli.Print(output, types.NewResult(&a, artifact, verification))
 
-	if alertConfigFile != "" {
-		if err := handleAlert(alertConfigFile, u, a, *verification, output); err != nil {
+	if createAlert {
+		if err := handleAlert(arg, u, alertName, a, *verification, output); err != nil {
 			return cli.PrintWarning(output, err.Error())
 		}
 	}

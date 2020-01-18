@@ -34,7 +34,7 @@ func saveAlerts(alerts Alerts, filepath string) error {
 	return WriteYAML(alerts, filepath)
 }
 
-func alertFilepath(email string) (string, error) {
+func AlertFilepath(email string) (string, error) {
 	path := filepath.Join(dir, defaultAlertsDir)
 	if err := ensureDir(path); err != nil {
 		return "", err
@@ -43,7 +43,7 @@ func alertFilepath(email string) (string, error) {
 }
 
 func SaveAlert(userEmail string, alertID string, alert Alert) error {
-	path, err := alertFilepath(userEmail)
+	path, err := AlertFilepath(userEmail)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func SaveAlert(userEmail string, alertID string, alert Alert) error {
 }
 
 func DeleteAlert(userEmail string, id string) error {
-	path, err := alertFilepath(userEmail)
+	path, err := AlertFilepath(userEmail)
 	if err != nil {
 		return err
 	}
