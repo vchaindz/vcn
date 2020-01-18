@@ -73,3 +73,11 @@ func DeleteAlert(userEmail string, id string) error {
 
 	return saveAlerts(alerts, path)
 }
+
+func ReadAlerts(userEmail string) (Alerts, error) {
+	path, err := AlertFilepath(userEmail)
+	if err != nil {
+		return make(Alerts), err
+	}
+	return loadAlerts(path)
+}
