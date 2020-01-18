@@ -10,7 +10,6 @@ package verify
 
 import (
 	"fmt"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -103,7 +102,6 @@ ARG must be one of:
 	cmd.Flags().MarkDeprecated("key", "please use --signerID instead")
 	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID,\nif set no SignerID can be used\n(overrides VCN_ORG env var, if any)")
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no ARG(s) can be used")
-	cmd.Flags().String("alert-config", "", "specify the path to the alert config file, if set only one ARG can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
 	cmd.Flags().MarkHidden("raw-diff")
 
@@ -111,22 +109,6 @@ ARG must be one of:
 }
 
 func runVerify(cmd *cobra.Command, args []string) error {
-
-	var alertConfig *api.AlertConfig
-	alertConfigFile, err := cmd.Flags().GetString("alert-config")
-	if err != nil {
-		return err
-	}
-	if alertConfigFile != "" {
-		alertConfigFile, err = filepath.Abs(alertConfigFile)
-		if err != nil {
-			return err
-		}
-		alertConfig = &api.AlertConfig{}
-		if err := cli.ReadYAML(alertConfig, alertConfigFile); err != nil {
-			return err
-		}
-	}
 
 	hash, err := cmd.Flags().GetString("hash")
 	if err != nil {
@@ -164,27 +146,17 @@ func runVerify(cmd *cobra.Command, args []string) error {
 
 	user := api.NewUser(store.Config().CurrentContext)
 
-	if alertConfig != nil {
-		if hashAuth, _ := user.IsAuthenticated(); !hashAuth {
-			return fmt.Errorf("user must be logged in when --alert-config is used")
-		}
-	}
-
 	// by hash
 	if hash != "" {
 		a := &api.Artifact{
 			Hash: strings.ToLower(hash),
 		}
-		if err := verify(cmd, a, keys, org, user, output, alertConfig); err != nil {
+		if err := verify(cmd, a, keys, org, user, output); err != nil {
 			return err
 		}
 		return nil
 	}
 
-	// else by args
-	if alertConfig != nil && len(args) > 1 {
-		return fmt.Errorf("--alert-config is not supported when multiple ARGs at same time")
-	}
 	for _, arg := range args {
 		a, err := extractor.Extract(arg)
 		if err != nil {
@@ -193,7 +165,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		if a == nil {
 			return fmt.Errorf("unable to process the input asset provided: %s", arg)
 		}
-		if err := verify(cmd, a, keys, org, user, output, alertConfig); err != nil {
+		if err := verify(cmd, a, keys, org, user, output); err != nil {
 			return err
 		}
 	}
@@ -201,7 +173,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user *api.User, output string, alertConfig *api.AlertConfig) (err error) {
+func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user *api.User, output string) (err error) {
 	hook := newHook(cmd, a)
 	var verification *api.BlockchainVerification
 	if output == "" {
@@ -279,21 +251,6 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 	// todo(ameingast/leogr): remove reduntat event - need backend improvement
 	api.TrackPublisher(user, meta.VcnVerifyEvent)
 	api.TrackVerify(user, a.Hash, a.Name)
-
-	if alertConfig != nil {
-		if verification.Trusted() {
-			err = user.PingAlert(*alertConfig)
-		} else {
-			err = user.TriggerAlert(*alertConfig)
-		}
-		if err != nil {
-			return err
-		}
-
-		if output == "" {
-			fmt.Printf("\nPing for alert %s sent.\n\n", alertConfig.AlertUUID)
-		}
-	}
 
 	if !verification.Trusted() {
 		errLabels := map[meta.Status]string{
