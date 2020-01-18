@@ -24,3 +24,5 @@ const DefaultDirName = ".vcn"
 const configFilename = "config.json"
 
 const defaultSecretFile = "secret.json"
+
+const defaultAlertsDir = "alerts"
