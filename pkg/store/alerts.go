@@ -9,14 +9,28 @@
 package store
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Alert struct {
 	Name   string
 	Arg    string
 	Config interface{}
+}
+
+func (a Alert) ExportConfig(out interface{}) error {
+	tmp, err := yaml.Marshal(a.Config)
+	if err != nil {
+		return fmt.Errorf("invalid alert config: %s", err)
+	}
+	if err := yaml.Unmarshal(tmp, out); err != nil {
+		return fmt.Errorf("invalid alert config: %s", err)
+	}
+	return nil
 }
 
 type Alerts map[string]Alert

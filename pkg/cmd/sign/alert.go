@@ -42,7 +42,11 @@ func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.Bloc
 		if err != nil {
 			return err
 		}
-		aURI.Opaque = "//" + absPath
+		if aURI.Scheme == "" {
+			aURI.Opaque = absPath
+		} else {
+			aURI.Opaque = "//" + absPath
+		}
 		arg = aURI.String()
 	}
 
