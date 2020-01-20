@@ -36,7 +36,7 @@ func newHook(cmd *cobra.Command, a *api.Artifact) *hook {
 	return nil
 }
 
-func (h *hook) finalize(v *api.BlockchainVerification, output string) error {
+func (h *hook) finalize(v *api.BlockchainVerification, alertConfig *api.AlertConfig, output string) error {
 	if h != nil && output == "" {
 		manifest, path := dir.Metadata(h.a)
 		if manifest != nil && path != "" {
@@ -69,6 +69,9 @@ func (h *hook) finalize(v *api.BlockchainVerification, output string) error {
 				}
 				if !equal {
 					fmt.Printf("Diff since %s\n\n%s\n\n", v.Date(), report)
+					if alertConfig != nil {
+						alertConfig.Metadata["diff"] = report
+					}
 				}
 			} else {
 				fmt.Printf("Diff is unavailable because '%s' has been tampered.\n\n", bundle.ManifestFilename)

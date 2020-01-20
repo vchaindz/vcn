@@ -26,6 +26,8 @@ import (
 
 func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.BlockchainVerification, output string) error {
 
+	m := api.Metadata{}
+
 	// make path absolute
 	aURI, err := uri.Parse(arg)
 	if err != nil {
@@ -48,9 +50,8 @@ func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.Bloc
 			aURI.Opaque = "//" + absPath
 		}
 		arg = aURI.String()
+		m["path"] = absPath
 	}
-
-	m := api.Metadata{}
 
 	hostname, _ := os.Hostname()
 	if hostname != "" {

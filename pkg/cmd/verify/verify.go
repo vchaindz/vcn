@@ -207,6 +207,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 				cli.PrintWarning(output, fmt.Sprintf("unable to process the input asset provided: %s", alert.Arg))
 				continue
 			}
+			alertConfig.Metadata["arg"] = alert.Arg
 			if err := verify(cmd, a, keys, org, user, &alertConfig, output); err != nil {
 				cli.PrintWarning(output, fmt.Sprintf("%s: %s", alert.Arg, err))
 			}
@@ -302,7 +303,7 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 		return fmt.Errorf("unable to authenticate the hash: %s", err)
 	}
 
-	err = hook.finalize(verification, output)
+	err = hook.finalize(verification, alertConfig, output)
 	if err != nil {
 		return err
 	}
