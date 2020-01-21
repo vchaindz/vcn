@@ -234,3 +234,25 @@ func PrintWarning(output string, message string) error {
 func outputNotSupportedErr(output string) error {
 	return fmt.Errorf("output format not supported: %s", output)
 }
+
+func PrintObjects(output string, out interface{}) error {
+	switch output {
+	case "":
+		fallthrough
+	case "yaml":
+		b, err := yaml.Marshal(out)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
+		b, err := json.MarshalIndent(out, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}

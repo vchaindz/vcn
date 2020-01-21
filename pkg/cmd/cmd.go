@@ -13,6 +13,8 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/vchain-us/vcn/pkg/cmd/alert"
+
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/vchain-us/vcn/pkg/cmd/dashboard"
@@ -113,6 +115,9 @@ func init() {
 
 	// Serve command
 	rootCmd.AddCommand(serve.NewCommand())
+
+	// Alert comand
+	rootCmd.AddCommand(alert.NewCommand())
 
 }
 
