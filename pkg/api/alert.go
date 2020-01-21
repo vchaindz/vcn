@@ -23,6 +23,17 @@ type alert struct {
 	UUID             string   `json:"uuid,omitempty"`
 }
 
+// AlertResponse holds alert values returned by the platform.
+type AlertResponse struct {
+	ArtifactHash     string   `json:"artifactHash,omitempty"`
+	ArtifactMetaHash string   `json:"artifactMetaHash,omitempty"`
+	Enabled          bool     `json:"enabled"`
+	Metadata         Metadata `json:"metadata,omitempty"`
+	Name             string   `json:"name"`
+	UnAcknowledged   bool     `json:"unAcknowledgedNotification"`
+	UUID             string   `json:"uuid,omitempty"`
+}
+
 // AlertConfig represents a platform alert configuration.
 type AlertConfig struct {
 	AlertUUID string   `json:"alertUuid" yaml:"alertUUID"`
@@ -90,6 +101,31 @@ func (u *User) ModifyAlert(config *AlertConfig, enabled bool) error {
 		return fmt.Errorf(`no such alert found matching "%s"`, config.AlertUUID)
 	default:
 		return fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
+			restError.Status)
+	}
+}
+
+// GetAlert returns an AlertResponse for a given alert uuid.
+func (u *User) GetAlert(uuid string) (*AlertResponse, error) {
+	restError := new(Error)
+	response := &AlertResponse{}
+	r, err := newSling(u.token()).
+		Get(meta.APIEndpoint("alert/"+uuid)).
+		Receive(&response, restError)
+
+	if err != nil {
+		return nil, err
+	}
+
+	switch r.StatusCode {
+	case 200:
+		return response, nil
+	case 403:
+		return nil, fmt.Errorf("illegal alert access: %s", restError.Message)
+	case 404:
+		return nil, fmt.Errorf(`no such alert found matching "%s"`, uuid)
+	default:
+		return nil, fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
 			restError.Status)
 	}
 }
