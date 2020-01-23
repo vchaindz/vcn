@@ -10,9 +10,11 @@ package api
 
 // Error represents a CodeNotary platform's API returned error.
 type Error struct {
-	Status    int    `json:"status"`
-	Message   string `json:"message"`
-	Path      string `json:"path"`
-	Timestamp string `json:"timestamp"`
-	Error     string `json:"error"`
+	Description string   `json:"description"`
+	Status      int      `json:"status"`
+	Message     string   `json:"message"`
+	Path        string   `json:"path"`
+	Timestamp   string   `json:"timestamp"`
+	Error       string   `json:"error"`
+	FieldErrors []string `json:"fieldErrors"`
 }
