@@ -17,6 +17,7 @@ import (
 type alert struct {
 	ArtifactHash     string   `json:"artifactHash,omitempty"`
 	ArtifactMetaHash string   `json:"artifactMetaHash,omitempty"`
+	Email            string   `json:"email,omitempty"`
 	Enabled          bool     `json:"enabled"`
 	Metadata         Metadata `json:"metadata,omitempty"`
 	Name             string   `json:"name"`
@@ -27,6 +28,7 @@ type alert struct {
 type AlertResponse struct {
 	ArtifactHash     string   `json:"artifactHash,omitempty"`
 	ArtifactMetaHash string   `json:"artifactMetaHash,omitempty"`
+	Email            string   `json:"email,omitempty"`
 	Enabled          bool     `json:"enabled"`
 	Metadata         Metadata `json:"metadata,omitempty"`
 	Name             string   `json:"name"`
@@ -41,7 +43,7 @@ type AlertConfig struct {
 }
 
 // CreateAlert creates a platform alert and returns its UUID.
-func (u *User) CreateAlert(name string, a Artifact, v BlockchainVerification, m Metadata) (alertConfig *AlertConfig, err error) {
+func (u *User) CreateAlert(name string, email string, a Artifact, v BlockchainVerification, m Metadata) (alertConfig *AlertConfig, err error) {
 
 	restError := new(Error)
 	alertResponse := &alert{}
@@ -50,6 +52,7 @@ func (u *User) CreateAlert(name string, a Artifact, v BlockchainVerification, m 
 		BodyJSON(alert{
 			ArtifactHash:     a.Hash,
 			ArtifactMetaHash: v.MetaHash(),
+			Email:            email,
 			Enabled:          true,
 			Metadata:         m,
 			Name:             name,
@@ -58,12 +61,17 @@ func (u *User) CreateAlert(name string, a Artifact, v BlockchainVerification, m 
 	if err != nil {
 		return
 	}
-	if r.StatusCode == 200 {
+	switch r.StatusCode {
+	case 200:
 		alertConfig = &AlertConfig{
 			AlertUUID: alertResponse.UUID,
 			Metadata:  m,
 		}
-	} else {
+	case 400:
+		err = fmt.Errorf("%s", restError.Description)
+	case 413:
+		err = fmt.Errorf("%s is not allowed", email)
+	default:
 		err = fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
 			restError.Status)
 	}
@@ -71,39 +79,39 @@ func (u *User) CreateAlert(name string, a Artifact, v BlockchainVerification, m 
 }
 
 // ModifyAlert modifies the settings of an already existing alert.
-func (u *User) ModifyAlert(config *AlertConfig, enabled bool) error {
+// func (u *User) ModifyAlert(config *AlertConfig, enabled bool) error {
 
-	if config == nil {
-		return fmt.Errorf("alert config cannot be nil")
-	}
+// 	if config == nil {
+// 		return fmt.Errorf("alert config cannot be nil")
+// 	}
 
-	restError := new(Error)
-	alertResponse := &alert{}
-	alertRequest := alert{
-		Enabled:  enabled,
-		Metadata: config.Metadata,
-	}
+// 	restError := new(Error)
+// 	alertResponse := &alert{}
+// 	alertRequest := alert{
+// 		Enabled:  enabled,
+// 		Metadata: config.Metadata,
+// 	}
 
-	r, err := newSling(u.token()).
-		Patch(meta.APIEndpoint("alert")+"?uuid="+config.AlertUUID).
-		BodyJSON(alertRequest).Receive(alertResponse, restError)
+// 	r, err := newSling(u.token()).
+// 		Patch(meta.APIEndpoint("alert")+"?uuid="+config.AlertUUID).
+// 		BodyJSON(alertRequest).Receive(alertResponse, restError)
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	switch r.StatusCode {
-	case 200:
-		return nil
-	case 403:
-		return fmt.Errorf("illegal alert access: %s", restError.Message)
-	case 404:
-		return fmt.Errorf(`no such alert found matching "%s"`, config.AlertUUID)
-	default:
-		return fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
-			restError.Status)
-	}
-}
+// 	switch r.StatusCode {
+// 	case 200:
+// 		return nil
+// 	case 403:
+// 		return fmt.Errorf("illegal alert access: %s", restError.Message)
+// 	case 404:
+// 		return fmt.Errorf(`no such alert found matching "%s"`, config.AlertUUID)
+// 	default:
+// 		return fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
+// 			restError.Status)
+// 	}
+// }
 
 // GetAlert returns an AlertResponse for a given alert uuid.
 func (u *User) GetAlert(uuid string) (*AlertResponse, error) {

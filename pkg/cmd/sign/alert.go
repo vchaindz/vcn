@@ -24,14 +24,23 @@ import (
 	"github.com/vchain-us/vcn/pkg/api"
 )
 
-func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.BlockchainVerification, output string) error {
+type alertOptions struct {
+	arg   string
+	name  string
+	email string
+}
+
+func handleAlert(opts *alertOptions, u api.User, a api.Artifact, v api.BlockchainVerification, output string) error {
+	if opts == nil {
+		return nil
+	}
 
 	m := api.Metadata{}
 
 	// make path absolute
-	aURI, err := uri.Parse(arg)
+	aURI, err := uri.Parse(opts.arg)
 	if err != nil {
-		return fmt.Errorf("invalid argument for alert: %s", arg)
+		return fmt.Errorf("invalid argument for alert: %s", opts.arg)
 	}
 
 	switch a.Kind {
@@ -49,7 +58,7 @@ func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.Bloc
 		} else {
 			aURI.Opaque = "//" + absPath
 		}
-		arg = aURI.String()
+		opts.arg = aURI.String()
 		m["path"] = absPath
 	}
 
@@ -58,11 +67,11 @@ func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.Bloc
 		m["hostname"] = hostname
 	}
 
-	if name == "" {
-		name = hostname
+	if opts.name == "" {
+		opts.name = hostname
 	}
 
-	alertConfig, err := u.CreateAlert(name, a, v, m)
+	alertConfig, err := u.CreateAlert(opts.name, opts.email, a, v, m)
 	if err != nil {
 		return fmt.Errorf("cannot create alert: %s", err)
 	}
@@ -72,8 +81,8 @@ func handleAlert(arg string, u api.User, name string, a api.Artifact, v api.Bloc
 	}
 
 	if err := store.SaveAlert(u.Email(), alertConfig.AlertUUID, store.Alert{
-		Name:   name,
-		Arg:    arg,
+		Name:   opts.name,
+		Arg:    opts.arg,
 		Config: alertConfig,
 	}); err != nil {
 		return fmt.Errorf("cannot save alert: %s", err)

@@ -48,7 +48,8 @@ ARG must be one of:
 func NewCommand() *cobra.Command {
 	cmd := makeCommand()
 	cmd.Flags().Bool("create-alert", false, "if set, an alert will be created (config will be stored into the .vcn dir)")
-	cmd.Flags().String("alert-name", "", "set the alert name (will be ignored if --create-alert is not set)")
+	cmd.Flags().String("alert-name", "", "set the alert name (ignored if --create-alert is not set)")
+	cmd.Flags().String("alert-email", "", "set the alert email recipient (ignored if --create-alert is not set)")
 	return cmd
 }
 
@@ -104,17 +105,27 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	if !noIgnoreFile {
 		extractorOptions = append(extractorOptions, dir.WithIgnoreFileInit())
 	}
-	var createAlert bool
-	var alertName string
+
+	var alert *alertOptions
 	if hasCreateAlert := cmd.Flags().Lookup("create-alert"); hasCreateAlert != nil {
-		createAlert, err = cmd.Flags().GetBool("create-alert")
+		createAlert, err := cmd.Flags().GetBool("create-alert")
 		if err != nil {
 			return err
 		}
-		alertName, _ = cmd.Flags().GetString("alert-name")
-		if err != nil {
-			return err
+		if createAlert {
+			alert = &alertOptions{
+				arg: args[0],
+			}
+			alert.name, _ = cmd.Flags().GetString("alert-name")
+			if err != nil {
+				return err
+			}
+			alert.email, _ = cmd.Flags().GetString("alert-email")
+			if err != nil {
+				return err
+			}
 		}
+
 	}
 
 	var hash string
@@ -162,7 +173,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Make the artifact to be signed
 	var a *api.Artifact
 	if hash != "" {
-		if createAlert {
+		if alert != nil {
 			return fmt.Errorf("cannot use --create-alert with --hash")
 		}
 		hash = strings.ToLower(hash)
@@ -195,10 +206,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(args[0], *u, *a, state, meta.VisibilityForFlag(public), output, silentMode, createAlert, alertName)
+	return sign(args[0], *u, *a, state, meta.VisibilityForFlag(public), output, silentMode, alert)
 }
 
-func sign(arg string, u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, createAlert bool, alertName string) error {
+func sign(arg string, u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, alert *alertOptions) error {
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
@@ -286,10 +297,8 @@ func sign(arg string, u api.User, a api.Artifact, state meta.Status, visibility 
 
 	cli.Print(output, types.NewResult(&a, artifact, verification))
 
-	if createAlert {
-		if err := handleAlert(arg, u, alertName, a, *verification, output); err != nil {
-			return cli.PrintWarning(output, err.Error())
-		}
+	if err := handleAlert(alert, u, a, *verification, output); err != nil {
+		return cli.PrintWarning(output, err.Error())
 	}
 
 	return nil
