@@ -70,7 +70,7 @@ func (u *User) CreateAlert(name string, email string, a Artifact, v BlockchainVe
 	case 400:
 		err = fmt.Errorf("%s", restError.Description)
 	case 413:
-		err = fmt.Errorf("%s is not allowed", email)
+		err = fmt.Errorf("%s is not allowed, only email addresses using the same domain are allowed", email)
 	default:
 		err = fmt.Errorf("alert API request failed: %s (%d)", restError.Message,
 			restError.Status)
