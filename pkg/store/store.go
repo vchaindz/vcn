@@ -26,3 +26,5 @@ const configFilename = "config.json"
 const defaultSecretFile = "secret.json"
 
 const defaultAlertsDir = "alerts"
+
+const defaultManifestsDir = "manifests"
