@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/vchain-us/vcn/pkg/store"
+
 	"github.com/spf13/cobra"
 	"github.com/vchain-us/vcn/pkg/bundle"
 
@@ -40,7 +42,10 @@ func (h *hook) finalize(v *api.BlockchainVerification, alertConfig *api.AlertCon
 	if h != nil && output == "" {
 		manifest, path := dir.Metadata(h.a)
 		if manifest != nil && path != "" {
-			oldManifest, err := bundle.ReadManifest(filepath.Join(path, bundle.ManifestFilename))
+			oldManifest, err := store.ReadManifest(h.a.Kind, path)
+			if err != nil {
+				oldManifest, err = bundle.ReadManifest(filepath.Join(path, bundle.ManifestFilename))
+			}
 			if err != nil {
 				fmt.Printf("Diff is unavailable because '%s' is missing or invalid.\n\n", bundle.ManifestFilename)
 				return nil // ignore missing or bad manifest
