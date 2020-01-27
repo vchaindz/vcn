@@ -198,16 +198,21 @@ func runVerify(cmd *cobra.Command, args []string) error {
 				))
 				continue
 			}
+			alertConfig.Metadata["arg"] = alert.Arg
+
 			a, err := extractor.Extract(alert.Arg)
 			if err != nil {
 				cli.PrintWarning(output, err.Error())
+				alertConfig.Metadata["error"] = err.Error()
+				user.TriggerAlert(alertConfig)
 				continue
 			}
 			if a == nil {
 				cli.PrintWarning(output, fmt.Sprintf("unable to process the input asset provided: %s", alert.Arg))
+				alertConfig.Metadata["error"] = err.Error()
+				user.TriggerAlert(alertConfig)
 				continue
 			}
-			alertConfig.Metadata["arg"] = alert.Arg
 			if err := verify(cmd, a, keys, org, user, &alertConfig, output); err != nil {
 				cli.PrintWarning(output, fmt.Sprintf("%s: %s", alert.Arg, err))
 			}
@@ -250,6 +255,7 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 	hook := newHook(cmd, a)
 	var verification *api.BlockchainVerification
 	if output == "" {
+		fmt.Println()
 		color.Set(meta.StyleAffordance())
 		fmt.Println("Your assets will not be uploaded. They will be processed locally.")
 		color.Unset()
