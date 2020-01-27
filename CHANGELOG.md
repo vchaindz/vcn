@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.8.0"></a>
+## [v0.8.0] - 2020-01-27
+### Bug Fixes
+- Pull latest xgo (go cross compilation tools) when creating the full stack
+- **api:** correct alert error message
+- **api:** correct alert config JSON name
+- **cmd/verify:** show error when alert fails
+
+### Changes
+- improve "your assets will not be uploaded" notice
+- update copyright year
+- **api:** add name to alert struct
+- **api:** improve alert error messages
+- **api:** more fields for Error struct
+- **cmd/internal/cli:** reader and writer for YAML files
+- **cmd/verify:** trigger alert on asset error, if any
+- **store:** read alerts
+
+### Code Refactoring
+- **cmd/sign:** move alert handling to another function
+
+### Features
+- added --alert-email option
+- add ARM build
+- **api:** added get alert API
+- **api:** public AlertConfig struct
+- **api:** platform alerting system APIs
+- **cmd:** augmenting alerts metadata (full path and diff)
+- **cmd:** alerts list command
+- **cmd:** use stderr for errors and show warning instead when notarization is committed
+- **cmd/sign:** add `--create-alert` for notarization
+- **cmd/sign:** add hostname to alert's metadata by default
+- **cmd/verify:** add `--alert-config` for authentication
+- **cmd/verify:** added --alerts to authenticate configured alerts
+- **sign:** alert creation
+- **store:** alert configuration storage
+
+
 <a name="v0.7.4"></a>
 ## [v0.7.4] - 2019-12-19
 ### Bug Fixes
@@ -508,7 +546,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.7.4...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.8.0...HEAD
+[v0.8.0]: https://github.com/vchain-us/vcn/compare/v0.7.4...v0.8.0
 [v0.7.4]: https://github.com/vchain-us/vcn/compare/v0.7.3...v0.7.4
 [v0.7.3]: https://github.com/vchain-us/vcn/compare/v0.7.2...v0.7.3
 [v0.7.2]: https://github.com/vchain-us/vcn/compare/v0.7.1...v0.7.2
