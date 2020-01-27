@@ -11,6 +11,8 @@ package sign
 import (
 	"path/filepath"
 
+	"github.com/vchain-us/vcn/pkg/store"
+
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/bundle"
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
@@ -31,12 +33,15 @@ func newHook(a *api.Artifact) *hook {
 	return nil
 }
 
-func (h *hook) finalize(v *api.BlockchainVerification) error {
+func (h *hook) finalize(v *api.BlockchainVerification, readOnly bool) error {
 	if h != nil && !v.Unknown() {
 		manifest, path := dir.Metadata(h.a)
 		if manifest != nil && path != "" {
 			// manifest is optional, we can ignore errors
-			bundle.WriteManifest(*manifest, filepath.Join(path, bundle.ManifestFilename))
+			store.SaveManifest(h.a.Kind, path, *manifest)
+			if !readOnly {
+				bundle.WriteManifest(*manifest, filepath.Join(path, bundle.ManifestFilename))
+			}
 		}
 	}
 	return nil

@@ -86,6 +86,7 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().BoolP("public", "p", false, "when notarized as public, the asset name and metadata will be visible to everyone")
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir")
+	cmd.Flags().Bool("read-only", false, "if set, no files will be written into the targeted dir (affects dir:// only)")
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
 	)
@@ -101,6 +102,13 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	noIgnoreFile, err := cmd.Flags().GetBool("no-ignore-file")
 	if err != nil {
 		return err
+	}
+	readOnly, err := cmd.Flags().GetBool("read-only")
+	if err != nil {
+		return err
+	}
+	if readOnly {
+		noIgnoreFile = true
 	}
 	if !noIgnoreFile {
 		extractorOptions = append(extractorOptions, dir.WithIgnoreFileInit())
@@ -206,10 +214,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, alert)
+	return sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, readOnly, alert)
 }
 
-func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, alert *alertOptions) error {
+func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, readOnly bool, alert *alertOptions) error {
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
@@ -281,7 +289,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 	api.TrackPublisher(&u, meta.VcnSignEvent)
 	api.TrackSign(&u, a.Hash, a.Name, state)
 
-	err = hook.finalize(verification)
+	err = hook.finalize(verification, readOnly)
 	if err != nil {
 		return cli.PrintWarning(output, err.Error())
 	}
