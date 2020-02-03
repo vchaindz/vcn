@@ -126,3 +126,11 @@ dist/sign: vendor vcn
 
 .PHONY: dist/all
 dist/all: dist dist/${VCNEXE} dist/NSIS dist/${SETUPEXE}
+
+.PHONY: dist/binary.md
+dist/binary.md:
+	@for f in ./dist/*; do \
+		ff=$$(basename $$f); \
+		shm_id=$$(sha256sum $$f | awk '{print $$1}'); \
+		printf "[$$ff](https://github.com/vchain-us/vcn/releases/download/v${VERSION}/$$ff) | $$shm_id \n" ; \
+	done
