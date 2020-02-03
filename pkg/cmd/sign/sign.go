@@ -206,10 +206,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	// Copy user provided custom attributes
 	a.Metadata.SetValues(metadata)
 
-	return sign(args[0], *u, *a, state, meta.VisibilityForFlag(public), output, silentMode, alert)
+	return sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, alert)
 }
 
-func sign(arg string, u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, alert *alertOptions) error {
+func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, alert *alertOptions) error {
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
