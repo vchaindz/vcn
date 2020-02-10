@@ -10,12 +10,19 @@ package meta
 
 var version = ""
 
+var static = ""
+
 var gitCommit = ""
 var gitBranch = ""
 
 // Version returns the current CodeNotary vcn version string
 func Version() string {
 	return version
+}
+
+// StaticBuild returns when the current vcn executable has been statically linked against libraries
+func StaticBuild() bool {
+	return static == "static"
 }
 
 // GitRevision returns the current CodeNotary vcn git revision string
