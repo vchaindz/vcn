@@ -15,8 +15,11 @@ PWD=$(shell pwd)
 LDFLAGS := -s -X github.com/vchain-us/vcn/pkg/meta.version=v${VERSION} \
 			  -X github.com/vchain-us/vcn/pkg/meta.gitCommit=${GIT_COMMIT} \
 			  -X github.com/vchain-us/vcn/pkg/meta.gitBranch=${GIT_BRANCH}
+LDFLAGS_STATIC := ${LDFLAGS} \
+				  -X github.com/vchain-us/vcn/pkg/meta.static=static \
+				  -extldflags "-static"
 TEST_FLAGS ?= -v -race
-VCNEXE=vcn-v${VERSION}-windows-4.0-amd64.exe
+VCNEXE=vcn-v${VERSION}-windows-amd64.exe
 SETUPEXE=codenotary_vcn_v${VERSION}_setup.exe
 
 .PHONY: vcn
@@ -39,7 +42,7 @@ install: vendor test
 
 .PHONY: static
 static:
-	$(GO) build -a -tags netgo -ldflags '${LDFLAGS} -extldflags "-static"' ./cmd/vcn
+	$(GO) build -a -tags netgo -ldflags '${LDFLAGS_STATIC}' ./cmd/vcn
 
 .PHONY: docs/cmd
 docs/cmd:
@@ -80,7 +83,7 @@ CHANGELOG.md.next-tag:
 .PHONY: dist
 dist: clean/dist build/xgo
 	mkdir -p dist
-	$(GO) build -a -tags netgo -ldflags '${LDFLAGS} -extldflags "-static"' \
+	$(GO) build -a -tags netgo -ldflags '${LDFLAGS_STATIC}' \
 			-o ./dist/vcn-v${VERSION}-linux-amd64-static \
 			./cmd/vcn 
 	$(DOCKER) run --rm \
@@ -92,6 +95,8 @@ dist: clean/dist build/xgo
 			-e PACK=cmd/vcn \
 			-e OUT=vcn-v${VERSION} \
 			vcn-xgo .
+	mv ./dist/vcn-v${VERSION}-linux-arm-7 ./dist/vcn-v${VERSION}-linux-arm
+	mv ./dist/vcn-v${VERSION}-windows-4.0-amd64.exe ./dist/${VCNEXE}
 
 .PHONY: dist/${VCNEXE} dist/${SETUPEXE}
 dist/${VCNEXE} dist/${SETUPEXE}:
