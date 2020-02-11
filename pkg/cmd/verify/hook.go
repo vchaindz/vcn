@@ -47,8 +47,7 @@ func (h *hook) finalize(v *api.BlockchainVerification, alertConfig *api.AlertCon
 				oldManifest, err = bundle.ReadManifest(filepath.Join(path, bundle.ManifestFilename))
 			}
 			if err != nil {
-				fmt.Printf("Diff is unavailable because '%s' is missing or invalid.\n\n", bundle.ManifestFilename)
-				return nil // ignore missing or bad manifest
+				return nil // ignore missing manifest
 			}
 			// check old manifest integrity
 			oldDigest, err := oldManifest.Digest()
