@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.8.2"></a>
+## [v0.8.2] - 2020-02-11
+### Changes
+- **cmd/verify:** manifest lookup from storage, fallback to target dir
+- **meta:** add StaticBool()
+
+### Features
+- **cmd/sign:** added --read-only flag for dir notarization
+- **store:** manifests centralized storage
+
+
 <a name="v0.8.1"></a>
 ## [v0.8.1] - 2020-02-03
 ### Bug Fixes
@@ -552,7 +563,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.8.2...HEAD
+[v0.8.2]: https://github.com/vchain-us/vcn/compare/v0.8.1...v0.8.2
 [v0.8.1]: https://github.com/vchain-us/vcn/compare/v0.8.0...v0.8.1
 [v0.8.0]: https://github.com/vchain-us/vcn/compare/v0.7.4...v0.8.0
 [v0.7.4]: https://github.com/vchain-us/vcn/compare/v0.7.3...v0.7.4
