@@ -85,7 +85,7 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().StringP("name", "n", "", "set the asset name")
 	cmd.Flags().BoolP("public", "p", false, "when notarized as public, the asset name and metadata will be visible to everyone")
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
-	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir")
+	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir (affects dir:// only)")
 	cmd.Flags().Bool("read-only", false, "if set, no files will be written into the targeted dir (affects dir:// only)")
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
@@ -112,6 +112,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 	if !noIgnoreFile {
 		extractorOptions = append(extractorOptions, dir.WithIgnoreFileInit())
+		extractorOptions = append(extractorOptions, dir.WithSkipIgnoreFileErr())
 	}
 
 	var alert *alertOptions
