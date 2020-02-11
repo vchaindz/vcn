@@ -30,7 +30,8 @@ const ManifestKey = "manifest"
 const PathKey = "path"
 
 type opts struct {
-	initIgnoreFile bool
+	initIgnoreFile    bool
+	skipIgnoreFileErr bool
 }
 
 // Artifact returns a file *api.Artifact from a given u
@@ -68,7 +69,9 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 
 	if opts.initIgnoreFile {
 		if err := initIgnoreFile(path); err != nil {
-			return nil, err
+			if !opts.skipIgnoreFileErr {
+				return nil, err
+			}
 		}
 	}
 
@@ -103,6 +106,17 @@ func WithIgnoreFileInit() extractor.Option {
 	return func(o interface{}) error {
 		if o, ok := o.(*opts); ok {
 			o.initIgnoreFile = true
+		}
+		return nil
+	}
+}
+
+// WithSkipIgnoreFileErr returns a functional option to instruct the dir's extractor to skip errors during
+// ignore file initialization.
+func WithSkipIgnoreFileErr() extractor.Option {
+	return func(o interface{}) error {
+		if o, ok := o.(*opts); ok {
+			o.skipIgnoreFileErr = true
 		}
 		return nil
 	}
