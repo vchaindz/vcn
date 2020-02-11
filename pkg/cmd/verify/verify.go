@@ -328,7 +328,6 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 	}
 
 	// todo(ameingast/leogr): remove reduntat event - need backend improvement
-	api.TrackPublisher(user, meta.VcnVerifyEvent)
 	api.TrackVerify(user, a.Hash, a.Name)
 
 	if alertConfig != nil {
@@ -345,6 +344,9 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 		if output == "" {
 			fmt.Printf("\nPing for alert %s sent.\n", alertConfig.AlertUUID)
 		}
+		api.TrackPublisher(user, meta.VcnAlertVerifyEvent)
+	} else {
+		api.TrackPublisher(user, meta.VcnVerifyEvent)
 	}
 
 	if !verification.Trusted() {

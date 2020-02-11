@@ -52,9 +52,10 @@ const (
 
 // Event tracking related consts
 const (
-	VcnLoginEvent  string = "VCN_LOGIN"
-	VcnSignEvent   string = "VCN_SIGN"
-	VcnVerifyEvent string = "VCN_VERIFY"
+	VcnLoginEvent       string = "VCN_LOGIN"
+	VcnSignEvent        string = "VCN_SIGN"
+	VcnVerifyEvent      string = "VCN_VERIFY"
+	VcnAlertVerifyEvent string = "VCN_ALERT_VERIFY"
 )
 
 // vcn environment variable names
