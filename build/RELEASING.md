@@ -24,7 +24,7 @@ VERSION=X.Y.Z
 Then run:
 
 ```
-make CHANGELOG.md.next
+make CHANGELOG.md.next-tag
 ```
 
 ## 2. Commit and tag (locally)
