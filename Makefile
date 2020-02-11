@@ -97,6 +97,7 @@ dist: clean/dist build/xgo
 			vcn-xgo .
 	mv ./dist/vcn-v${VERSION}-linux-arm-7 ./dist/vcn-v${VERSION}-linux-arm
 	mv ./dist/vcn-v${VERSION}-windows-4.0-amd64.exe ./dist/${VCNEXE}
+	mv ./dist/vcn-v${VERSION}-darwin-10.6-amd64 ./dist/vcn-v${VERSION}-darwin-amd64
 
 .PHONY: dist/${VCNEXE} dist/${SETUPEXE}
 dist/${VCNEXE} dist/${SETUPEXE}:
