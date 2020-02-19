@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.8.3"></a>
+## [v0.8.3] - 2020-02-11
+### Changes
+- distinct event for alert verification
+- **cmd/sign:** allow notarization when no dir with write access by default
+- **cmd/verify:** do not show "diff unavailable" when no manifest is found
+- **extractor/dir:** option to skip ignore file creation
+
+
 <a name="v0.8.2"></a>
 ## [v0.8.2] - 2020-02-11
 ### Changes
@@ -316,11 +325,11 @@ support for multiple keystores in config file and related APIs within the `store
 - **sign:** `VCN_KEY` env variable for signing
 
 
-<a name="v0.5.0"></a>
-## [v0.5.0] - 2019-06-25
-
 <a name="0.5.0"></a>
 ## [0.5.0] - 2019-06-25
+
+<a name="v0.5.0"></a>
+## [v0.5.0] - 2019-06-25
 ### Bug Fixes
 - ca-certificates for Dockerfile
 - clean other context when user logs in
@@ -563,7 +572,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.8.2...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.8.3...HEAD
+[v0.8.3]: https://github.com/vchain-us/vcn/compare/v0.8.2...v0.8.3
 [v0.8.2]: https://github.com/vchain-us/vcn/compare/v0.8.1...v0.8.2
 [v0.8.1]: https://github.com/vchain-us/vcn/compare/v0.8.0...v0.8.1
 [v0.8.0]: https://github.com/vchain-us/vcn/compare/v0.7.4...v0.8.0
@@ -579,9 +589,9 @@ this commit introduce the config file with multi-keys support, and a huge refact
 [v0.5.4]: https://github.com/vchain-us/vcn/compare/v0.5.3...v0.5.4
 [v0.5.3]: https://github.com/vchain-us/vcn/compare/v0.5.2...v0.5.3
 [v0.5.2]: https://github.com/vchain-us/vcn/compare/v0.5.1...v0.5.2
-[v0.5.1]: https://github.com/vchain-us/vcn/compare/v0.5.0...v0.5.1
-[v0.5.0]: https://github.com/vchain-us/vcn/compare/0.5.0...v0.5.0
-[0.5.0]: https://github.com/vchain-us/vcn/compare/0.4.3...0.5.0
+[v0.5.1]: https://github.com/vchain-us/vcn/compare/0.5.0...v0.5.1
+[0.5.0]: https://github.com/vchain-us/vcn/compare/v0.5.0...0.5.0
+[v0.5.0]: https://github.com/vchain-us/vcn/compare/0.4.3...v0.5.0
 [0.4.3]: https://github.com/vchain-us/vcn/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/vchain-us/vcn/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/vchain-us/vcn/compare/0.4.0...0.4.1
