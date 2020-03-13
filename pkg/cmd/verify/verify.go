@@ -328,7 +328,9 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 	}
 
 	// todo(ameingast/leogr): remove reduntat event - need backend improvement
-	api.TrackVerify(user, a.Hash, a.Name)
+	if verification.Trusted() {
+		api.TrackVerify(user, a.Hash, a.Name)
+	}
 
 	if alertConfig != nil {
 		var err error
