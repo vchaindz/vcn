@@ -110,19 +110,28 @@ func extractInfo(arg string, output string) (hash string, err error) {
 }
 
 func inspect(hash string, u *api.User, output string) error {
-	verifications, err := api.BlockChainInspect(hash)
+	results, err := GetResults(hash , u)
 	if err != nil {
 		return err
 	}
-	l := len(verifications)
 
 	if output == "" {
 		fmt.Printf(
 			`%d notarizations found for "%s"
 
 `,
-			l, hash)
+			len(results), hash)
 	}
+
+	return cli.PrintSlice(output, results)
+}
+
+func GetResults(hash string, u *api.User) ([]types.Result, error) {
+	verifications, err := api.BlockChainInspect(hash)
+	if err != nil {
+		return nil, err
+	}
+	l := len(verifications)
 
 	results := make([]types.Result, l)
 	for i, v := range verifications {
@@ -145,6 +154,5 @@ func inspect(hash string, u *api.User, output string) error {
 			}
 		}
 	}
-
-	return cli.PrintSlice(output, results)
+	return results, nil
 }

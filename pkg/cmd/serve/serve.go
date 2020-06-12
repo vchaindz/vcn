@@ -64,6 +64,7 @@ func runServe(cmd *cobra.Command) error {
 	router.HandleFunc("/untrust", signHander(meta.StatusUntrusted)).Methods("POST")
 	router.HandleFunc("/unsupport", signHander(meta.StatusUnsupported)).Methods("POST")
 	router.HandleFunc("/authenticate/{hash}", verify).Methods("GET")
+	router.HandleFunc("/inspect/{hash}", inspect).Methods("GET")
 
 	logs.LOG.Infof("Log level: %s", logs.LOG.GetLevel().String())
 	logs.LOG.Infof("Stage: %s", meta.StageEnvironment().String())
