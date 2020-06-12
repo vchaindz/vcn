@@ -1,0 +1,337 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "VCN server",
+    "contact": {}
+  },
+  "host": "127.0.0.1:8080",
+  "basePath": "/",
+  "securityDefinitions": {
+    "auth": {
+      "type": "basic"
+    }
+  },
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "health check",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "healthcheck",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/notarize": {
+      "post": {
+        "description": "This method is invoked to notarize an artifact\nIf successful a BlockchainVerification is returned.\nBy default, the artifact is notarized using status = meta.StatusTrusted, visibility meta.VisibilityPrivate.\nAt least the key (secret) must be provided.",
+        "summary": "notarize",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "notarize",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "x-notarization-password",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/notarizerequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/untrusted": {
+      "post": {
+        "description": "“untrust” an asset (meaning the user deems this file unsafe)",
+        "summary": "untrust",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "untrust",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "x-notarization-password",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/untrustrequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/unsupport": {
+      "post": {
+        "description": "“unsupport” an asset (meaning this file may no longer work)",
+        "summary": "unsupport",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "unsupport",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "x-notarization-password",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/unsupportrequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/authenticate/{hash}": {
+      "get": {
+        "description": "Authenticating (verifying) an asset is the same as was done previously and can be performed on any kind of supported asset.",
+        "summary": "authenticate",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "authenticate",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "x-notarization-password",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/inspect/{hash}": {
+      "get": {
+        "description": "Return the asset history with low-level information",
+        "summary": "inspect",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "inspect",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "x-notarization-password",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "notarizerequest": {
+      "title": "notarizerequest",
+      "example": {
+        "Kind": "file",
+        "Name": "CONTRIBUTING.md",
+        "Hash": "e2b58ab102dbadb3b1fd5139c8d2a937dc622b1b0d0907075edea163fe2cd093",
+        "Size": 1400,
+        "ContentType": "text/plain; charset=utf-8"
+      },
+      "type": "object",
+      "properties": {
+        "Kind": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Hash": {
+          "type": "string"
+        },
+        "Size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ContentType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Kind",
+        "Name",
+        "Hash",
+        "Size",
+        "ContentType"
+      ]
+    },
+    "untrustrequest": {
+      "title": "untrustrequest",
+      "example": {
+        "Kind": "file",
+        "Name": "CONTRIBUTING.md",
+        "Hash": "e2b58ab102dbadb3b1fd5139c8d2a937dc622b1b0d0907075edea163fe2cd093",
+        "Size": 1400,
+        "ContentType": "text/plain; charset=utf-8"
+      },
+      "type": "object",
+      "properties": {
+        "Kind": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Hash": {
+          "type": "string"
+        },
+        "Size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ContentType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Kind",
+        "Name",
+        "Hash",
+        "Size",
+        "ContentType"
+      ]
+    },
+    "unsupportrequest": {
+      "title": "unsupportrequest",
+      "example": {
+        "Name": "CONTRIBUTING.md",
+        "Hash": "e2b58ab102dbadb3b1fd5139c8d2a937dc622b1b0d0907075edea163fe2cd093"
+      },
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Hash": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Name",
+        "Hash"
+      ]
+    }
+  },
+  "security": [
+    {
+      "auth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Misc",
+      "description": ""
+    }
+  ]
+}
