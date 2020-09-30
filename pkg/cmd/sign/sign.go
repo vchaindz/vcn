@@ -87,8 +87,8 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir (affects dir:// only)")
 	cmd.Flags().Bool("read-only", false, "if set, no files will be written into the targeted dir (affects dir:// only)")
-	cmd.Flags().String("host", "", "if set, sign action wil be direct to ledger compliance")
-	cmd.Flags().String("port", "", "if set, sign action wil be direct to ledger compliance")
+	cmd.Flags().String("host", "", "if set with port, action will be route to ledger compliance")
+	cmd.Flags().String("port", "", "if set with host, action will be route to ledger compliance")
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
 	)
@@ -208,6 +208,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 
 	if lcUser != nil {
 		a, err := extractor.Extract(args[0], extractorOptions...)
+		if err != nil {
+			return err
+		}
+		err = lcUser.Client.Connect()
 		if err != nil {
 			return err
 		}
