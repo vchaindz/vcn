@@ -31,9 +31,16 @@ func LcSign(u *api.LcUser, a api.Artifact, state meta.Status, output string) err
 		fmt.Println()
 	}
 
-	artifact, err := u.LoadArtifact(a.Hash)
+	artifact, verified, err := u.LoadArtifact(a.Hash)
 	if err != nil {
 		return cli.PrintWarning(output, err.Error())
+	}
+
+	if !verified {
+		color.Set(meta.StyleError())
+		fmt.Println("the ledger is compromised. Please contact the CodeNotary Ledger Compliance administrators")
+		color.Unset()
+		fmt.Println()
 	}
 
 	cli.PrintLc(output, types.NewLcResult(artifact))

@@ -57,10 +57,6 @@ func (u LcUser) createArtifact(
 	hasher.Write([]byte(u.LcApiKey()))
 	aR.Signer = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 
-	err := u.Client.Connect()
-	if err != nil {
-		return err
-	}
 	arJson, err := json.Marshal(aR)
 	_, err = u.Client.SafeSet(context.TODO(), []byte(artifact.Hash), arJson)
 	if err != nil {
@@ -70,16 +66,16 @@ func (u LcUser) createArtifact(
 }
 
 // LoadArtifact fetches and returns an *lcArtifact for the given hash and current u, if any.
-func (u *LcUser) LoadArtifact(hash string) (lc *LcArtifact, err error) {
+func (u *LcUser) LoadArtifact(hash string) (lc *LcArtifact, verified bool, err error) {
 	jsonAr, err := u.Client.SafeGet(context.TODO(), []byte(hash))
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	var lcArtifact LcArtifact
 
 	err = json.Unmarshal(jsonAr.Value, &lcArtifact)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
-	return &lcArtifact, nil
+	return &lcArtifact, jsonAr.Verified, nil
 }
