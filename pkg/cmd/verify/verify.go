@@ -116,6 +116,8 @@ ARG must be one of:
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no ARG(s) can be used")
 	cmd.Flags().Bool("alerts", false, "specify to authenticate and monitor for the configured alerts, if set no ARG(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
+	cmd.Flags().String("host", "", "if set with port, action will be route to ledger compliance")
+	cmd.Flags().String("port", "", "if set with host, action will be route to ledger compliance")
 	cmd.Flags().MarkHidden("raw-diff")
 
 	return cmd
@@ -140,6 +142,15 @@ func runVerify(cmd *cobra.Command, args []string) error {
 
 	cmd.SilenceUsage = true
 
+	host, err := cmd.Flags().GetString("host")
+	if err != nil {
+		return err
+	}
+	port, err := cmd.Flags().GetString("port")
+	if err != nil {
+		return err
+	}
+
 	org := viper.GetString("org")
 	var keys []string
 	if org != "" {
@@ -162,7 +173,47 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	user := api.NewUser(store.Config().CurrentContext.Email)
+	//check if an lcUser is present inside the context
+	var lcUser *api.LcUser
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+	if err != nil {
+		return err
+	}
+	if lctmp, ok := uif.(*api.LcUser); ok {
+		lcUser = lctmp
+	}
+
+	// use credentials if provided inline
+	if host != "" || port != "" {
+		apiKey, err := cli.ProvideLcApiKey()
+		if err != nil {
+			return err
+		}
+		if apiKey != "" {
+			lcUser = api.NewLcUser(apiKey, host, port)
+			// Store the new config
+			if err := store.SaveConfig(); err != nil {
+				return err
+			}
+		}
+	}
+
+	if lcUser != nil {
+		a, err := extractor.Extract(args[0])
+		if err != nil {
+			return err
+		}
+		err = lcUser.Client.Connect()
+		if err != nil {
+			return err
+		}
+		return lcVerify(a, lcUser, output)
+	}
+
+	user, ok := uif.(*api.User)
+	if !ok {
+		return fmt.Errorf("cannot load the current user")
+	}
 
 	// by alerts
 	if useAlerts {
