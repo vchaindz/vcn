@@ -30,3 +30,6 @@ vendor
 
 # Vim
 *.swp
+
+# precommit
+.pre-commit-config.yaml

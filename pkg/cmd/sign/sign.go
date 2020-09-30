@@ -60,18 +60,18 @@ func makeCommand() *cobra.Command {
 		Long: `
 Notarize an asset onto the blockchain.
 
-Notarization calculates the SHA-256 hash of a digital asset 
-(file, directory, container's image). 
-The hash (not the asset) and the desired status of TRUSTED are then 
-cryptographically signed by the signer's secret (private key). 
+Notarization calculates the SHA-256 hash of a digital asset
+(file, directory, container's image).
+The hash (not the asset) and the desired status of TRUSTED are then
+cryptographically signed by the signer's secret (private key).
 Next, these signed objects are sent to the blockchain where the signer’s
-trust level and a timestamp are added. 
+trust level and a timestamp are added.
 When complete, a new blockchain entry is created that binds the asset’s
-signed hash, signed status, level, and timestamp together. 
+signed hash, signed status, level, and timestamp together.
 
 Note that your assets will not be uploaded. They will be processed locally.
 
-Assets are referenced by passed ARG with notarization only accepting 
+Assets are referenced by passed ARG with notarization only accepting
 1 ARG at a time.
 ` + helpMsgFooter,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -86,6 +86,8 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir (affects dir:// only)")
 	cmd.Flags().Bool("read-only", false, "if set, no files will be written into the targeted dir (affects dir:// only)")
+	cmd.Flags().String("host", "", "if set, sign action wil be direct to ledger compliance")
+	cmd.Flags().String("port", "", "if set, sign action wil be direct to ledger compliance")
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
 	)
@@ -169,12 +171,54 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 
 	cmd.SilenceUsage = true
 
+	host, err := cmd.Flags().GetString("host")
+	if err != nil {
+		return err
+	}
+	port, err := cmd.Flags().GetString("port")
+	if err != nil {
+		return err
+	}
+
+	//check if an lcUser is present inside the context
+	var lcUser *api.LcUser
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+	if err != nil {
+		return err
+	}
+	if lctmp, ok := uif.(*api.LcUser); ok {
+		lcUser = lctmp
+	}
+
+	// use credentials if provided inline
+	if host != "" || port != "" {
+		apiKey, err := cli.ProvideLcApiKey()
+		if err != nil {
+			return err
+		}
+		if apiKey != "" {
+			lcUser = api.NewLcUser(apiKey, host, port)
+			// Store the new config
+			if err := store.SaveConfig(); err != nil {
+				return err
+			}
+		}
+	}
+
+	if lcUser != nil {
+		a, err := extractor.Extract(args[0], extractorOptions...)
+		if err != nil {
+			return err
+		}
+		return LcSign(lcUser, *a, state, output)
+	}
+
 	// User
 	if err := assert.UserLogin(); err != nil {
 		return err
 	}
-	u := api.NewUser(store.Config().CurrentContext)
-	if u == nil {
+	u, ok := uif.(*api.User)
+	if !ok {
 		return fmt.Errorf("cannot load the current user")
 	}
 

@@ -154,10 +154,31 @@ func ProvideOtp() (otp string, err error) {
 		return "", err
 	}
 	otp = strings.ReplaceAll(strings.TrimSpace(otp), " ", "")
-	if otp != ""{
+	if otp != "" {
 		logs.LOG.WithFields(logrus.Fields{
 			"otp": otp,
 		}).Trace("Otp provided (interactive)")
 	}
 	return otp, nil
+}
+
+func ProvideLcApiKey() (ak string, err error) {
+	ak = os.Getenv(meta.VcnLcApiKey)
+	if ak != "" {
+		logs.LOG.Trace("Lc api key provided (environment)")
+		return ak, nil
+	}
+	fmt.Print("Lc api key: ")
+	w := bufio.NewReader(os.Stdin)
+	ak, err = w.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	ak = strings.ReplaceAll(strings.TrimSpace(ak), " ", "")
+	if ak != "" {
+		logs.LOG.WithFields(logrus.Fields{
+			"lc-api-key": ak,
+		}).Trace("Lc api key provided (interactive)")
+	}
+	return ak, nil
 }

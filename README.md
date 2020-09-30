@@ -8,15 +8,15 @@
 [![Changelog](https://img.shields.io/badge/CHANGELOG-.md-blue?style=flat-square)](https://github.com/vchain-us/vcn/blob/master/CHANGELOG.md)
 [![Release](https://img.shields.io/github/release/vchain-us/vcn.svg?style=flat-square)](https://github.com/vchain-us/vcn/releases/latest)
 ## The Trust and Integrity platform for the Cloud native environment
-Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere. 
+Give any digital asset a meaningful, globally-unique, immutable identity that is authentic, verifiable, traceable from anywhere.
 
 <img align="right" src="https://github.com/vchain-us/vcn/blob/master/docs/img/codenotary_mascot.png" width="256px"/>
-When using CodeNotary vcn in source code, release, deployment or at runtime, you allow a continuous trust verification that can be used to detect unusual or unwanted activity in your workload and act on it. 
+When using CodeNotary vcn in source code, release, deployment or at runtime, you allow a continuous trust verification that can be used to detect unusual or unwanted activity in your workload and act on it.
 <br/>
 Powered by CodeNotary's digital identity infrastructure, vcn lets you notarize all of your digital assets that add a trust level of your choice, custom attributes and a meaningful status without touching or appending anything (unlike digital certificates).
-That allows change and revocation post-release without breaking any customer environment. 
+That allows change and revocation post-release without breaking any customer environment.
 <br/>
-Everything is done in a global, collaborative way to break the common silo solution architecture. Leveraging an immutable, always-on DLT platform allows you to avoid complex setup of Certificate authorities or digital certificates (that are unfit for DevOps anyway). 
+Everything is done in a global, collaborative way to break the common silo solution architecture. Leveraging an immutable, always-on DLT platform allows you to avoid complex setup of Certificate authorities or digital certificates (that are unfit for DevOps anyway).
 
 ## Table of contents
 
@@ -48,7 +48,7 @@ Everything is done in a global, collaborative way to break the common silo solut
    vcn authenticate <file|dir://directory|docker://dockerimage|git://gitdirectory>
    ```
 
-3. [**Create your identity (free)**](https://dashboard.codenotary.io/auth/signup) You need an identity at CodeNotary to notarize objects yourself (btw, we're a data-minimum company and only ask for data that is really required) 
+3. [**Create your identity (free)**](https://dashboard.codenotary.io/auth/signup) You need an identity at CodeNotary to notarize objects yourself (btw, we're a data-minimum company and only ask for data that is really required)
 
 
 4. **Notarize existing digital objects** Once you have an account you can start notarizing digital assets to give them an identity.
@@ -60,7 +60,7 @@ Everything is done in a global, collaborative way to break the common silo solut
 
 
 ## DevSecOps in mind
-Codenotary vcn is a solution written by a devops-obsessed engineers for Devops engineers to bring better trust and security to the the CloudNative source to deployment process 
+Codenotary vcn is a solution written by a devops-obsessed engineers for Devops engineers to bring better trust and security to the the CloudNative source to deployment process
 
 ## What kind of behaviors can CodeNotary vcn detect
 vcn (and its extensions for Docker, Kubernetes, documents or CI/CD) can detect, authenticate and alert on any behavior that involves using unauthentic digital assets. vcn verification can be embedded anywhere and can be used to trigger alerts, updates or workflows.
@@ -73,7 +73,7 @@ vcn is so versatile, it can help detecting or acting on the following (but not l
 * Prevent untrusted or revoked containers from starting in production
 * Verify the integrity and the publisher of all the data received over any channel
 
-and more 
+and more
 * Enable application version checks and actions
 * Buggy or rogue libraries can be traced by simple revoke or unsupport
 * Revoke or unsupport your build or build version post-deployment (no complex certificate revocation that includes delivery of newly signed builds)
@@ -114,7 +114,7 @@ brew install vcn
 
 ### Build from Source
 
-After having installed [golang](https://golang.org/doc/install) 1.12 or newer clone this 
+After having installed [golang](https://golang.org/doc/install) 1.12 or newer clone this
 repository into your working directory.
 
 Now, you can build `vcn` in the working directory by using `make vcn` and then run `./vcn`.
@@ -135,7 +135,7 @@ Basically, `vcn` can notarize or authenticate any of the following kind of asset
 
 For detailed **command line usage** see [docs/cmd/vcn.md](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md) or just run `vcn help`.
 
-### Notarization 
+### Notarization
 
 Register an account with [codernotary.io](https://codenotary.io) first.
 
@@ -198,7 +198,7 @@ vcn authenticate --output=yaml <asset>
 
 * [Github Action](https://github.com/marketplace/actions/verify-commit) - An action to verify the authenticity of your commits within your Github workflow
 * [docker](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/schemes/docker.md) - Out of the box support for notarizing and authenticating Docker images.
-* [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository. 
+* [hub.docker.com/r/codenotary/vcn](https://hub.docker.com/r/codenotary/vcn) - The `vcn`'s DockerHub repository.
 * [kube-notary](https://github.com/vchain-us/kube-notary) - A Kubernetes watchdog for verifying image trust with CodeNotary.
 * [vcn-watchdog](https://github.com/vchain-us/vcn-watchdog) - Continuous authentication with CodeNotary for Docker.
 * [jsvcn](https://github.com/vchain-us/jsvcn) - CodeNotary JavaScript Client.
@@ -217,18 +217,18 @@ vcn authenticate --output=yaml <asset>
 
 #### Authenticate a Docker image automatically prior to running it
 
-First, you’ll need to pull the image by using: 
+First, you’ll need to pull the image by using:
 
 ```
 docker pull hello-world
 ```
 
-Then use the below command to put in place an automatic safety check. It allows only verified images to run. 
+Then use the below command to put in place an automatic safety check. It allows only verified images to run.
 
 ```
 vcn authenticate docker://hello-world && docker run hello-world
 ```
-If an image was not verified, it will not run and nothing will execute. 
+If an image was not verified, it will not run and nothing will execute.
 
 
 #### Authenticate multiple assets
@@ -250,7 +250,7 @@ vcn authenticate --signerID 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://
 
 If an asset you or your organization wants to trust needs to be verified against a list of signers as a prerequisite, then use the `vcn authenticate` command and the following syntax:
 
-- Add a `--signerID` flag in front of each SignerID you want to add  
+- Add a `--signerID` flag in front of each SignerID you want to add
 (eg. `--signerID 0x0...1 --signerID 0x0...2`)
 - Or set the env var `VCN_SIGNERID` correctly by using a space to separate each SignerID (eg. `VCN_SIGNERID=0x0...1 0x0...2`)
 > Be aware that using the `--signerID` flag will take precedence over `VCN_SIGNERID`.
@@ -273,7 +273,7 @@ First, you’ll need to get the hash of the asset from your CodeNotary [dashboar
 
 ```
 vcn untrust --hash <asset's hash>
-# or 
+# or
 vcn unsupport --hash <asset's hash>
 ```
 
@@ -295,12 +295,6 @@ vcn notarize <asset>
 ```
 > Other commands like `untrust` and `unsupport` will also work.
 
-It's possible to disable one time password or notarization password requirements in particular cases using:
-```
-export VCN_OTP_EMPTY=true
-export VCN_NOTARIZATION_PASSWORD_EMPTY=true
-```
-
 ## Testing
 ```
 make test
@@ -312,24 +306,14 @@ The C libraries of [go-ethereum](https://github.com/ethereum/go-ethereum) make a
 necessary.
 The `make dist` target takes care of all steps by using [xgo](https://github.com/techknowlogick/xgo) and [docker](https://github.com/docker).
 
-## Generating smart contracts on linux
-
-Clone https://github.com/ethereum/go-ethereum and compile `abigen` command in ./cmd/abigen
-
-Download solc at https://github.com/ethereum/solidity/releases?after=v0.5.0 and chmod +x on it and copy in /usr/bin
-solc version must be:
-```bash
-solc --version
-solc, the solidity compiler commandline interface
-Version: 0.4.24+commit.e67f0147.Linux.g++
-```
-
-Place at the root of the contracts repo and generate go files with:
-```
-abigen --sol organisations/contracts/OrganisationsRelay.sol --pkg blockchain --out organisationsrelay.go
-abigen --sol assets/contracts/AssetsRelay.sol --pkg blockchain --out assetsrelay.go
-```
-
 ## License
 
 This software is released under [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+
+### gRPC code generation
+
+As prerequisite follow:
+
+https://grpc.io/docs/languages/go/quickstart/
+(cd ../../../grpc-go/cmd/protoc-gen-go-grpc && go install .)
