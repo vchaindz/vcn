@@ -43,7 +43,7 @@ func runPasshphrase(cmd *cobra.Command, args []string) error {
 	if err := assert.UserLogin(); err != nil {
 		return err
 	}
-	u := api.NewUser(store.Config().CurrentContext)
+	u := api.NewUser(store.Config().CurrentContext.Email)
 	fmt.Printf("User:	%s\n", u.Email())
 
 	secret, id, offline, err := u.Secret()

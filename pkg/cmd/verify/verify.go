@@ -47,19 +47,19 @@ func NewCommand() *cobra.Command {
 		Long: `
 Authenticate assets against the blockchain.
 
-Authentication is the process of matching the hash of a local asset to 
-a hash on the blockchain. 
+Authentication is the process of matching the hash of a local asset to
+a hash on the blockchain.
 If matched, the returned result (the authentication) is the blockchain-stored
-metadata that’s bound to the matching hash. 
+metadata that’s bound to the matching hash.
 Otherwise, the returned result status equals UNKNOWN.
 
 Note that your assets will not be uploaded but processed locally.
 
-The exit code will be 0 only if all assets' statuses are equal to TRUSTED. 
+The exit code will be 0 only if all assets' statuses are equal to TRUSTED.
 Otherwise, the exit code will be 1.
 
-Assets are referenced by the passed ARG(s), with authentication accepting 
-1 or more ARG(s) at a time. Multiple assets can be authenticated at the 
+Assets are referenced by the passed ARG(s), with authentication accepting
+1 or more ARG(s) at a time. Multiple assets can be authenticated at the
 same time while passing them within ARG(s).
 
 ARG must be one of:
@@ -162,7 +162,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	user := api.NewUser(store.Config().CurrentContext)
+	user := api.NewUser(store.Config().CurrentContext.Email)
 
 	// by alerts
 	if useAlerts {

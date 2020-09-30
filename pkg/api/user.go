@@ -31,7 +31,7 @@ type User struct {
 // NewUser returns a new User instance for the given email.
 func NewUser(email string) *User {
 	return &User{
-		cfg: store.Config().User(email),
+		cfg: store.Config().UserByMail(email),
 	}
 }
 

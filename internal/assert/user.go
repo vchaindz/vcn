@@ -23,7 +23,7 @@ const loginMsg = "You need to be logged in"
 
 func UserLogin() error {
 	// check for token
-	hasAuth, err := api.NewUser(store.Config().CurrentContext).IsAuthenticated()
+	hasAuth, err := api.NewUser(store.Config().CurrentContext.Email).IsAuthenticated()
 	if err != nil {
 		return err
 	}

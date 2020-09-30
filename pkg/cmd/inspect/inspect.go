@@ -83,7 +83,7 @@ func runInspect(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	u := api.NewUser(store.Config().CurrentContext)
+	u := api.NewUser(store.Config().CurrentContext.Email)
 	if hasAuth, _ := u.IsAuthenticated(); hasAuth && output == "" {
 		fmt.Printf("Current user: %s\n", u.Email())
 	}
