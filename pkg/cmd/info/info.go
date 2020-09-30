@@ -58,11 +58,11 @@ Contract Addr.: %s
 	)
 
 	context := store.Config().CurrentContext
-	if context == "" {
+	if context.Email == "" {
 		fmt.Println("\nNo user logged in.")
 		return nil
 	}
-	u := api.NewUser(context)
+	u := api.NewUser(context.Email)
 	fmt.Printf("\nUser:		%s\n", u.Email())
 	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
