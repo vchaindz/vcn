@@ -14,6 +14,7 @@ import (
 
 type LcResult struct {
 	api.LcArtifact `yaml:",inline"`
+	Verified       bool    `json:"verified" yaml:"verified" vcn:"Verified"`
 	Errors         []error `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
@@ -21,13 +22,13 @@ func (r *LcResult) AddError(err error) {
 	r.Errors = append(r.Errors, err)
 }
 
-func NewLcResult(lca *api.LcArtifact) *LcResult {
+func NewLcResult(lca *api.LcArtifact, verified bool) *LcResult {
 
 	var r LcResult
 
 	switch true {
 	case lca != nil:
-		r = LcResult{*lca, nil}
+		r = LcResult{LcArtifact: *lca, Verified: verified}
 	default:
 		r = LcResult{}
 	}
