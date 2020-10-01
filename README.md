@@ -212,6 +212,7 @@ vcn authenticate --output=yaml <asset>
 * [Environments](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/environments.md)
 * [Formatted output (json/yaml)](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/formatted-output.md)
 * [Notarization explained](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/notarization.md)
+* [CodeNotary Ledger Compliance](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/ledger-compliance.md)
 
 ## Examples
 
