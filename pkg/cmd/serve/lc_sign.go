@@ -20,6 +20,10 @@ import (
 )
 
 func lcSign(user *api.LcUser, status meta.Status, kinds map[string]bool, w http.ResponseWriter, r *http.Request) {
+	if user.Client.ApiKey == "" {
+		writeError(w, http.StatusUnauthorized, fmt.Errorf("api key not provided"))
+		return
+	}
 	err := user.Client.Connect()
 	if err != nil {
 		writeError(w, http.StatusBadGateway, err)

@@ -9,6 +9,7 @@
 package serve
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -25,7 +26,10 @@ func (sh *signHandler) verify(w http.ResponseWriter, r *http.Request) {
 
 	if sh.lcHost != "" && sh.lcPort != "" {
 		lcUser := getLcUser(r, sh.lcHost, sh.lcPort)
-
+		if lcUser.Client.ApiKey == "" {
+			writeError(w, http.StatusUnauthorized, fmt.Errorf("api key not provided"))
+			return
+		}
 		err := lcUser.Client.Connect()
 		if err != nil {
 			writeError(w, http.StatusBadGateway, err)
