@@ -199,11 +199,19 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	}
 
 	if lcUser != nil {
-		a, err := extractor.Extract(args[0])
+		err = lcUser.Client.Connect()
 		if err != nil {
 			return err
 		}
-		err = lcUser.Client.Connect()
+		// by hash
+		if hash != "" {
+			a := &api.Artifact{
+				Hash: strings.ToLower(hash),
+			}
+			return lcVerify(a, lcUser, output)
+		}
+
+		a, err := extractor.Extract(args[0])
 		if err != nil {
 			return err
 		}
