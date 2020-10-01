@@ -116,8 +116,8 @@ ARG must be one of:
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no ARG(s) can be used")
 	cmd.Flags().Bool("alerts", false, "specify to authenticate and monitor for the configured alerts, if set no ARG(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
-	cmd.Flags().String("host", "", "if set with port, action will be route to ledger compliance")
-	cmd.Flags().String("port", "", "if set with host, action will be route to ledger compliance")
+	cmd.Flags().String("lc-host", "", "if set with port, action will be route to ledger compliance")
+	cmd.Flags().String("lc-port", "", "if set with host, action will be route to ledger compliance")
 	cmd.Flags().MarkHidden("raw-diff")
 
 	return cmd
@@ -142,11 +142,11 @@ func runVerify(cmd *cobra.Command, args []string) error {
 
 	cmd.SilenceUsage = true
 
-	host, err := cmd.Flags().GetString("host")
+	host, err := cmd.Flags().GetString("lc-host")
 	if err != nil {
 		return err
 	}
-	port, err := cmd.Flags().GetString("port")
+	port, err := cmd.Flags().GetString("lc-port")
 	if err != nil {
 		return err
 	}

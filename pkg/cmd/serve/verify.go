@@ -19,9 +19,26 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func verify(w http.ResponseWriter, r *http.Request) {
+func (sh *signHandler) verify(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := strings.ToLower(vars["hash"])
+
+	if sh.lcHost != "" && sh.lcPort != "" {
+		lcUser := getLcUser(r, sh.lcHost, sh.lcPort)
+
+		err := lcUser.Client.Connect()
+		if err != nil {
+			writeError(w, http.StatusBadGateway, err)
+			return
+		}
+		ar, verified, err := lcUser.LoadArtifact(hash)
+		if err != nil {
+			writeError(w, http.StatusBadRequest, err)
+			return
+		}
+		writeLcResult(w, http.StatusOK, types.NewLcResult(ar, verified))
+		return
+	}
 
 	var keys []string
 	org := r.URL.Query().Get("org")
