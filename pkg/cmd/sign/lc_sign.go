@@ -41,6 +41,7 @@ func LcSign(u *api.LcUser, a api.Artifact, state meta.Status, output string) err
 		fmt.Println("the ledger is compromised. Please contact the CodeNotary Ledger Compliance administrators")
 		color.Unset()
 		fmt.Println()
+		artifact.Status = meta.StatusUnknown
 	}
 
 	cli.PrintLc(output, types.NewLcResult(artifact, verified))
