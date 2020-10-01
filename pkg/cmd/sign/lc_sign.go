@@ -43,7 +43,7 @@ func LcSign(u *api.LcUser, a api.Artifact, state meta.Status, output string) err
 		fmt.Println()
 	}
 
-	cli.PrintLc(output, types.NewLcResult(artifact))
+	cli.PrintLc(output, types.NewLcResult(artifact, verified))
 
 	return nil
 }

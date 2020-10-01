@@ -35,6 +35,10 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().String("port", "8080", "port")
 	cmd.Flags().String("tls-cert-file", "", "TLS certificate file")
 	cmd.Flags().String("tls-key-file", "", "TLS key file")
+
+	cmd.Flags().String("lc-host", "", "if set with port, action will be route to ledger compliance")
+	cmd.Flags().String("lc-port", "", "if set with host, action will be route to ledger compliance")
+
 	return cmd
 }
 
@@ -58,12 +62,26 @@ func runServe(cmd *cobra.Command) error {
 		return fmt.Errorf("--tls-cert-file is missing")
 	}
 
+	lcHost, err := cmd.Flags().GetString("lc-host")
+	if err != nil {
+		return err
+	}
+	lcPort, err := cmd.Flags().GetString("lc-port")
+	if err != nil {
+		return err
+	}
+
+	sh := signHandler{
+		lcHost: lcHost,
+		lcPort: lcPort,
+	}
+
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
-	router.HandleFunc("/notarize", signHander(meta.StatusTrusted)).Methods("POST")
-	router.HandleFunc("/untrust", signHander(meta.StatusUntrusted)).Methods("POST")
-	router.HandleFunc("/unsupport", signHander(meta.StatusUnsupported)).Methods("POST")
-	router.HandleFunc("/authenticate/{hash}", verify).Methods("GET")
+	router.HandleFunc("/notarize", sh.signHandler(meta.StatusTrusted)).Methods("POST")
+	router.HandleFunc("/untrust", sh.signHandler(meta.StatusUntrusted)).Methods("POST")
+	router.HandleFunc("/unsupport", sh.signHandler(meta.StatusUnsupported)).Methods("POST")
+	router.HandleFunc("/authenticate/{hash}", sh.verify).Methods("GET")
 
 	logs.LOG.Infof("Log level: %s", logs.LOG.GetLevel().String())
 	logs.LOG.Infof("Stage: %s", meta.StageEnvironment().String())

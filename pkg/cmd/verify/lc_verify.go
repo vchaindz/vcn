@@ -20,7 +20,7 @@ func lcVerify(a *api.Artifact, user *api.LcUser, output string) (err error) {
 		fmt.Println()
 	}
 
-	cli.PrintLc(output, types.NewLcResult(ar))
+	cli.PrintLc(output, types.NewLcResult(ar, verified))
 
 	return
 }
