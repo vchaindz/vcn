@@ -11,13 +11,17 @@ import (
 
 func lcVerify(a *api.Artifact, user *api.LcUser, output string) (err error) {
 
-	ar, verified, _ := user.LoadArtifact(a.Hash)
+	ar, verified, err := user.LoadArtifact(a.Hash)
+	if err != nil {
+		return cli.PrintWarning(output, err.Error())
+	}
 
 	if !verified {
 		color.Set(meta.StyleError())
 		fmt.Println("the ledger is compromised. Please contact the CodeNotary Ledger Compliance administrators")
 		color.Unset()
 		fmt.Println()
+		ar.Status = meta.StatusUnknown
 	}
 
 	cli.PrintLc(output, types.NewLcResult(ar, verified))
