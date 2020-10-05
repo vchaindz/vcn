@@ -44,7 +44,7 @@ type LcArtifact struct {
 	Metadata Metadata `json:"metadata" yaml:"metadata" vcn:"Metadata"`
 
 	Signer string      `json:"signer" yaml:"signer" vcn:"Signer"`
-	Status meta.Status `json:"status,omitempty" yaml:"status,omitempty" vcn:"Status"`
+	Status meta.Status `json:"status" yaml:"status" vcn:"Status"`
 }
 
 func (u LcUser) createArtifact(
