@@ -112,3 +112,28 @@ func WriteLcResultTo(r *types.LcResult, out io.Writer) (n int64, err error) {
 
 	return n, w.Flush()
 }
+
+func PrintLcSlice(output string, rs []types.LcResult) error {
+	switch output {
+	case "":
+		for _, r := range rs {
+			WriteLcResultTo(&r, colorable.NewColorableStdout())
+			fmt.Println()
+		}
+	case "yaml":
+		b, err := yaml.Marshal(rs)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	case "json":
+		b, err := json.MarshalIndent(rs, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+	default:
+		return outputNotSupportedErr(output)
+	}
+	return nil
+}
