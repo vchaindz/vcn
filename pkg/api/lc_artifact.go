@@ -14,6 +14,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/vchain-us/vcn/pkg/meta"
+	"google.golang.org/grpc/metadata"
 )
 
 func (a Artifact) toLcArtifact() *LcArtifact {
@@ -55,10 +56,19 @@ func (u LcUser) createArtifact(
 
 	hasher := sha256.New()
 	hasher.Write([]byte(u.LcApiKey()))
-	aR.Signer = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	signerId := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+
+	aR.Signer = signerId
 
 	arJson, err := json.Marshal(aR)
-	_, err = u.Client.SafeSet(context.TODO(), []byte(artifact.Hash), arJson)
+
+	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+
+	key := AppendPrefix(meta.VcnLCPrefix, []byte(artifact.Hash))
+	key = AppendSignerId(aR.Signer, key)
+
+	_, err = u.Client.SafeSet(ctx, key, arJson)
 	if err != nil {
 		return err
 	}
@@ -67,7 +77,18 @@ func (u LcUser) createArtifact(
 
 // LoadArtifact fetches and returns an *lcArtifact for the given hash and current u, if any.
 func (u *LcUser) LoadArtifact(hash string) (lc *LcArtifact, verified bool, err error) {
-	jsonAr, err := u.Client.SafeGet(context.TODO(), []byte(hash))
+
+	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+
+	hasher := sha256.New()
+	hasher.Write([]byte(u.LcApiKey()))
+	signerId := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+
+	key := AppendPrefix(meta.VcnLCPrefix, []byte(hash))
+	key = AppendSignerId(signerId, key)
+
+	jsonAr, err := u.Client.SafeGet(ctx, key)
 	if err != nil {
 		return nil, false, err
 	}
@@ -77,5 +98,20 @@ func (u *LcUser) LoadArtifact(hash string) (lc *LcArtifact, verified bool, err e
 	if err != nil {
 		return nil, false, err
 	}
+
 	return &lcArtifact, jsonAr.Verified, nil
+}
+
+func AppendPrefix(prefix string, key []byte) []byte {
+	var prefixed = make([]byte, len(prefix)+1+len(key))
+	copy(prefixed[0:], prefix+".")
+	copy(prefixed[len(prefix)+1:], key)
+	return prefixed
+}
+
+func AppendSignerId(signerId string, k []byte) []byte {
+	var prefixed = make([]byte, len(k)+len(signerId)+1)
+	copy(prefixed[0:], k)
+	copy(prefixed[len(k):], "."+signerId)
+	return prefixed
 }
