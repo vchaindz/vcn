@@ -10,6 +10,7 @@ package inspect
 
 import (
 	"fmt"
+	"github.com/vchain-us/vcn/internal/assert"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
@@ -46,6 +47,10 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().String("hash", "", "specify a hash to inspect, if set no ARG can be used")
 	cmd.Flags().Bool("extract-only", false, "if set, print only locally extracted info")
+	// ledger compliance flags
+	cmd.Flags().String("lc-host", "", "if set with port, action will be route to ledger compliance")
+	cmd.Flags().String("lc-port", "", "if set with host, action will be route to ledger compliance")
+	cmd.Flags().String("lc-signer-id", "", "specify a signerID to refine inspection result on ledger compliance")
 
 	return cmd
 }
@@ -83,7 +88,62 @@ func runInspect(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	u := api.NewUser(store.Config().CurrentContext.Email)
+	signerID, err := cmd.Flags().GetString("lc-signer-id")
+	if err != nil {
+		return err
+	}
+
+	host, err := cmd.Flags().GetString("lc-host")
+	if err != nil {
+		return err
+	}
+	port, err := cmd.Flags().GetString("lc-port")
+	if err != nil {
+		return err
+	}
+
+	//check if an lcUser is present inside the context
+	var lcUser *api.LcUser
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+	if err != nil {
+		return err
+	}
+	if lctmp, ok := uif.(*api.LcUser); ok {
+		lcUser = lctmp
+	}
+
+	// use credentials if provided inline
+	if host != "" || port != "" {
+		apiKey, err := cli.ProvideLcApiKey()
+		if err != nil {
+			return err
+		}
+		if apiKey != "" {
+			lcUser = api.NewLcUser(apiKey, host, port)
+			// Store the new config
+			if err := store.SaveConfig(); err != nil {
+				return err
+			}
+		}
+	}
+
+	if lcUser != nil {
+		err = lcUser.Client.Connect()
+		if err != nil {
+			return err
+		}
+		return lcInspect(hash, signerID, lcUser, output)
+	}
+
+	// User
+	if err := assert.UserLogin(); err != nil {
+		return err
+	}
+	u, ok := uif.(*api.User)
+	if !ok {
+		return fmt.Errorf("cannot load the current user")
+	}
+
 	if hasAuth, _ := u.IsAuthenticated(); hasAuth && output == "" {
 		fmt.Printf("Current user: %s\n", u.Email())
 	}

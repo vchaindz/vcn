@@ -68,6 +68,11 @@ const (
 	VcnLcApiKey                  string = "VCN_LC_API_KEY"
 )
 
+// Ledger compliance
+const VcnLCPrefix string = "vcn"
+const VcnLCPluginTypeHeaderName string = "lc-plugin-type"
+const VcnLCPluginTypeHeaderValue string = "vcn"
+
 // UserAgent returns the vcn's User-Agent string
 func UserAgent() string {
 	// Syntax reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent#Syntax
