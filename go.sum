@@ -369,6 +369,9 @@ github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGr
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/urfave/cli v1.22.1 h1:+mkCCcOFKPnCmVYVcURKps1Xe+3zP90gSYGNfRkjoIY=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20200927211645-a37b7d07696f/go.mod h1:4C/fkBS5AJCFI0/u4/AdIGwCmXQSZAv5JBw8hiRcZrg=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20201007075028-5f04d0c22088 h1:IjVA759+GAhyuit5BO1tUQn5hNwV2jmr+i6Vg4rmth0=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20201007075028-5f04d0c22088/go.mod h1:QdPjwHypirrJYGJLJgY+S1AuitFui1+DdrIjA9nbTTA=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
