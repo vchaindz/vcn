@@ -46,7 +46,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tyler-smith/go-bip32 v0.0.0-20170922074101-2c9cfd177564
 	github.com/tyler-smith/go-bip39 v1.0.2
-	github.com/vchain-us/ledger-compliance-go v0.0.0-20200927211645-a37b7d07696f
+	github.com/vchain-us/ledger-compliance-go v0.0.0-20201007075028-5f04d0c22088
 	golang.org/x/crypto v0.0.0-20200423211502-4bdfaf469ed5
 	google.golang.org/grpc v1.31.1
 	google.golang.org/protobuf v1.23.0
@@ -61,5 +61,3 @@ require (
 replace gopkg.in/urfave/cli.v1 v1.20.0 => github.com/urfave/cli v1.22.1
 
 replace github.com/codenotary/immudb v0.8.0 => github.com/codenotary/immudb v0.0.0-20200927082347-0c8e8ad49566
-
-replace github.com/vchain-us/ledger-compliance-go v0.0.0-20200927211645-a37b7d07696f => ../../ledger-compliance-go
