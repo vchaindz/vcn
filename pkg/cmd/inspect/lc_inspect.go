@@ -44,8 +44,8 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 		}
 	} else {
 		contextSignerID = signerID
-		key := api.AppendPrefix(meta.VcnLCPrefix, []byte(hash))
-		key = api.AppendSignerId(signerID, key)
+		key := api.AppendPrefix(meta.VcnLCPrefix, []byte(signerID))
+		key = api.AppendSignerId(hash, key)
 		items, err = u.Client.History(ctx, key)
 		if err != nil {
 			return err
