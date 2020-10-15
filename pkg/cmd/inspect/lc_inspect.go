@@ -52,13 +52,7 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 		}
 	}
 
-	// todo @michele we should improve zscan adding functionalities to secondary indexes to retrieve the full history of a key, not only the last one
-	var list = make(map[uint64]*schema.StructuredItem)
-	for _, v := range items.Items {
-		list[v.Index] = v
-	}
-
-	l := len(list)
+	l := len(items.Items)
 	if output == "" {
 		fmt.Printf(
 			`current signer ID "%s"
@@ -70,7 +64,7 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 
 	results := make([]types.LcResult, l)
 	var i = 0
-	for _, v := range list {
+	for _, v := range items.Items {
 		var lca api.LcArtifact
 		err = json.Unmarshal(v.Value.Payload, &lca)
 		if err != nil {
