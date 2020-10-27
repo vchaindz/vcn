@@ -36,7 +36,7 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 
 	if signerID == "" {
 		if output == "" {
-			fmt.Printf("no signer ID provided. Only the last item for each signer ID is returned\n")
+			fmt.Println("no signer ID provided. Full history of the item is returned")
 		}
 		items, err = u.Client.ZScan(ctx, []byte(hash))
 		if err != nil {
