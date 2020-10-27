@@ -60,4 +60,4 @@ require (
 
 replace gopkg.in/urfave/cli.v1 v1.20.0 => github.com/urfave/cli v1.22.1
 
-replace github.com/codenotary/immudb v0.8.0 => github.com/codenotary/immudb v0.0.0-20201009135111-4ecdf1bf01bd
+replace github.com/codenotary/immudb v0.8.0 => github.com/codenotary/immudb v0.0.0-20201027111935-bb51ff91e789

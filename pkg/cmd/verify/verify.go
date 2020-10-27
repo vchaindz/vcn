@@ -116,8 +116,8 @@ ARG must be one of:
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no ARG(s) can be used")
 	cmd.Flags().Bool("alerts", false, "specify to authenticate and monitor for the configured alerts, if set no ARG(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
-	cmd.Flags().String("lc-host", "", "if set with port, action will be route to ledger compliance")
-	cmd.Flags().String("lc-port", "", "if set with host, action will be route to ledger compliance")
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.Flags().MarkHidden("raw-diff")
 
 	return cmd
