@@ -36,6 +36,18 @@ in a non-interactive environment.
 				return err
 			}
 
+			lcHost, err := cmd.Flags().GetString("lc-host")
+			if err != nil {
+				return err
+			}
+			lcPort, err := cmd.Flags().GetString("lc-port")
+			if err != nil {
+				return err
+			}
+			if lcHost != "" || lcPort != "" {
+				return ExecuteLC(lcHost, lcPort)
+			}
+
 			if err := Execute(); err != nil {
 				return err
 			}
@@ -44,9 +56,10 @@ in a non-interactive environment.
 			}
 			return nil
 		},
-		Args: cobra.NoArgs,
+		Args: cobra.MaximumNArgs(2),
 	}
-
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	return cmd
 }
 

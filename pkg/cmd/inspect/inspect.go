@@ -11,6 +11,7 @@ package inspect
 import (
 	"fmt"
 	"github.com/vchain-us/vcn/internal/assert"
+	"github.com/vchain-us/vcn/pkg/meta"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
@@ -48,8 +49,8 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().String("hash", "", "specify a hash to inspect, if set no ARG can be used")
 	cmd.Flags().Bool("extract-only", false, "if set, print only locally extracted info")
 	// ledger compliance flags
-	cmd.Flags().String("lc-host", "", "if set with port, action will be route to ledger compliance")
-	cmd.Flags().String("lc-port", "", "if set with host, action will be route to ledger compliance")
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.Flags().String("lc-signer-id", "", "specify a signerID to refine inspection result on ledger compliance")
 
 	return cmd

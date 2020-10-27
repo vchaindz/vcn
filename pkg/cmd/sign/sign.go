@@ -87,8 +87,8 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir (affects dir:// only)")
 	cmd.Flags().Bool("read-only", false, "if set, no files will be written into the targeted dir (affects dir:// only)")
-	cmd.Flags().String("lc-host", "", "if set with port, action will be route to ledger compliance")
-	cmd.Flags().String("lc-port", "", "if set with host, action will be route to ledger compliance")
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
 	)

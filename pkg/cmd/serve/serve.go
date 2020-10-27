@@ -36,8 +36,8 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().String("tls-cert-file", "", "TLS certificate file")
 	cmd.Flags().String("tls-key-file", "", "TLS key file")
 
-	cmd.Flags().String("lc-host", "", "if set with port, action will be route to ledger compliance")
-	cmd.Flags().String("lc-port", "", "if set with host, action will be route to ledger compliance")
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 
 	return cmd
 }

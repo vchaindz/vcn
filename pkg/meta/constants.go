@@ -73,6 +73,9 @@ const VcnLCPrefix string = "vcn"
 const VcnLCPluginTypeHeaderName string = "lc-plugin-type"
 const VcnLCPluginTypeHeaderValue string = "vcn"
 
+const VcnLcPortFlagDesc string = "if set with port, action will be route to ledger compliance"
+const VcnLcHostFlagDesc string = "if set with host, action will be route to ledger compliance"
+
 // UserAgent returns the vcn's User-Agent string
 func UserAgent() string {
 	// Syntax reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent#Syntax
