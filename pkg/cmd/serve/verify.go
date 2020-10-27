@@ -35,7 +35,7 @@ func (sh *signHandler) verify(w http.ResponseWriter, r *http.Request) {
 			writeError(w, http.StatusBadGateway, err)
 			return
 		}
-		ar, verified, err := lcUser.LoadArtifact(hash)
+		ar, verified, err := lcUser.LoadArtifact(hash, "")
 		if err != nil {
 			writeError(w, http.StatusBadRequest, err)
 			return

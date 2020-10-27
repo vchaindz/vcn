@@ -9,9 +9,9 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func lcVerify(a *api.Artifact, user *api.LcUser, output string) (err error) {
+func lcVerify(a *api.Artifact, user *api.LcUser, signerID string, output string) (err error) {
 
-	ar, verified, err := user.LoadArtifact(a.Hash)
+	ar, verified, err := user.LoadArtifact(a.Hash, signerID)
 	if err != nil {
 		return cli.PrintWarning(output, err.Error())
 	}
