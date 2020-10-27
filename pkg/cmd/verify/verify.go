@@ -109,7 +109,7 @@ ARG must be one of:
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG(s)", 1),
 	)
 
-	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)\n(overrides VCN_SIGNERID env var, if any)")
+	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)\n(overrides VCN_SIGNERID env var, if any). It's valid both for blockchain and ledger compliance")
 	cmd.Flags().StringSliceP("key", "k", nil, "")
 	cmd.Flags().MarkDeprecated("key", "please use --signerID instead")
 	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID,\nif set no SignerID can be used\n(overrides VCN_ORG env var, if any)")
@@ -123,6 +123,7 @@ ARG must be one of:
 	return cmd
 }
 
+// runVerify first determine if the context is LC or blockchain, then call the correct verify
 func runVerify(cmd *cobra.Command, args []string) error {
 
 	hash, err := cmd.Flags().GetString("hash")
@@ -149,28 +150,6 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	port, err := cmd.Flags().GetString("lc-port")
 	if err != nil {
 		return err
-	}
-
-	org := viper.GetString("org")
-	var keys []string
-	if org != "" {
-		bo, err := api.GetBlockChainOrganisation(org)
-		if err != nil {
-			return err
-		}
-		keys = bo.MembersIDs()
-	} else {
-		keys = getSignerIDs()
-		// add 0x if missing, lower case, and check if format is correct
-		for i, k := range keys {
-			if !strings.HasPrefix(k, "0x") {
-				keys[i] = "0x" + k
-			}
-			keys[i] = strings.ToLower(keys[i])
-			if !keyRegExp.MatchString(keys[i]) {
-				return fmt.Errorf("invalid public address format: %s", k)
-			}
-		}
 	}
 
 	//check if an lcUser is present inside the context
@@ -208,14 +187,37 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			a := &api.Artifact{
 				Hash: strings.ToLower(hash),
 			}
-			return lcVerify(a, lcUser, output)
+			return lcVerify(a, lcUser, getSignerIDs()[0], output)
 		}
 
 		a, err := extractor.Extract(args[0])
 		if err != nil {
 			return err
 		}
-		return lcVerify(a, lcUser, output)
+		return lcVerify(a, lcUser, getSignerIDs()[0], output)
+	}
+
+	// blockchain context
+	org := viper.GetString("org")
+	var keys []string
+	if org != "" {
+		bo, err := api.GetBlockChainOrganisation(org)
+		if err != nil {
+			return err
+		}
+		keys = bo.MembersIDs()
+	} else {
+		keys = getSignerIDs()
+		// add 0x if missing, lower case, and check if format is correct
+		for i, k := range keys {
+			if !strings.HasPrefix(k, "0x") {
+				keys[i] = "0x" + k
+			}
+			keys[i] = strings.ToLower(keys[i])
+			if !keyRegExp.MatchString(keys[i]) {
+				return fmt.Errorf("invalid public address format: %s", k)
+			}
+		}
 	}
 
 	user, ok := uif.(*api.User)

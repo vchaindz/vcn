@@ -31,7 +31,7 @@ func LcSign(u *api.LcUser, a api.Artifact, state meta.Status, output string) err
 		fmt.Println()
 	}
 
-	artifact, verified, err := u.LoadArtifact(a.Hash)
+	artifact, verified, err := u.LoadArtifact(a.Hash, "")
 	if err != nil {
 		return cli.PrintWarning(output, err.Error())
 	}

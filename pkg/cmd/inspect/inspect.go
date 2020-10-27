@@ -51,7 +51,7 @@ func NewCommand() *cobra.Command {
 	// ledger compliance flags
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
-	cmd.Flags().String("lc-signer-id", "", "specify a signerID to refine inspection result on ledger compliance")
+	cmd.Flags().String("signerID", "", "specify a signerID to refine inspection result on ledger compliance")
 
 	return cmd
 }
@@ -89,7 +89,7 @@ func runInspect(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	signerID, err := cmd.Flags().GetString("lc-signer-id")
+	signerID, err := cmd.Flags().GetString("signerID")
 	if err != nil {
 		return err
 	}

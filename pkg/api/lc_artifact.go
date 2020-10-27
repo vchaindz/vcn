@@ -76,16 +76,18 @@ func (u LcUser) createArtifact(
 }
 
 // LoadArtifact fetches and returns an *lcArtifact for the given hash and current u, if any.
-func (u *LcUser) LoadArtifact(hash string) (lc *LcArtifact, verified bool, err error) {
+func (u *LcUser) LoadArtifact(hash, signerID string) (lc *LcArtifact, verified bool, err error) {
 
 	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	hasher := sha256.New()
-	hasher.Write([]byte(u.LcApiKey()))
-	signerId := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	if signerID == "" {
+		hasher := sha256.New()
+		hasher.Write([]byte(u.LcApiKey()))
+		signerID = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	}
 
-	key := AppendPrefix(meta.VcnLCPrefix, []byte(signerId))
+	key := AppendPrefix(meta.VcnLCPrefix, []byte(signerID))
 	key = AppendSignerId(hash, key)
 
 	jsonAr, err := u.Client.SafeGet(ctx, key)

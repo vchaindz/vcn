@@ -64,7 +64,7 @@ func lcSign(user *api.LcUser, status meta.Status, kinds map[string]bool, w http.
 		return
 	}
 
-	ar, verified, err := user.LoadArtifact(artifact.Hash)
+	ar, verified, err := user.LoadArtifact(artifact.Hash, "")
 
 	writeLcResult(w, http.StatusOK, types.NewLcResult(ar, verified))
 }
