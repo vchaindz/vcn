@@ -13,8 +13,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/vchain-us/ledger-compliance-go/schema"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"google.golang.org/grpc/metadata"
+	"time"
 )
 
 func (a Artifact) toLcArtifact() *LcArtifact {
@@ -32,14 +34,35 @@ func (a Artifact) toLcArtifact() *LcArtifact {
 
 	return aR
 }
+func ItemToLcArtifact(item *schema.StructuredItemExt) (*LcArtifact, error) {
+	var lca LcArtifact
+	err := json.Unmarshal(item.Item.Value.Payload, &lca)
+	if err != nil {
+		return nil, err
+	}
+	lca.Timestamp = time.Unix(int64(item.Timestamp.GetSeconds()), int64(item.Timestamp.GetNanos())).UTC()
+
+	return &lca, nil
+}
+
+func VerifiedItemToLcArtifact(item *schema.VerifiedItemExt) (*LcArtifact, error) {
+	var lca LcArtifact
+	err := json.Unmarshal(item.Item.Value, &lca)
+	if err != nil {
+		return nil, err
+	}
+	lca.Timestamp = time.Unix(int64(item.Timestamp.GetSeconds()), int64(item.Timestamp.GetNanos())).UTC()
+	return &lca, nil
+}
 
 type LcArtifact struct {
 	// root fields
-	Kind        string `json:"kind" yaml:"kind" vcn:"Kind"`
-	Name        string `json:"name" yaml:"name" vcn:"Name"`
-	Hash        string `json:"hash" yaml:"hash" vcn:"Hash"`
-	Size        uint64 `json:"size" yaml:"size" vcn:"Size"`
-	ContentType string `json:"contentType" yaml:"contentType" vcn:"ContentType"`
+	Kind        string    `json:"kind" yaml:"kind" vcn:"Kind"`
+	Name        string    `json:"name" yaml:"name" vcn:"Name"`
+	Hash        string    `json:"hash" yaml:"hash" vcn:"Hash"`
+	Size        uint64    `json:"size" yaml:"size" vcn:"Size"`
+	Timestamp   time.Time `json:"timestamp" yaml:"timestamp" vcn:"Timestamp"`
+	ContentType string    `json:"contentType" yaml:"contentType" vcn:"ContentType"`
 
 	// custom metadata
 	Metadata Metadata `json:"metadata" yaml:"metadata" vcn:"Metadata"`
@@ -90,18 +113,17 @@ func (u *LcUser) LoadArtifact(hash, signerID string) (lc *LcArtifact, verified b
 	key := AppendPrefix(meta.VcnLCPrefix, []byte(signerID))
 	key = AppendSignerId(hash, key)
 
-	jsonAr, err := u.Client.SafeGet(ctx, key)
-	if err != nil {
-		return nil, false, err
-	}
-	var lcArtifact LcArtifact
-
-	err = json.Unmarshal(jsonAr.Value, &lcArtifact)
+	jsonAr, err := u.Client.SafeGetExt(ctx, key)
 	if err != nil {
 		return nil, false, err
 	}
 
-	return &lcArtifact, jsonAr.Verified, nil
+	lcArtifact, err := VerifiedItemToLcArtifact(jsonAr)
+	if err != nil {
+		return nil, false, err
+	}
+
+	return lcArtifact, jsonAr.Item.Verified, nil
 }
 
 func AppendPrefix(prefix string, key []byte) []byte {

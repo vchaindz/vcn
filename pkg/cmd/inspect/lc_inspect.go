@@ -12,12 +12,10 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
-	"github.com/codenotary/immudb/pkg/api/schema"
-	"github.com/vchain-us/vcn/pkg/meta"
-
 	"fmt"
+	"github.com/vchain-us/ledger-compliance-go/schema"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
+	"github.com/vchain-us/vcn/pkg/meta"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/vchain-us/vcn/pkg/api"
@@ -28,7 +26,7 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	var items *schema.StructuredItemList
+	var items *schema.StructuredItemExtList
 
 	hasher := sha256.New()
 	hasher.Write([]byte(u.LcApiKey()))
@@ -38,7 +36,7 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 		if output == "" {
 			fmt.Println("no signer ID provided. Full history of the item is returned")
 		}
-		items, err = u.Client.ZScan(ctx, []byte(hash))
+		items, err = u.Client.ZScanExt(ctx, []byte(hash))
 		if err != nil {
 			return err
 		}
@@ -46,7 +44,7 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 		contextSignerID = signerID
 		key := api.AppendPrefix(meta.VcnLCPrefix, []byte(signerID))
 		key = api.AppendSignerId(hash, key)
-		items, err = u.Client.History(ctx, key)
+		items, err = u.Client.HistoryExt(ctx, key)
 		if err != nil {
 			return err
 		}
@@ -65,12 +63,11 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 	results := make([]types.LcResult, l)
 	var i = 0
 	for _, v := range items.Items {
-		var lca api.LcArtifact
-		err = json.Unmarshal(v.Value.Payload, &lca)
+		lca, err := api.ItemToLcArtifact(v)
 		if err != nil {
 			return err
 		}
-		results[i] = *types.NewLcResult(&lca, true)
+		results[i] = *types.NewLcResult(lca, true)
 		if err != nil {
 			results[i].AddError(err)
 		}

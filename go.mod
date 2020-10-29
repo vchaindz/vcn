@@ -46,7 +46,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tyler-smith/go-bip32 v0.0.0-20170922074101-2c9cfd177564
 	github.com/tyler-smith/go-bip39 v1.0.2
-	github.com/vchain-us/ledger-compliance-go v0.0.0-20201014092021-5724c5fb3ff2
+	github.com/vchain-us/ledger-compliance-go v0.0.0-20201029170917-30ce7f38d407
 	golang.org/x/crypto v0.0.0-20200423211502-4bdfaf469ed5
 	google.golang.org/grpc v1.31.1
 	google.golang.org/protobuf v1.23.0
