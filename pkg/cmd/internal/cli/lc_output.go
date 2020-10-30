@@ -113,11 +113,11 @@ func WriteLcResultTo(r *types.LcResult, out io.Writer) (n int64, err error) {
 	return n, w.Flush()
 }
 
-func PrintLcSlice(output string, rs []types.LcResult) error {
+func PrintLcSlice(output string, rs []*types.LcResult) error {
 	switch output {
 	case "":
 		for _, r := range rs {
-			WriteLcResultTo(&r, colorable.NewColorableStdout())
+			WriteLcResultTo(r, colorable.NewColorableStdout())
 			fmt.Println()
 		}
 	case "yaml":

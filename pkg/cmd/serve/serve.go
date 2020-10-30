@@ -71,7 +71,7 @@ func runServe(cmd *cobra.Command) error {
 		return err
 	}
 
-	sh := signHandler{
+	sh := handler{
 		lcHost: lcHost,
 		lcPort: lcPort,
 	}
@@ -82,7 +82,7 @@ func runServe(cmd *cobra.Command) error {
 	router.HandleFunc("/untrust", sh.signHandler(meta.StatusUntrusted)).Methods("POST")
 	router.HandleFunc("/unsupport", sh.signHandler(meta.StatusUnsupported)).Methods("POST")
 	router.HandleFunc("/authenticate/{hash}", sh.verify).Methods("GET")
-	router.HandleFunc("/inspect/{hash}", inspect).Methods("GET")
+	router.HandleFunc("/inspect/{hash}", sh.inspectHandler).Methods("GET")
 
 	logs.LOG.Infof("Log level: %s", logs.LOG.GetLevel().String())
 	logs.LOG.Infof("Stage: %s", meta.StageEnvironment().String())

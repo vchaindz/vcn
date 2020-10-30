@@ -20,12 +20,12 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-type signHandler struct {
+type handler struct {
 	lcHost string
 	lcPort string
 }
 
-func (sh *signHandler) signHandler(state meta.Status) func(w http.ResponseWriter, r *http.Request) {
+func (sh *handler) signHandler(state meta.Status) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s := state
 		k := make(map[string]bool)

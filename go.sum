@@ -60,10 +60,6 @@ github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDk
 github.com/cmars/basen v0.0.0-20150613233007-fe3947df716e h1:0XBUw73chJ1VYSsfvcPvVT7auykAJce9FpRr10L6Qhw=
 github.com/cmars/basen v0.0.0-20150613233007-fe3947df716e/go.mod h1:P13beTBKr5Q18lJe1rIoLUqjM+CB1zYrRg44ZqGuQSA=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
-github.com/codenotary/immudb v0.0.0-20200927082347-0c8e8ad49566 h1:xwqcPMju+HBDw9xgi5V4MCQBFi3MSBETmiwjWAL/CV8=
-github.com/codenotary/immudb v0.0.0-20200927082347-0c8e8ad49566/go.mod h1:eplq5VZWdNCP4pRZTGVE9ellhnfd37SXAEeUfeEtw+U=
-github.com/codenotary/immudb v0.0.0-20201009135111-4ecdf1bf01bd h1:72F5JLfVxa2W5cetg22EaRCurwpwCdPNkYOuEfDMRyA=
-github.com/codenotary/immudb v0.0.0-20201009135111-4ecdf1bf01bd/go.mod h1:eplq5VZWdNCP4pRZTGVE9ellhnfd37SXAEeUfeEtw+U=
 github.com/codenotary/immudb v0.0.0-20201027111935-bb51ff91e789 h1:aTqWacw3ueBzLrneLaWhgc3fPCyaDjTx1ibbozYjN1M=
 github.com/codenotary/immudb v0.0.0-20201027111935-bb51ff91e789/go.mod h1:otCztOd0EipuKMyYkzcWnWGRQZT5Amr4+BkDFD4i1Lg=
 github.com/codenotary/merkletree v0.1.2-0.20200720105344-68d95395a656 h1:Rp8hZs7t0fNLlfLj9PzEmW/W7X+nSp0vpu5CB0ba0jM=
@@ -373,8 +369,6 @@ github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGr
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/urfave/cli v1.22.1 h1:+mkCCcOFKPnCmVYVcURKps1Xe+3zP90gSYGNfRkjoIY=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
-github.com/vchain-us/ledger-compliance-go v0.0.0-20201014092021-5724c5fb3ff2 h1:FJrHef2ADJ+z82LM4KhQjITnhQqjCqfLercgAVfX6Is=
-github.com/vchain-us/ledger-compliance-go v0.0.0-20201014092021-5724c5fb3ff2/go.mod h1:RVZy2Ms2wh+cxc3nsyT0o1tKoVcx1SsgT3DV5xMwbNU=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20201029170917-30ce7f38d407 h1:BXSATDpmtbSo75ihr2U3rB9+QK+MKNFNVkjKFwrrSSo=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20201029170917-30ce7f38d407/go.mod h1:3xe+2q20jE2MYbn7fqx+PZi8gKff9BhIWSnXs2IRzBA=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
