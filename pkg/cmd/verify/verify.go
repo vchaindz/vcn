@@ -178,6 +178,11 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	}
 
 	if lcUser != nil {
+		var signerID string
+		signerIDs := getSignerIDs()
+		if len(signerIDs) > 0 {
+			signerID = signerIDs[0]
+		}
 		err = lcUser.Client.Connect()
 		if err != nil {
 			return err
@@ -187,14 +192,14 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			a := &api.Artifact{
 				Hash: strings.ToLower(hash),
 			}
-			return lcVerify(a, lcUser, getSignerIDs()[0], output)
+			return lcVerify(a, lcUser, signerID, output)
 		}
 
 		a, err := extractor.Extract(args[0])
 		if err != nil {
 			return err
 		}
-		return lcVerify(a, lcUser, getSignerIDs()[0], output)
+		return lcVerify(a, lcUser, signerID, output)
 	}
 
 	// blockchain context
