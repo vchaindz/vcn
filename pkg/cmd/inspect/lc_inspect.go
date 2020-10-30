@@ -23,11 +23,6 @@ import (
 )
 
 func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err error) {
-	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-
-	var items *schema.StructuredItemExtList
-
 	hasher := sha256.New()
 	hasher.Write([]byte(u.LcApiKey()))
 	contextSignerID := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
@@ -36,21 +31,13 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 		if output == "" {
 			fmt.Println("no signer ID provided. Full history of the item is returned")
 		}
-		items, err = u.Client.ZScanExt(ctx, []byte(hash))
-		if err != nil {
-			return err
-		}
 	} else {
 		contextSignerID = signerID
-		key := api.AppendPrefix(meta.VcnLCPrefix, []byte(signerID))
-		key = api.AppendSignerId(hash, key)
-		items, err = u.Client.HistoryExt(ctx, key)
-		if err != nil {
-			return err
-		}
 	}
 
-	l := len(items.Items)
+	results, err := GetLcResults(hash, signerID, u)
+
+	l := len(results)
 	if output == "" {
 		fmt.Printf(
 			`current signer ID "%s"
@@ -60,19 +47,42 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 			contextSignerID, l, hash)
 	}
 
-	results := make([]types.LcResult, l)
+	return cli.PrintLcSlice(output, results)
+}
+
+func GetLcResults(hash, signerID string, u *api.LcUser) ([]*types.LcResult, error) {
+	var err error
+	var items *schema.StructuredItemExtList
+
+	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+
+	if signerID == "" {
+		items, err = u.Client.ZScanExt(ctx, []byte(hash))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		key := api.AppendPrefix(meta.VcnLCPrefix, []byte(signerID))
+		key = api.AppendSignerId(hash, key)
+		items, err = u.Client.HistoryExt(ctx, key)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	results := make([]*types.LcResult, len(items.Items))
 	var i = 0
 	for _, v := range items.Items {
 		lca, err := api.ItemToLcArtifact(v)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		results[i] = *types.NewLcResult(lca, true)
+		results[i] = types.NewLcResult(lca, true)
 		if err != nil {
 			results[i].AddError(err)
 		}
 		i++
 	}
-
-	return cli.PrintLcSlice(output, results)
+	return results, nil
 }

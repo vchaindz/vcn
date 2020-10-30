@@ -20,7 +20,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func (sh *signHandler) verify(w http.ResponseWriter, r *http.Request) {
+func (sh *handler) verify(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := strings.ToLower(vars["hash"])
 

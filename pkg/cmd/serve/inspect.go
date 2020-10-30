@@ -16,9 +16,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func inspect(w http.ResponseWriter, r *http.Request) {
+func (sh *handler) inspectHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := strings.ToLower(vars["hash"])
+	var signerID string
+	keys, ok := r.URL.Query()["signerid"]
+
+	if ok || len(keys[0]) > 0 {
+		signerID = keys[0]
+	}
+
+	if sh.lcHost != "" && sh.lcPort != "" {
+		lcInspect(getLcUser(r, sh.lcHost, sh.lcPort), hash, signerID, w)
+		return
+	}
 
 	user, _, err := getCredential(r)
 	if err != nil {
@@ -28,5 +39,5 @@ func inspect(w http.ResponseWriter, r *http.Request) {
 
 	results, err := i.GetResults(hash, user)
 
-	writeResults (w, http.StatusOK, results)
+	writeResults(w, http.StatusOK, results)
 }
