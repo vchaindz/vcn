@@ -10,6 +10,8 @@ package sign
 
 import (
 	"fmt"
+	"github.com/vchain-us/vcn/pkg/extractor/wildcard"
+	"io"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
@@ -35,12 +37,13 @@ required notarization password in a non-interactive environment.
 
 const helpMsgFooter = `
 ARG must be one of:
-  <file>
+  wildcard
   file://<file>
   dir://<directory>
   git://<repository>
   docker://<image>
   podman://<image>
+  wildcard://"*"
 `
 
 // NewCommand returns the cobra command for `vcn sign`
@@ -77,7 +80,8 @@ Assets are referenced by passed ARG with notarization only accepting
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runSignWithState(cmd, args, meta.StatusTrusted)
 		},
-		Args: noArgsWhenHash,
+		Args:    noArgsWhenHash,
+		Example: `./vcn notarize -r "*.md"`,
 	}
 
 	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (repeat --attr for multiple entries)")
@@ -86,6 +90,7 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir (affects dir:// only)")
 	cmd.Flags().Bool("read-only", false, "if set, no files will be written into the targeted dir (affects dir:// only)")
+	cmd.Flags().BoolP("recursive", "r", false, "if set, wildcard usage will walk inside subdirectories of provided path")
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.SetUsageTemplate(
@@ -116,6 +121,13 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		extractorOptions = append(extractorOptions, dir.WithSkipIgnoreFileErr())
 	}
 
+	recursive, err := cmd.Flags().GetBool("recursive")
+	if err != nil {
+		return err
+	}
+	if recursive {
+		extractorOptions = append(extractorOptions, wildcard.WithRecursive())
+	}
 	var alert *alertOptions
 	if hasCreateAlert := cmd.Flags().Lookup("create-alert"); hasCreateAlert != nil {
 		createAlert, err := cmd.Flags().GetBool("create-alert")

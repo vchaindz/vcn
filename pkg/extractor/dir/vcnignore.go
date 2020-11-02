@@ -113,8 +113,8 @@ func newIgnoreFileMatcher(path string) (m gitignore.Matcher, err error) {
 	return
 }
 
-// initIgnoreFile writes the default ignore file if it does not exist.
-func initIgnoreFile(root string) error {
+// InitIgnoreFile writes the default ignore file if it does not exist.
+func InitIgnoreFile(root string) error {
 	filename := filepath.Join(root, IgnoreFilename)
 
 	// create and open the file if not exists

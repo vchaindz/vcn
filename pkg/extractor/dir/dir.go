@@ -37,7 +37,7 @@ type opts struct {
 // Artifact returns a file *api.Artifact from a given u
 func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 
-	if u.Scheme != "" && u.Scheme != Scheme {
+	if u.Scheme != Scheme {
 		return nil, nil
 	}
 
@@ -68,7 +68,7 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 	}
 
 	if opts.initIgnoreFile {
-		if err := initIgnoreFile(path); err != nil {
+		if err := InitIgnoreFile(path); err != nil {
 			if !opts.skipIgnoreFileErr {
 				return nil, err
 			}

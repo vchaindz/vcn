@@ -26,7 +26,7 @@ const Scheme = "file"
 // Artifact returns a file *api.Artifact from a given u
 func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 
-	if u.Scheme != "" && u.Scheme != Scheme {
+	if u.Scheme != Scheme {
 		return nil, nil
 	}
 

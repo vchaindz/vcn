@@ -10,6 +10,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/vchain-us/vcn/pkg/extractor/wildcard"
 	"os"
 
 	"github.com/vchain-us/vcn/pkg/extractor"
@@ -25,12 +26,13 @@ import (
 func initConfig() {
 
 	// Register metadata extractors
-	extractor.Register("", file.Artifact)
+	extractor.Register("", wildcard.Artifact)
 	extractor.Register(file.Scheme, file.Artifact)
 	extractor.Register(dir.Scheme, dir.Artifact)
 	extractor.Register(docker.Scheme, docker.Artifact)
 	extractor.Register(docker.SchemePodman, docker.Artifact)
 	extractor.Register(git.Scheme, git.Artifact)
+	extractor.Register(wildcard.Scheme, wildcard.Artifact)
 
 	// Load config
 	if cfgFile != "" {
