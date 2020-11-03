@@ -195,11 +195,17 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			return lcVerify(a, lcUser, signerID, output)
 		}
 
-		a, err := extractor.Extract(args[0])
+		artifacts, err := extractor.Extract(args[0])
 		if err != nil {
 			return err
 		}
-		return lcVerify(a, lcUser, signerID, output)
+		for _, a := range artifacts {
+			err := lcVerify(a, lcUser, signerID, output)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 
 	// blockchain context
@@ -266,24 +272,26 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			}
 			alertConfig.Metadata["arg"] = alert.Arg
 
-			a, err := extractor.Extract(alert.Arg)
+			artifacts, err := extractor.Extract(alert.Arg)
 			if err != nil {
 				cli.PrintWarning(output, err.Error())
 				alertConfig.Metadata["error"] = err.Error()
 				user.TriggerAlert(alertConfig)
 				continue
 			}
-			if a == nil {
+			if artifacts == nil {
 				cli.PrintWarning(output, fmt.Sprintf("unable to process the input asset provided: %s", alert.Arg))
 				alertConfig.Metadata["error"] = err.Error()
 				user.TriggerAlert(alertConfig)
 				continue
 			}
-			if err := verify(cmd, a, keys, org, user, &alertConfig, output); err != nil {
-				cli.PrintWarning(output, fmt.Sprintf("%s: %s", alert.Arg, err))
-			}
-			if output == "" {
-				fmt.Println()
+			for _, a := range artifacts {
+				if err := verify(cmd, a, keys, org, user, &alertConfig, output); err != nil {
+					cli.PrintWarning(output, fmt.Sprintf("%s: %s", alert.Arg, err))
+				}
+				if output == "" {
+					fmt.Println()
+				}
 			}
 		}
 		return nil
@@ -302,15 +310,17 @@ func runVerify(cmd *cobra.Command, args []string) error {
 
 	// by args
 	for _, arg := range args {
-		a, err := extractor.Extract(arg)
+		artifacts, err := extractor.Extract(arg)
 		if err != nil {
 			return err
 		}
-		if a == nil {
+		if artifacts == nil {
 			return fmt.Errorf("unable to process the input asset provided: %s", arg)
 		}
-		if err := verify(cmd, a, keys, org, user, nil, output); err != nil {
-			return err
+		for _, a := range artifacts {
+			if err := verify(cmd, a, keys, org, user, nil, output); err != nil {
+				return err
+			}
 		}
 	}
 

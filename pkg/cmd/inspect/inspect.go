@@ -157,21 +157,24 @@ func extractInfo(arg string, output string) (hash string, err error) {
 	if err != nil {
 		return "", err
 	}
-	if a == nil {
+	if len(a) == 0 {
 		return "", fmt.Errorf("unable to process the input asset provided: %s", arg)
 	}
-
-	hash = a.Hash
-
+	if len(a) == 1 {
+		hash = a[0].Hash
+	}
+	if len(a) > 1 {
+		return "", fmt.Errorf("info extraction on multiple items is not yet supported")
+	}
 	if output == "" {
 		fmt.Printf("Extracted info from: %s\n\n", arg)
 	}
-	cli.Print(output, types.NewResult(a, nil, nil))
+	cli.Print(output, types.NewResult(a[0], nil, nil))
 	return
 }
 
 func inspect(hash string, u *api.User, output string) error {
-	results, err := GetResults(hash , u)
+	results, err := GetResults(hash, u)
 	if err != nil {
 		return err
 	}

@@ -147,7 +147,6 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 				return err
 			}
 		}
-
 	}
 
 	var hash string
@@ -218,7 +217,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 
 	if lcUser != nil {
-		a, err := extractor.Extract(args[0], extractorOptions...)
+		artifacts, err := extractor.Extract(args[0], extractorOptions...)
 		if err != nil {
 			return err
 		}
@@ -226,7 +225,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		if err != nil {
 			return err
 		}
-		return LcSign(lcUser, *a, state, output)
+		return LcSign(lcUser, artifacts, state, output)
 	}
 
 	// User
@@ -239,7 +238,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 
 	// Make the artifact to be signed
-	var a *api.Artifact
+	var artifacts []*api.Artifact
 	if hash != "" {
 		if alert != nil {
 			return fmt.Errorf("cannot use --create-alert with --hash")
@@ -247,34 +246,42 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		hash = strings.ToLower(hash)
 		// Load existing artifact, if any, otherwise use an empty artifact
 		if ar, err := u.LoadArtifact(hash); err == nil && ar != nil {
-			a = ar.Artifact()
+			artifacts = []*api.Artifact{ar.Artifact()}
 		} else {
 			if name == "" {
 				return fmt.Errorf("please set an asset name, by using --name")
 			}
-			a = &api.Artifact{Hash: hash}
+			artifacts = []*api.Artifact{{Hash: hash}}
 		}
 	} else {
 		// Extract artifact from arg
-		a, err = extractor.Extract(args[0], extractorOptions...)
+		artifacts, err = extractor.Extract(args[0], extractorOptions...)
 		if err != nil {
 			return err
 		}
 	}
 
-	if a == nil {
+	if artifacts == nil {
 		return fmt.Errorf("unable to process the input asset provided")
 	}
 
-	// Override the asset's name, if provided by --name
-	if name != "" {
-		a.Name = name
+	if len(artifacts) == 1 {
+		// Override the asset's name, if provided by --name
+		if name != "" {
+			artifacts[0].Name = name
+		}
+		// Copy user provided custom attributes
+		artifacts[0].Metadata.SetValues(metadata)
 	}
 
-	// Copy user provided custom attributes
-	a.Metadata.SetValues(metadata)
+	for _, a := range artifacts {
+		err := sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, readOnly, alert)
+		if err != nil {
+			return err
+		}
+	}
 
-	return sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, readOnly, alert)
+	return nil
 }
 
 func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, readOnly bool, alert *alertOptions) error {
