@@ -31,37 +31,37 @@ func TestArtifact(t *testing.T) {
 	}
 	// dir - OK
 	u, _ := uri.Parse("dir://" + tmpDir)
-	a, err := Artifact(u)
+	artifacts, err := Artifact(u)
 	assert.NoError(t, err)
-	assert.NotNil(t, a)
-	assert.Equal(t, "dir", a.Kind)
-	assert.Equal(t, filepath.Base(tmpDir), a.Name)
-	assert.NotEmpty(t, a.Hash)
+	assert.NotNil(t, artifacts)
+	assert.Equal(t, "dir", artifacts[0].Kind)
+	assert.Equal(t, filepath.Base(tmpDir), artifacts[0].Name)
+	assert.NotEmpty(t, artifacts[0].Hash)
 
-	// dir (no schema) - OK
-	u, _ = uri.Parse(tmpDir)
-	a, err = Artifact(u)
+	// dir (no schema) - Suppressed this behaviour. With wildcard it's possible to specify a dir so this is replaced
+	/*u, _ = uri.Parse(tmpDir)
+	artifacts, err = Artifact(u)
 	assert.NoError(t, err)
-	assert.NotNil(t, a)
-	assert.Equal(t, "dir", a.Kind)
-	assert.Equal(t, filepath.Base(tmpDir), a.Name)
-	assert.NotEmpty(t, a.Hash)
+	assert.NotNil(t, artifacts[0])
+	assert.Equal(t, "dir", artifacts[0].Kind)
+	assert.Equal(t, filepath.Base(tmpDir), artifacts[0].Name)
+	assert.NotEmpty(t, artifacts[0].Hash)*/
 
 	// wrong schema - SKIP (no error)
 	u, _ = uri.Parse("file://" + tmpDir)
-	a, err = Artifact(u)
+	artifacts, err = Artifact(u)
 	assert.NoError(t, err)
-	assert.Nil(t, a)
+	assert.Nil(t, artifacts)
 
-	// not a dir - ERROR
+	// not artifacts dir - ERROR
 	u, _ = uri.Parse("dir://" + tmpFile)
-	a, err = Artifact(u)
+	artifacts, err = Artifact(u)
 	assert.Error(t, err)
-	assert.Nil(t, a)
+	assert.Nil(t, artifacts)
 
 	// not existing dir - ERROR
 	u, _ = uri.Parse("dir://" + tmpDir + "/not-existing")
-	a, err = Artifact(u)
+	artifacts, err = Artifact(u)
 	assert.Error(t, err)
-	assert.Nil(t, a)
+	assert.Nil(t, artifacts)
 }
