@@ -28,7 +28,7 @@ const SchemePodman = "podman"
 var schemes = map[string]bool{Scheme: true, SchemePodman: true}
 
 // Artifact returns a file *api.Artifact from a given u
-func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) ([]*api.Artifact, error) {
 
 	if !schemes[u.Scheme] {
 		return nil, nil
@@ -55,13 +55,13 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 	}
 
 	m[u.Scheme] = i
-	return &api.Artifact{
+	return []*api.Artifact{{
 		Kind:     u.Scheme,
 		Name:     u.Scheme + "://" + i.name(),
 		Hash:     i.hash(),
 		Size:     i.Size,
 		Metadata: m,
-	}, nil
+	}}, nil
 }
 
 type image struct {

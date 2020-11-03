@@ -35,7 +35,7 @@ type opts struct {
 }
 
 // Artifact returns a file *api.Artifact from a given u
-func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) ([]*api.Artifact, error) {
 
 	if u.Scheme != Scheme {
 		return nil, nil
@@ -92,12 +92,12 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 		PathKey:     path,
 	}
 
-	return &api.Artifact{
+	return []*api.Artifact{{
 		Kind:     Scheme,
 		Hash:     digest.Encoded(),
 		Name:     stat.Name(),
 		Metadata: m,
-	}, nil
+	}}, nil
 }
 
 // WithIgnoreFileInit returns a functional option to instruct the dir's extractor to create the defualt ignore file

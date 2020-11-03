@@ -18,7 +18,7 @@ import (
 var extractors = map[string]Extractor{}
 
 // Extractor extract an api.Artifact referenced by the given uri.URI.
-type Extractor func(*uri.URI, ...Option) (*api.Artifact, error)
+type Extractor func(*uri.URI, ...Option) ([]*api.Artifact, error)
 
 // Register the Extractor e for the given scheme
 func Register(scheme string, e Extractor) {
@@ -37,7 +37,7 @@ func Schemes() []string {
 }
 
 // Extract returns an api.Artifact for the given rawURI.
-func Extract(rawURI string, options ...Option) (*api.Artifact, error) {
+func Extract(rawURI string, options ...Option) ([]*api.Artifact, error) {
 	u, err := uri.Parse(rawURI)
 	if err != nil {
 		return nil, err

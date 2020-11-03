@@ -18,7 +18,6 @@ import (
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/api"
-	"github.com/vchain-us/vcn/pkg/bundle"
 	"github.com/vchain-us/vcn/pkg/extractor"
 	"github.com/vchain-us/vcn/pkg/uri"
 )
@@ -39,7 +38,7 @@ type opts struct {
 }
 
 // Artifact returns a file *api.Artifact from a given u
-func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) ([]*api.Artifact, error) {
 
 	if u.Scheme != "" && u.Scheme != Scheme {
 		return nil, nil
@@ -97,46 +96,22 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 	if len(filePaths) == 0 {
 		return nil, errors.New("no files matching from provided search terms")
 	}
-	// convert files path list to files descriptors
-	files := make([]bundle.Descriptor, 0)
+
+	arst := []*api.Artifact{}
+	// convert files path list to artifacts
 	for _, fp := range filePaths {
-		file, err := os.Open(fp)
+		u, err := uri.Parse("file://" + fp)
 		if err != nil {
 			return nil, err
 		}
-		relPath, err := filepath.Rel(root, fp)
+		ars, err := file.Artifact(u)
 		if err != nil {
 			return nil, err
 		}
-		// descriptor's path must be OS agnostic
-		relPath = filepath.ToSlash(relPath)
-
-		d, err := bundle.NewDescriptor(relPath, file)
-		file.Close()
-		if err != nil {
-			return nil, err
-		}
-		files = append(files, *d)
+		arst = append(arst, ars...)
 	}
 
-	manifest := bundle.NewManifest(files...)
-	digest, err := manifest.Digest()
-	if err != nil {
-		return nil, err
-	}
-
-	// Metadata container
-	m := api.Metadata{
-		ManifestKey: manifest,
-		PathKey:     path,
-	}
-
-	return &api.Artifact{
-		Kind:     Scheme,
-		Hash:     digest.Encoded(),
-		Name:     filepath.Base(root),
-		Metadata: m,
-	}, nil
+	return arst, nil
 }
 
 func buildFilePaths(wildcard string, filePaths *[]string) func(ele string, info os.FileInfo, err error) error {
