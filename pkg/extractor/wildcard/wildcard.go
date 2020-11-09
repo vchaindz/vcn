@@ -10,10 +10,8 @@ package wildcard
 
 import (
 	"errors"
-	"fmt"
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
 	"github.com/vchain-us/vcn/pkg/extractor/file"
-	"github.com/vchain-us/vcn/pkg/meta"
 	"os"
 	"path/filepath"
 	"strings"
@@ -130,10 +128,6 @@ func buildFilePaths(wildcard string, filePaths *[]string) func(ele string, info 
 					}
 					if !info.IsDir() {
 						*filePaths = append(*filePaths, fp)
-						lenFilePath := len(*filePaths)
-						if lenFilePath > meta.WildcardMaxFileNumber() {
-							return fmt.Errorf("you are trying to notarize %d files. The maximum number of files that can be notarized sequentially is %d", lenFilePath, meta.WildcardMaxFileNumber())
-						}
 					}
 				}
 			}
