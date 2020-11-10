@@ -38,8 +38,29 @@ func NewCommand() *cobra.Command {
 				}
 				return nil
 			}
+
+			first, _ := cmd.Flags().GetUint64("first")
+			last, _ := cmd.Flags().GetUint64("last")
+			start, _ := cmd.Flags().GetString("start")
+			end, _ := cmd.Flags().GetString("end")
+
+			if (first > 0 || last > 0 || start != "" || end != "") &&
+				store.Config().CurrentContext.LcApiKey == "" {
+				return fmt.Errorf("time range filter is available only in Ledger Compliance environment")
+			}
+
+			if first > 0 && last > 0 {
+				return fmt.Errorf("--first and --last are mutual exclusive")
+			}
+
 			return cobra.MinimumNArgs(1)(cmd, args)
 		},
+		Example: `
+vcn inspect document.pdf --last 1
+vcn inspect document.pdf --first 1
+vcn inspect document.pdf --start 2020/10/28-08:00:00 --end 2020/10/28-17:00:00 --first 10
+vcn inspect document.pdf --signerID CygBE_zb8XnprkkO6ncIrbbwYoUq5T1zfyEF6DhqcAI= --start 2020/10/28-16:00:00 --end 2020/10/28-17:10:00 --last 3
+`,
 	}
 
 	cmd.SetUsageTemplate(
@@ -52,6 +73,12 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.Flags().String("signerID", "", "specify a signerID to refine inspection result on ledger compliance")
+
+	cmd.Flags().Uint64("first", 0, "set the limit for the first elements filter")
+	cmd.Flags().Uint64("last", 0, "set the limit for the last elements filter")
+
+	cmd.Flags().String("start", "", "set the start of date and time range filter. Example 2020/10/28-16:00:00")
+	cmd.Flags().String("end", "", "set the end of date and time range filter. Example 2020/10/28-16:00:00")
 
 	return cmd
 }
@@ -133,7 +160,24 @@ func runInspect(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		return lcInspect(hash, signerID, lcUser, output)
+		first, err := cmd.Flags().GetUint64("first")
+		if err != nil {
+			return err
+		}
+		last, err := cmd.Flags().GetUint64("last")
+		if err != nil {
+			return err
+		}
+		start, err := cmd.Flags().GetString("start")
+		if err != nil {
+			return err
+		}
+		end, err := cmd.Flags().GetString("end")
+		if err != nil {
+			return err
+		}
+
+		return lcInspect(hash, signerID, lcUser, first, last, start, end, output)
 	}
 
 	// User

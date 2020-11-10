@@ -149,3 +149,6 @@ func VisibilityForFlag(public bool) Visibility {
 	}
 	return VisibilityPrivate
 }
+
+const DateShortForm = "2006/1/2-15:04:05"
+const IndexDateRangePrefix = "_INDEX.ITEM.INSERTION-DATE."
