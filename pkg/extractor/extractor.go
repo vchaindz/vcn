@@ -46,5 +46,5 @@ func Extract(rawURI string, options ...Option) ([]*api.Artifact, error) {
 	if e, ok := extractors[u.Scheme]; ok {
 		return e(u, options...)
 	}
-	return nil, fmt.Errorf("%s scheme not yet s upported", u.Scheme)
+	return nil, fmt.Errorf("%s scheme not yet supported", u.Scheme)
 }
