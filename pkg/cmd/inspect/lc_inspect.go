@@ -188,7 +188,7 @@ func getTimeRangedResults(ctx context.Context, u *api.LcUser, set []byte, first,
 			return nil, err
 		}
 		startScore = &immuschema.Score{
-			Score: float64(timeStart.Unix()), // there is no precision loss. 52 bit are enough to represent seconds.
+			Score: float64(timeStart.UnixNano()), // there is no precision loss. 52 bit are enough to represent seconds.
 		}
 	}
 
@@ -198,7 +198,7 @@ func getTimeRangedResults(ctx context.Context, u *api.LcUser, set []byte, first,
 			return nil, err
 		}
 		endScore = &immuschema.Score{
-			Score: float64(timeEnd.Unix()), // there is no precision loss. 52 bit are enough to represent seconds.
+			Score: float64(timeEnd.UnixNano()), // there is no precision loss. 52 bit are enough to represent seconds.
 		}
 	}
 

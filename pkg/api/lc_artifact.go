@@ -63,7 +63,7 @@ func ZStructuredItemToLcArtifact(i *immuschema.ZStructuredItem) (*LcArtifact, er
 	if err != nil {
 		return nil, err
 	}
-	timestamp := time.Unix(int64(i.Score), 0)
+	timestamp := time.Unix(0, int64(i.Score))
 	lca.Timestamp = timestamp.UTC()
 
 	return &lca, nil
@@ -115,7 +115,7 @@ func (u LcUser) createArtifact(
 	key := AppendPrefix(meta.VcnLCPrefix, []byte(aR.Signer))
 	key = AppendSignerId(artifact.Hash, key)
 
-	_, err = u.Client.SafeSet(ctx, key, arJson)
+	_, err = u.Client.Set(ctx, key, arJson)
 	if err != nil {
 		return err
 	}
