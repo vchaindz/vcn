@@ -10,7 +10,6 @@ package sign
 
 import (
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
@@ -248,7 +247,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 			s.Start()
 		}
 
-		var keyin io.Reader
+		var keyin string
 		var offline bool
 		keyin, _, offline, err = u.Secret()
 		if err != nil {

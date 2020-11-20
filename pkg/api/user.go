@@ -43,6 +43,11 @@ func (u User) Email() string {
 	return ""
 }
 
+// User configures current user with a custom values
+func (u *User) User(cfg *store.User) {
+	u.cfg = cfg
+}
+
 // Authenticate the User against the CodeNotary platform.
 // If successful the auth token in stored within the User's config and used for subsequent API call.
 func (u *User) Authenticate(password string, otp string) (err error) {
@@ -159,7 +164,7 @@ func (u User) getWallet() (address, keystore string, offline bool, err error) {
 }
 
 // Secret fetches the User's secret and returns an io.Reader for reading it.
-func (u User) Secret() (reader io.Reader, id string, offline bool, err error) {
+func (u User) Secret() (reader, id string, offline bool, err error) {
 	id, keystore, offline, err := u.getWallet()
 
 	switch true {
@@ -172,7 +177,7 @@ func (u User) Secret() (reader io.Reader, id string, offline bool, err error) {
 	case keystore == "":
 		err = fmt.Errorf("no secret found for %s", u.Email())
 	default:
-		reader = bytes.NewReader([]byte(keystore))
+		reader = keystore
 	}
 
 	return

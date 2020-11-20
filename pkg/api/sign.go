@@ -9,10 +9,12 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	goErr "errors"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -65,10 +67,23 @@ func (u User) Sign(artifact Artifact, options ...SignOption) (*BlockchainVerific
 		return nil, fmt.Errorf(errors.NoRemainingSignOps)
 	}
 
-	return u.commitTransaction(
-		artifact,
-		options...,
-	)
+	// In order to handle parallel calls here there is a retry mechanism if another transaction is already in place.
+	// This is a workaround. Need a proper solution to handle parallel signing
+	var verification *BlockchainVerification
+	for i := uint64(0); i < meta.TxVerificationRounds(); i++ {
+		verification, err := u.commitTransaction(artifact, options...)
+		if err != nil {
+			if err.Error() == errors.BlockchainPermission {
+				rand.Seed(time.Now().UnixNano())
+				sleepTime := time.Second * time.Duration(int64(rand.Intn(6)))
+				time.Sleep(sleepTime)
+				continue
+			}
+			break
+		}
+		return verification, err
+	}
+	return verification, err
 }
 
 func (u User) commitTransaction(
@@ -76,17 +91,16 @@ func (u User) commitTransaction(
 	opts ...SignOption,
 ) (verification *BlockchainVerification, err error) {
 
-	o, err := makeSignOpts(u, opts...)
+	o, err := makeSignOpts(opts...)
 	if err != nil {
 		return
 	}
-
-	transactor, err := bind.NewTransactor(o.keyin, o.passphrase)
+	transactor, err := bind.NewTransactor(bytes.NewReader([]byte(o.keyin)), o.passphrase)
 	if err != nil {
 		if err.Error() == "could not decrypt key with given passphrase" {
 			err = WrongPassphraseErr
 		}
-		return
+		return nil, err
 	}
 
 	transactor.GasLimit = meta.GasLimit()
@@ -122,9 +136,9 @@ func (u User) commitTransaction(
 				"hash":  artifact.Hash,
 			},
 		)
-		return
+		return nil, err
 	}
-	timeout, err := waitForTx(tx.Hash(), meta.TxVerificationRounds(), meta.PollInterval())
+	timeout, err := waitForTx(client, tx.Hash(), meta.TxVerificationRounds(), meta.PollInterval())
 	if err != nil {
 		err = makeFatal(
 			errors.BlockchainPermission,
@@ -154,8 +168,7 @@ func (u User) commitTransaction(
 	return
 }
 
-func waitForTx(tx common.Hash, maxRounds uint64, pollInterval time.Duration) (timeout bool, err error) {
-	client, err := ethclient.Dial(meta.MainNet())
+func waitForTx(client *ethclient.Client, tx common.Hash, maxRounds uint64, pollInterval time.Duration) (timeout bool, err error) {
 	if err != nil {
 		return false, err
 	}
