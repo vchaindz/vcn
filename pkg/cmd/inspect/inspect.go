@@ -52,7 +52,6 @@ func NewCommand() *cobra.Command {
 			if first > 0 && last > 0 {
 				return fmt.Errorf("--first and --last are mutual exclusive")
 			}
-
 			return cobra.MinimumNArgs(1)(cmd, args)
 		},
 		Example: `
@@ -177,6 +176,10 @@ func runInspect(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
+		if first == 0 && last == 0 {
+			last = 100
+			fmt.Printf("no filter is specified. At maximum last 100 items will be returned\n")
+		}
 		return lcInspect(hash, signerID, lcUser, first, last, start, end, output)
 	}
 
