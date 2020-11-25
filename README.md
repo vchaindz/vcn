@@ -295,6 +295,12 @@ vcn notarize <asset>
 ```
 > Other commands like `untrust` and `unsupport` will also work.
 
+It's possible to disable one time password or notarization password requirements in particular cases using:
+```
+export VCN_OTP_EMPTY=true
+export VCN_NOTARIZATION_PASSWORD_EMPTY=true
+```
+
 ## Testing
 ```
 make test

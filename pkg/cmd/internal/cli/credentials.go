@@ -138,6 +138,10 @@ func ProvidePlatformPassword() (password string, err error) {
 }
 
 func ProvideOtp() (otp string, err error) {
+	if _, empty := os.LookupEnv(meta.VcnOtpEmpty); empty {
+		logs.LOG.Trace("Empty otp provided (environment)")
+		return "", nil
+	}
 	otp = os.Getenv(meta.VcnOtp)
 	if otp != "" {
 		logs.LOG.Trace("Otp provided (environment)")

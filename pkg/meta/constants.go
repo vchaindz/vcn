@@ -65,6 +65,7 @@ const (
 	VcnNotarizationPassword      string = "VCN_NOTARIZATION_PASSWORD"
 	VcnNotarizationPasswordEmpty string = "VCN_NOTARIZATION_PASSWORD_EMPTY"
 	VcnOtp                       string = "VCN_OTP"
+	VcnOtpEmpty                  string = "VCN_OTP_EMPTY"
 )
 
 // UserAgent returns the vcn's User-Agent string
