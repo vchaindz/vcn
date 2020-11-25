@@ -12,7 +12,7 @@ require (
 	github.com/caarlos0/spin v1.1.0
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/cmars/basen v0.0.0-20150613233007-fe3947df716e // indirect
-	github.com/codenotary/immudb v0.8.1-0.20201109084512-3ddc8112e4e1
+	github.com/codenotary/immudb v0.8.1-0.20201125135926-5f5386d1d2d7
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dghubble/sling v1.3.0
 	github.com/dustin/go-humanize v1.0.0
@@ -47,7 +47,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tyler-smith/go-bip32 v0.0.0-20170922074101-2c9cfd177564
 	github.com/tyler-smith/go-bip39 v1.0.2
-	github.com/vchain-us/ledger-compliance-go v0.0.0-20201109095337-56458799ab88
+	github.com/vchain-us/ledger-compliance-go v0.0.0-20201125144549-7809e422f1b4
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0
 	google.golang.org/grpc v1.31.1
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect

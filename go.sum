@@ -62,6 +62,8 @@ github.com/cmars/basen v0.0.0-20150613233007-fe3947df716e/go.mod h1:P13beTBKr5Q1
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/codenotary/immudb v0.8.1-0.20201109084512-3ddc8112e4e1 h1:1rJ7az7spWardOTlPkuY98RXxlUmmD2W/SmEFiPWMnU=
 github.com/codenotary/immudb v0.8.1-0.20201109084512-3ddc8112e4e1/go.mod h1:otCztOd0EipuKMyYkzcWnWGRQZT5Amr4+BkDFD4i1Lg=
+github.com/codenotary/immudb v0.8.1-0.20201125135926-5f5386d1d2d7 h1:utkrdZBRPLO5Ni5YerzfoHxXNf3TZFRP1TQIo3IWPik=
+github.com/codenotary/immudb v0.8.1-0.20201125135926-5f5386d1d2d7/go.mod h1:otCztOd0EipuKMyYkzcWnWGRQZT5Amr4+BkDFD4i1Lg=
 github.com/codenotary/merkletree v0.1.2-0.20200720105344-68d95395a656 h1:Rp8hZs7t0fNLlfLj9PzEmW/W7X+nSp0vpu5CB0ba0jM=
 github.com/codenotary/merkletree v0.1.2-0.20200720105344-68d95395a656/go.mod h1:RkIGSuQ3nHZbE0rH21aYxyqlrI/2eICNOOIanDbzZPg=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
@@ -380,6 +382,8 @@ github.com/urfave/cli v1.22.1 h1:+mkCCcOFKPnCmVYVcURKps1Xe+3zP90gSYGNfRkjoIY=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20201109095337-56458799ab88 h1:2CWv13whQbIyHrEKXgj3EPvclLMoJCbPFkJ77PknbB0=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20201109095337-56458799ab88/go.mod h1:SOR2K52T3bzOv+cqiF/QsXXg3m/R2+JxfWELrISEMAA=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20201125144549-7809e422f1b4 h1:HtesOqeE0Z9yhSj3idpKzj26/akYLHbogor48LIuqJE=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20201125144549-7809e422f1b4/go.mod h1:G7enxCryytHhY+zyr58mWNjxOPPQZZUQuhmXl4pRcxc=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
