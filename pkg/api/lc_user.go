@@ -30,6 +30,15 @@ func NewLcUser(lcApiKey string, host string, port string) *LcUser {
 	}
 }
 
+// NewLcUserVolatile returns a new User instance without a backing cfg file.
+func NewLcUserVolatile(lcApiKey string, host string, port string) *LcUser {
+	p, _ := strconv.Atoi(port)
+	return &LcUser{
+		Client: sdk.NewLcClient(sdk.ApiKey(lcApiKey), sdk.Host(host), sdk.Port(p), sdk.Dir(store.CurrentConfigFilePath())),
+		cfg:   &store.User{LcApiKey: lcApiKey},
+	}
+}
+
 // Email returns the User's email, if any, otherwise an empty string.
 func (u LcUser) LcApiKey() string {
 	if u.cfg != nil {
