@@ -13,18 +13,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-<<<<<<< HEAD
-	"github.com/vchain-us/ledger-compliance-go/schema"
-	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
-	"github.com/vchain-us/vcn/pkg/meta"
-	"google.golang.org/grpc/metadata"
-
-	"github.com/vchain-us/vcn/pkg/api"
-	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
-)
-
-func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err error) {
-=======
 	immuschema "github.com/codenotary/immudb/pkg/api/schema"
 	"github.com/vchain-us/ledger-compliance-go/schema"
 	"github.com/vchain-us/vcn/pkg/api"
@@ -38,7 +26,6 @@ func lcInspect(hash string, signerID string, u *api.LcUser, output string) (err 
 )
 
 func lcInspect(hash string, signerID string, u *api.LcUser, first, last uint64, start, end string, output string) (err error) {
->>>>>>> origin
 	hasher := sha256.New()
 	hasher.Write([]byte(u.LcApiKey()))
 	contextSignerID := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
@@ -51,10 +38,6 @@ func lcInspect(hash string, signerID string, u *api.LcUser, first, last uint64, 
 		contextSignerID = signerID
 	}
 
-<<<<<<< HEAD
-	results, err := GetLcResults(hash, signerID, u)
-
-=======
 	results, err := GetLcResults(hash, signerID, u, first, last, start, end)
 	if err != nil {
 		if s, ok := status.FromError(err); ok {
@@ -64,7 +47,6 @@ func lcInspect(hash string, signerID string, u *api.LcUser, first, last uint64, 
 		}
 		return err
 	}
->>>>>>> origin
 	l := len(results)
 	if output == "" {
 		fmt.Printf(
@@ -78,17 +60,6 @@ func lcInspect(hash string, signerID string, u *api.LcUser, first, last uint64, 
 	return cli.PrintLcSlice(output, results)
 }
 
-<<<<<<< HEAD
-func GetLcResults(hash, signerID string, u *api.LcUser) ([]*types.LcResult, error) {
-	var err error
-	var items *schema.StructuredItemExtList
-
-	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
-
-	if signerID == "" {
-		items, err = u.Client.ZScanExt(ctx, []byte(hash))
-=======
 func GetLcResults(hash, signerID string, u *api.LcUser, first, last uint64, start, end string) (results []*types.LcResult, err error) {
 	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
@@ -106,19 +77,10 @@ func GetLcResults(hash, signerID string, u *api.LcUser, first, last uint64, star
 			key = append([]byte(meta.IndexDateRangePrefix), key...)
 		}
 		results, err = getTimeRangedResults(ctx, u, key, first, last, start, end)
->>>>>>> origin
 		if err != nil {
 			return nil, err
 		}
 	} else {
-<<<<<<< HEAD
-		key := api.AppendPrefix(meta.VcnLCPrefix, []byte(signerID))
-		key = api.AppendSignerId(hash, key)
-		items, err = u.Client.HistoryExt(ctx, key)
-		if err != nil {
-			return nil, err
-		}
-=======
 		if signerID == "" {
 			results, err = getSignerResults(ctx, key, u, first, last)
 			if err != nil {
@@ -195,7 +157,6 @@ func getHistoryResults(ctx context.Context, key []byte, u *api.LcUser, first, la
 	})
 	if err != nil {
 		return nil, err
->>>>>>> origin
 	}
 
 	results := make([]*types.LcResult, len(items.Items))
@@ -213,8 +174,6 @@ func getHistoryResults(ctx context.Context, key []byte, u *api.LcUser, first, la
 	}
 	return results, nil
 }
-<<<<<<< HEAD
-=======
 
 func getTimeRangedResults(ctx context.Context, u *api.LcUser, set []byte, first, last uint64, start, end string) ([]*types.LcResult, error) {
 	var err error
@@ -280,4 +239,3 @@ func getTimeRangedResults(ctx context.Context, u *api.LcUser, set []byte, first,
 	}
 	return results, nil
 }
->>>>>>> origin
