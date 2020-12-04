@@ -47,14 +47,6 @@ func (u LcUser) LcApiKey() string {
 	return ""
 }
 
-// Email returns the User's email, if any, otherwise an empty string.
-/*func (u LcUser) WithLcApiKey(lcApiKeyz) string {
-	if u.cfg != nil {
-		return u.cfg.Email
-	}
-	return ""
-}*/
-
 // ClearAuth deletes the stored authentication token.
 func (u *LcUser) ClearAuth() {
 	if u != nil && u.cfg != nil {

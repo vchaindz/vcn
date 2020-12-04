@@ -26,7 +26,11 @@ func lcInspect(user *api.LcUser, hash, signerID string, w http.ResponseWriter) {
 		return
 	}
 
+<<<<<<< HEAD
 	results, err := inspect2.GetLcResults(hash, signerID, user)
+=======
+	results, err := inspect2.GetLcResults(hash, signerID, user, 0, 0, "", "")
+>>>>>>> origin
 	if err != nil {
 		writeError(w, http.StatusBadGateway, err)
 		return

@@ -131,8 +131,10 @@ func SaveConfig() error {
 // User returns nil when an empty email is given or c is nil.
 func (c *ConfigRoot) UserByMail(email string) *User {
 	defer func() {
-		cfg.CurrentContext.Clear()
-		cfg.CurrentContext.Email = email
+		if cfg != nil {
+			cfg.CurrentContext.Clear()
+			cfg.CurrentContext.Email = email
+		}
 	}()
 	if c == nil || email == "" {
 		return nil

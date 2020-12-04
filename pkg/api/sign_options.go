@@ -9,8 +9,6 @@
 package api
 
 import (
-	"io"
-
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
@@ -20,11 +18,11 @@ type SignOption func(*signOpts) error
 type signOpts struct {
 	status     meta.Status
 	visibility meta.Visibility
-	keyin      io.Reader
+	keyin      string
 	passphrase string
 }
 
-func makeSignOpts(u User, opts ...SignOption) (o *signOpts, err error) {
+func makeSignOpts(opts ...SignOption) (o *signOpts, err error) {
 	o = &signOpts{
 		status:     meta.StatusTrusted,
 		visibility: meta.VisibilityPrivate,
@@ -59,7 +57,7 @@ func SignWithVisibility(visibility meta.Visibility) SignOption {
 }
 
 // SignWithKey returns the functional option for the given keyin and passphrase.
-func SignWithKey(keyin io.Reader, passphrase string) SignOption {
+func SignWithKey(keyin, passphrase string) SignOption {
 	return func(o *signOpts) error {
 		o.keyin = keyin
 		o.passphrase = passphrase

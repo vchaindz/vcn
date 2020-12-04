@@ -10,6 +10,7 @@ package sign
 
 import (
 	"fmt"
+	"github.com/vchain-us/vcn/pkg/extractor/wildcard"
 	"io"
 	"strings"
 
@@ -36,12 +37,13 @@ required notarization password in a non-interactive environment.
 
 const helpMsgFooter = `
 ARG must be one of:
-  <file>
+  wildcard
   file://<file>
   dir://<directory>
   git://<repository>
   docker://<image>
   podman://<image>
+  wildcard://"*"
 `
 
 // NewCommand returns the cobra command for `vcn sign`
@@ -78,7 +80,8 @@ Assets are referenced by passed ARG with notarization only accepting
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runSignWithState(cmd, args, meta.StatusTrusted)
 		},
-		Args: noArgsWhenHash,
+		Args:    noArgsWhenHash,
+		Example: `./vcn notarize -r "*.md"`,
 	}
 
 	cmd.Flags().VarP(make(mapOpts), "attr", "a", "add user defined attributes (repeat --attr for multiple entries)")
@@ -87,6 +90,7 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().String("hash", "", "specify the hash instead of using an asset, if set no ARG(s) can be used")
 	cmd.Flags().Bool("no-ignore-file", false, "if set, .vcnignore will be not written inside the targeted dir (affects dir:// only)")
 	cmd.Flags().Bool("read-only", false, "if set, no files will be written into the targeted dir (affects dir:// only)")
+	cmd.Flags().BoolP("recursive", "r", false, "if set, wildcard usage will walk inside subdirectories of provided path")
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.SetUsageTemplate(
@@ -117,6 +121,13 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		extractorOptions = append(extractorOptions, dir.WithSkipIgnoreFileErr())
 	}
 
+	recursive, err := cmd.Flags().GetBool("recursive")
+	if err != nil {
+		return err
+	}
+	if recursive {
+		extractorOptions = append(extractorOptions, wildcard.WithRecursive())
+	}
 	var alert *alertOptions
 	if hasCreateAlert := cmd.Flags().Lookup("create-alert"); hasCreateAlert != nil {
 		createAlert, err := cmd.Flags().GetBool("create-alert")
@@ -136,7 +147,6 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 				return err
 			}
 		}
-
 	}
 
 	var hash string
@@ -207,7 +217,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 
 	if lcUser != nil {
-		a, err := extractor.Extract(args[0], extractorOptions...)
+		artifacts, err := extractor.Extract(args[0], extractorOptions...)
 		if err != nil {
 			return err
 		}
@@ -215,7 +225,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		if err != nil {
 			return err
 		}
-		return LcSign(lcUser, *a, state, output)
+		return LcSign(lcUser, artifacts, state, output)
 	}
 
 	// User
@@ -228,7 +238,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 
 	// Make the artifact to be signed
-	var a *api.Artifact
+	var artifacts []*api.Artifact
 	if hash != "" {
 		if alert != nil {
 			return fmt.Errorf("cannot use --create-alert with --hash")
@@ -236,34 +246,42 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		hash = strings.ToLower(hash)
 		// Load existing artifact, if any, otherwise use an empty artifact
 		if ar, err := u.LoadArtifact(hash); err == nil && ar != nil {
-			a = ar.Artifact()
+			artifacts = []*api.Artifact{ar.Artifact()}
 		} else {
 			if name == "" {
 				return fmt.Errorf("please set an asset name, by using --name")
 			}
-			a = &api.Artifact{Hash: hash}
+			artifacts = []*api.Artifact{{Hash: hash}}
 		}
 	} else {
 		// Extract artifact from arg
-		a, err = extractor.Extract(args[0], extractorOptions...)
+		artifacts, err = extractor.Extract(args[0], extractorOptions...)
 		if err != nil {
 			return err
 		}
 	}
 
-	if a == nil {
+	if artifacts == nil {
 		return fmt.Errorf("unable to process the input asset provided")
 	}
 
-	// Override the asset's name, if provided by --name
-	if name != "" {
-		a.Name = name
+	if len(artifacts) == 1 {
+		// Override the asset's name, if provided by --name
+		if name != "" {
+			artifacts[0].Name = name
+		}
+		// Copy user provided custom attributes
+		artifacts[0].Metadata.SetValues(metadata)
 	}
 
-	// Copy user provided custom attributes
-	a.Metadata.SetValues(metadata)
+	for _, a := range artifacts {
+		err := sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, readOnly, alert)
+		if err != nil {
+			return err
+		}
+	}
 
-	return sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, readOnly, alert)
+	return nil
 }
 
 func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibility, output string, silent bool, readOnly bool, alert *alertOptions) error {
@@ -296,7 +314,7 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 			s.Start()
 		}
 
-		var keyin io.Reader
+		var keyin string
 		var offline bool
 		keyin, _, offline, err = u.Secret()
 		if err != nil {

@@ -45,7 +45,9 @@ func TestSaveConfig(t *testing.T) {
 	email := "example@example.net"
 
 	cfg = &ConfigRoot{
-		CurrentContext: email,
+		CurrentContext: CurrentContext{
+			Email: email,
+		},
 		Users: []*User{
 			{
 				Email:    email,
@@ -58,14 +60,16 @@ func TestSaveConfig(t *testing.T) {
 	assert.NoError(t, err)
 
 	LoadConfig()
-	assert.Equal(t, email, Config().CurrentContext)
+	assert.Equal(t, email, Config().CurrentContext.Email)
 }
 
 func TestConfigClearContext(t *testing.T) {
 	email := "example@example.net"
 
 	cfg = &ConfigRoot{
-		CurrentContext: email,
+		CurrentContext: CurrentContext{
+			Email: email,
+		},
 		Users: []*User{
 			{
 				Email: email,

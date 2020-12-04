@@ -23,12 +23,12 @@ func TestDocker(t *testing.T) {
 	}
 
 	u, _ := uri.Parse("docker://hello-world")
-	a, err := Artifact(u)
+	artifacts, err := Artifact(u)
 	assert.NoError(t, err)
-	assert.NotNil(t, a)
-	assert.Equal(t, "docker://hello-world:latest", a.Name)
-	assert.Regexp(t, "[0-9a-f]{64}", a.Hash)
-	assert.NotZero(t, a.Size)
+	assert.NotNil(t, artifacts)
+	assert.Equal(t, "docker://hello-world:latest", artifacts[0].Name)
+	assert.Regexp(t, "[0-9a-f]{64}", artifacts[0].Hash)
+	assert.NotZero(t, artifacts[0].Size)
 }
 
 func TestInferVer(t *testing.T) {

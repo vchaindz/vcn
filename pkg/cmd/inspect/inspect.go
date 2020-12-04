@@ -38,8 +38,28 @@ func NewCommand() *cobra.Command {
 				}
 				return nil
 			}
+
+			first, _ := cmd.Flags().GetUint64("first")
+			last, _ := cmd.Flags().GetUint64("last")
+			start, _ := cmd.Flags().GetString("start")
+			end, _ := cmd.Flags().GetString("end")
+
+			if (first > 0 || last > 0 || start != "" || end != "") &&
+				store.Config().CurrentContext.LcApiKey == "" {
+				return fmt.Errorf("time range filter is available only in Ledger Compliance environment")
+			}
+
+			if first > 0 && last > 0 {
+				return fmt.Errorf("--first and --last are mutual exclusive")
+			}
 			return cobra.MinimumNArgs(1)(cmd, args)
 		},
+		Example: `
+vcn inspect document.pdf --last 1
+vcn inspect document.pdf --first 1
+vcn inspect document.pdf --start 2020/10/28-08:00:00 --end 2020/10/28-17:00:00 --first 10
+vcn inspect document.pdf --signerID CygBE_zb8XnprkkO6ncIrbbwYoUq5T1zfyEF6DhqcAI= --start 2020/10/28-16:00:00 --end 2020/10/28-17:10:00 --last 3
+`,
 	}
 
 	cmd.SetUsageTemplate(
@@ -52,6 +72,12 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.Flags().String("signerID", "", "specify a signerID to refine inspection result on ledger compliance")
+
+	cmd.Flags().Uint64("first", 0, "set the limit for the first elements filter")
+	cmd.Flags().Uint64("last", 0, "set the limit for the last elements filter")
+
+	cmd.Flags().String("start", "", "set the start of date and time range filter. Example 2020/10/28-16:00:00")
+	cmd.Flags().String("end", "", "set the end of date and time range filter. Example 2020/10/28-16:00:00")
 
 	return cmd
 }
@@ -133,7 +159,28 @@ func runInspect(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		return lcInspect(hash, signerID, lcUser, output)
+		first, err := cmd.Flags().GetUint64("first")
+		if err != nil {
+			return err
+		}
+		last, err := cmd.Flags().GetUint64("last")
+		if err != nil {
+			return err
+		}
+		start, err := cmd.Flags().GetString("start")
+		if err != nil {
+			return err
+		}
+		end, err := cmd.Flags().GetString("end")
+		if err != nil {
+			return err
+		}
+
+		if first == 0 && last == 0 {
+			last = 100
+			fmt.Printf("no filter is specified. At maximum last 100 items will be returned\n")
+		}
+		return lcInspect(hash, signerID, lcUser, first, last, start, end, output)
 	}
 
 	// User
@@ -157,21 +204,24 @@ func extractInfo(arg string, output string) (hash string, err error) {
 	if err != nil {
 		return "", err
 	}
-	if a == nil {
+	if len(a) == 0 {
 		return "", fmt.Errorf("unable to process the input asset provided: %s", arg)
 	}
-
-	hash = a.Hash
-
+	if len(a) == 1 {
+		hash = a[0].Hash
+	}
+	if len(a) > 1 {
+		return "", fmt.Errorf("info extraction on multiple items is not yet supported")
+	}
 	if output == "" {
 		fmt.Printf("Extracted info from: %s\n\n", arg)
 	}
-	cli.Print(output, types.NewResult(a, nil, nil))
+	cli.Print(output, types.NewResult(a[0], nil, nil))
 	return
 }
 
 func inspect(hash string, u *api.User, output string) error {
-	results, err := GetResults(hash , u)
+	results, err := GetResults(hash, u)
 	if err != nil {
 		return err
 	}

@@ -65,6 +65,7 @@ const (
 	VcnNotarizationPassword      string = "VCN_NOTARIZATION_PASSWORD"
 	VcnNotarizationPasswordEmpty string = "VCN_NOTARIZATION_PASSWORD_EMPTY"
 	VcnOtp                       string = "VCN_OTP"
+	VcnOtpEmpty                  string = "VCN_OTP_EMPTY"
 	VcnLcApiKey                  string = "VCN_LC_API_KEY"
 )
 
@@ -148,3 +149,6 @@ func VisibilityForFlag(public bool) Visibility {
 	}
 	return VisibilityPrivate
 }
+
+const DateShortForm = "2006/1/2-15:04:05"
+const IndexDateRangePrefix = "_INDEX.ITEM.INSERTION-DATE."
