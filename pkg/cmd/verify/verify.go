@@ -47,19 +47,19 @@ func NewCommand() *cobra.Command {
 		Long: `
 Authenticate assets against the blockchain.
 
-Authentication is the process of matching the hash of a local asset to 
-a hash on the blockchain. 
+Authentication is the process of matching the hash of a local asset to
+a hash on the blockchain.
 If matched, the returned result (the authentication) is the blockchain-stored
-metadata that’s bound to the matching hash. 
+metadata that’s bound to the matching hash.
 Otherwise, the returned result status equals UNKNOWN.
 
 Note that your assets will not be uploaded but processed locally.
 
-The exit code will be 0 only if all assets' statuses are equal to TRUSTED. 
+The exit code will be 0 only if all assets' statuses are equal to TRUSTED.
 Otherwise, the exit code will be 1.
 
-Assets are referenced by the passed ARG(s), with authentication accepting 
-1 or more ARG(s) at a time. Multiple assets can be authenticated at the 
+Assets are referenced by the passed ARG(s), with authentication accepting
+1 or more ARG(s) at a time. Multiple assets can be authenticated at the
 same time while passing them within ARG(s).
 
 ARG must be one of:
@@ -109,18 +109,21 @@ ARG must be one of:
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG(s)", 1),
 	)
 
-	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)\n(overrides VCN_SIGNERID env var, if any)")
+	cmd.Flags().StringSliceP("signerID", "s", nil, "accept only authentications matching the passed SignerID(s)\n(overrides VCN_SIGNERID env var, if any). It's valid both for blockchain and ledger compliance")
 	cmd.Flags().StringSliceP("key", "k", nil, "")
 	cmd.Flags().MarkDeprecated("key", "please use --signerID instead")
 	cmd.Flags().StringP("org", "I", "", "accept only authentications matching the passed organisation's ID,\nif set no SignerID can be used\n(overrides VCN_ORG env var, if any)")
 	cmd.Flags().String("hash", "", "specify a hash to authenticate, if set no ARG(s) can be used")
 	cmd.Flags().Bool("alerts", false, "specify to authenticate and monitor for the configured alerts, if set no ARG(s) can be used")
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.Flags().MarkHidden("raw-diff")
 
 	return cmd
 }
 
+// runVerify first determine if the context is LC or blockchain, then call the correct verify
 func runVerify(cmd *cobra.Command, args []string) error {
 
 	hash, err := cmd.Flags().GetString("hash")
@@ -140,6 +143,72 @@ func runVerify(cmd *cobra.Command, args []string) error {
 
 	cmd.SilenceUsage = true
 
+	host, err := cmd.Flags().GetString("lc-host")
+	if err != nil {
+		return err
+	}
+	port, err := cmd.Flags().GetString("lc-port")
+	if err != nil {
+		return err
+	}
+
+	//check if an lcUser is present inside the context
+	var lcUser *api.LcUser
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+	if err != nil {
+		return err
+	}
+	if lctmp, ok := uif.(*api.LcUser); ok {
+		lcUser = lctmp
+	}
+
+	// use credentials if provided inline
+	if host != "" || port != "" {
+		apiKey, err := cli.ProvideLcApiKey()
+		if err != nil {
+			return err
+		}
+		if apiKey != "" {
+			lcUser = api.NewLcUser(apiKey, host, port)
+			// Store the new config
+			if err := store.SaveConfig(); err != nil {
+				return err
+			}
+		}
+	}
+
+	if lcUser != nil {
+		var signerID string
+		signerIDs := getSignerIDs()
+		if len(signerIDs) > 0 {
+			signerID = signerIDs[0]
+		}
+		err = lcUser.Client.Connect()
+		if err != nil {
+			return err
+		}
+		// by hash
+		if hash != "" {
+			a := &api.Artifact{
+				Hash: strings.ToLower(hash),
+			}
+			return lcVerify(a, lcUser, signerID, output)
+		}
+
+		artifacts, err := extractor.Extract(args[0])
+		if err != nil {
+			return err
+		}
+		for _, a := range artifacts {
+			err := lcVerify(a, lcUser, signerID, output)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	// blockchain context
 	org := viper.GetString("org")
 	var keys []string
 	if org != "" {
@@ -162,7 +231,10 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	user := api.NewUser(store.Config().CurrentContext)
+	user, ok := uif.(*api.User)
+	if !ok {
+		return fmt.Errorf("cannot load the current user")
+	}
 
 	// by alerts
 	if useAlerts {
@@ -200,24 +272,26 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			}
 			alertConfig.Metadata["arg"] = alert.Arg
 
-			a, err := extractor.Extract(alert.Arg)
+			artifacts, err := extractor.Extract(alert.Arg)
 			if err != nil {
 				cli.PrintWarning(output, err.Error())
 				alertConfig.Metadata["error"] = err.Error()
 				user.TriggerAlert(alertConfig)
 				continue
 			}
-			if a == nil {
+			if artifacts == nil {
 				cli.PrintWarning(output, fmt.Sprintf("unable to process the input asset provided: %s", alert.Arg))
 				alertConfig.Metadata["error"] = err.Error()
 				user.TriggerAlert(alertConfig)
 				continue
 			}
-			if err := verify(cmd, a, keys, org, user, &alertConfig, output); err != nil {
-				cli.PrintWarning(output, fmt.Sprintf("%s: %s", alert.Arg, err))
-			}
-			if output == "" {
-				fmt.Println()
+			for _, a := range artifacts {
+				if err := verify(cmd, a, keys, org, user, &alertConfig, output); err != nil {
+					cli.PrintWarning(output, fmt.Sprintf("%s: %s", alert.Arg, err))
+				}
+				if output == "" {
+					fmt.Println()
+				}
 			}
 		}
 		return nil
@@ -236,15 +310,17 @@ func runVerify(cmd *cobra.Command, args []string) error {
 
 	// by args
 	for _, arg := range args {
-		a, err := extractor.Extract(arg)
+		artifacts, err := extractor.Extract(arg)
 		if err != nil {
 			return err
 		}
-		if a == nil {
+		if artifacts == nil {
 			return fmt.Errorf("unable to process the input asset provided: %s", arg)
 		}
-		if err := verify(cmd, a, keys, org, user, nil, output); err != nil {
-			return err
+		for _, a := range artifacts {
+			if err := verify(cmd, a, keys, org, user, nil, output); err != nil {
+				return err
+			}
 		}
 	}
 

@@ -69,3 +69,8 @@ func ConfigFile() string {
 func SetConfigFile(filepath string) {
 	configFilepath = filepath
 }
+
+// CurrentConfigFilePath returns the current config file path (e.g. ~/.vcn/config.json)
+func CurrentConfigFilePath() string {
+	return dir
+}

@@ -108,3 +108,8 @@ func GasPrice() *big.Int {
 func GasLimit() uint64 {
 	return 20000000
 }
+
+// WildcardMaxFileNumber wildcard max file number for a single notarization
+func WildcardMaxFileNumber() int {
+	return 100
+}

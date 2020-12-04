@@ -41,7 +41,7 @@ This feature is for advanced user only.
 // Execute recover secret action
 func Execute() error {
 
-	u := api.NewUser(store.Config().CurrentContext)
+	u := api.NewUser(store.Config().CurrentContext.Email)
 	hasAuth, err := u.IsAuthenticated()
 	if err != nil {
 		return err

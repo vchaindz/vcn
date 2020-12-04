@@ -20,12 +20,21 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func signHander(state meta.Status) func(w http.ResponseWriter, r *http.Request) {
+type handler struct {
+	lcHost string
+	lcPort string
+}
+
+func (sh *handler) signHandler(state meta.Status) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s := state
 		k := make(map[string]bool)
 		for _, scheme := range extractor.Schemes() {
 			k[scheme] = true
+		}
+		if sh.lcHost != "" && sh.lcPort != "" {
+			lcSign(getLcUser(r, sh.lcHost, sh.lcPort), s, k, w, r)
+			return
 		}
 		sign(s, k, w, r)
 	}

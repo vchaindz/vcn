@@ -44,7 +44,7 @@ func runList(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	u := api.NewUser(store.Config().CurrentContext)
+	u := api.NewUser(store.Config().CurrentContext.Email)
 	if hasAuth, _ := u.IsAuthenticated(); !hasAuth {
 		return fmt.Errorf("you need to be logged in, please use <vcn login>")
 	}

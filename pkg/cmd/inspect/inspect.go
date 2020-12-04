@@ -10,6 +10,8 @@ package inspect
 
 import (
 	"fmt"
+	"github.com/vchain-us/vcn/internal/assert"
+	"github.com/vchain-us/vcn/pkg/meta"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
@@ -36,8 +38,28 @@ func NewCommand() *cobra.Command {
 				}
 				return nil
 			}
+
+			first, _ := cmd.Flags().GetUint64("first")
+			last, _ := cmd.Flags().GetUint64("last")
+			start, _ := cmd.Flags().GetString("start")
+			end, _ := cmd.Flags().GetString("end")
+
+			if (first > 0 || last > 0 || start != "" || end != "") &&
+				store.Config().CurrentContext.LcApiKey == "" {
+				return fmt.Errorf("time range filter is available only in Ledger Compliance environment")
+			}
+
+			if first > 0 && last > 0 {
+				return fmt.Errorf("--first and --last are mutual exclusive")
+			}
 			return cobra.MinimumNArgs(1)(cmd, args)
 		},
+		Example: `
+vcn inspect document.pdf --last 1
+vcn inspect document.pdf --first 1
+vcn inspect document.pdf --start 2020/10/28-08:00:00 --end 2020/10/28-17:00:00 --first 10
+vcn inspect document.pdf --signerID CygBE_zb8XnprkkO6ncIrbbwYoUq5T1zfyEF6DhqcAI= --start 2020/10/28-16:00:00 --end 2020/10/28-17:10:00 --last 3
+`,
 	}
 
 	cmd.SetUsageTemplate(
@@ -46,6 +68,16 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().String("hash", "", "specify a hash to inspect, if set no ARG can be used")
 	cmd.Flags().Bool("extract-only", false, "if set, print only locally extracted info")
+	// ledger compliance flags
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
+	cmd.Flags().String("signerID", "", "specify a signerID to refine inspection result on ledger compliance")
+
+	cmd.Flags().Uint64("first", 0, "set the limit for the first elements filter")
+	cmd.Flags().Uint64("last", 0, "set the limit for the last elements filter")
+
+	cmd.Flags().String("start", "", "set the start of date and time range filter. Example 2020/10/28-16:00:00")
+	cmd.Flags().String("end", "", "set the end of date and time range filter. Example 2020/10/28-16:00:00")
 
 	return cmd
 }
@@ -83,7 +115,83 @@ func runInspect(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	u := api.NewUser(store.Config().CurrentContext)
+	signerID, err := cmd.Flags().GetString("signerID")
+	if err != nil {
+		return err
+	}
+
+	host, err := cmd.Flags().GetString("lc-host")
+	if err != nil {
+		return err
+	}
+	port, err := cmd.Flags().GetString("lc-port")
+	if err != nil {
+		return err
+	}
+
+	//check if an lcUser is present inside the context
+	var lcUser *api.LcUser
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+	if err != nil {
+		return err
+	}
+	if lctmp, ok := uif.(*api.LcUser); ok {
+		lcUser = lctmp
+	}
+
+	// use credentials if provided inline
+	if host != "" || port != "" {
+		apiKey, err := cli.ProvideLcApiKey()
+		if err != nil {
+			return err
+		}
+		if apiKey != "" {
+			lcUser = api.NewLcUser(apiKey, host, port)
+			// Store the new config
+			if err := store.SaveConfig(); err != nil {
+				return err
+			}
+		}
+	}
+
+	if lcUser != nil {
+		err = lcUser.Client.Connect()
+		if err != nil {
+			return err
+		}
+		first, err := cmd.Flags().GetUint64("first")
+		if err != nil {
+			return err
+		}
+		last, err := cmd.Flags().GetUint64("last")
+		if err != nil {
+			return err
+		}
+		start, err := cmd.Flags().GetString("start")
+		if err != nil {
+			return err
+		}
+		end, err := cmd.Flags().GetString("end")
+		if err != nil {
+			return err
+		}
+
+		if first == 0 && last == 0 {
+			last = 100
+			fmt.Printf("no filter is specified. At maximum last 100 items will be returned\n")
+		}
+		return lcInspect(hash, signerID, lcUser, first, last, start, end, output)
+	}
+
+	// User
+	if err := assert.UserLogin(); err != nil {
+		return err
+	}
+	u, ok := uif.(*api.User)
+	if !ok {
+		return fmt.Errorf("cannot load the current user")
+	}
+
 	if hasAuth, _ := u.IsAuthenticated(); hasAuth && output == "" {
 		fmt.Printf("Current user: %s\n", u.Email())
 	}
@@ -96,33 +204,45 @@ func extractInfo(arg string, output string) (hash string, err error) {
 	if err != nil {
 		return "", err
 	}
-	if a == nil {
+	if len(a) == 0 {
 		return "", fmt.Errorf("unable to process the input asset provided: %s", arg)
 	}
-
-	hash = a.Hash
-
+	if len(a) == 1 {
+		hash = a[0].Hash
+	}
+	if len(a) > 1 {
+		return "", fmt.Errorf("info extraction on multiple items is not yet supported")
+	}
 	if output == "" {
 		fmt.Printf("Extracted info from: %s\n\n", arg)
 	}
-	cli.Print(output, types.NewResult(a, nil, nil))
+	cli.Print(output, types.NewResult(a[0], nil, nil))
 	return
 }
 
 func inspect(hash string, u *api.User, output string) error {
-	verifications, err := api.BlockChainInspect(hash)
+	results, err := GetResults(hash, u)
 	if err != nil {
 		return err
 	}
-	l := len(verifications)
 
 	if output == "" {
 		fmt.Printf(
 			`%d notarizations found for "%s"
 
 `,
-			l, hash)
+			len(results), hash)
 	}
+
+	return cli.PrintSlice(output, results)
+}
+
+func GetResults(hash string, u *api.User) ([]types.Result, error) {
+	verifications, err := api.BlockChainInspect(hash)
+	if err != nil {
+		return nil, err
+	}
+	l := len(verifications)
 
 	results := make([]types.Result, l)
 	for i, v := range verifications {
@@ -145,6 +265,5 @@ func inspect(hash string, u *api.User, output string) error {
 			}
 		}
 	}
-
-	return cli.PrintSlice(output, results)
+	return results, nil
 }

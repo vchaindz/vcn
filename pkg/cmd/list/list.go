@@ -57,7 +57,7 @@ func runList(cmd *cobra.Command, args []string) error {
 	if err := assert.UserLogin(); err != nil {
 		return err
 	}
-	u := api.NewUser(store.Config().CurrentContext)
+	u := api.NewUser(store.Config().CurrentContext.Email)
 
 	artifacts, err := u.ListArtifacts(page)
 	if err != nil {

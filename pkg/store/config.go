@@ -9,27 +9,44 @@
 package store
 
 import (
+	"errors"
+	"fmt"
 	"os"
 
 	"github.com/spf13/viper"
 )
 
 const (
-	configSchemaVer uint = 2
+	configSchemaVer uint = 3
 )
 
 // User holds user's configuration.
 type User struct {
-	Email    string `json:"email"`
+	Email    string `json:"email,omitempty"`
 	Token    string `json:"token,omitempty"`
 	KeyStore string `json:"keystore,omitempty"`
+	LcApiKey string `json:"lcApiKey,omitempty"`
 }
 
 // ConfigRoot holds root fields of the configuration file.
 type ConfigRoot struct {
-	SchemaVersion  uint    `json:"schemaVersion"`
-	Users          []*User `json:"users"`
-	CurrentContext string  `json:"currentContext"`
+	SchemaVersion  uint           `json:"schemaVersion"`
+	Users          []*User        `json:"users"`
+	CurrentContext CurrentContext `json:"currentContext"`
+}
+
+type CurrentContext struct {
+	Email    string `json:"email,omitempty"`
+	LcApiKey string `json:"lcApiKey,omitempty"`
+	LcHost   string `json:"LcHost,omitempty"`
+	LcPort   string `json:"LcPort,omitempty"`
+}
+
+func (cc *CurrentContext) Clear() {
+	cc.Email = ""
+	cc.LcApiKey = ""
+	cc.LcHost = ""
+	cc.LcPort = ""
 }
 
 var cfg *ConfigRoot
@@ -77,7 +94,17 @@ func LoadConfig() error {
 	}
 
 	if err := v.Unmarshal(&c); err != nil {
-		return err
+		oldFormat := ConfigRootV2{
+			SchemaVersion: 2,
+		}
+		if err := v.Unmarshal(&oldFormat); err != nil {
+			return errors.New("unable to parse config file")
+		}
+		fmt.Println("Upgrading config to new format. Old sessions will expire")
+		c.Users = []*User{}
+		c.CurrentContext.Email = oldFormat.CurrentContext
+		c.SchemaVersion = 3
+		return SaveConfig()
 	}
 
 	return nil
@@ -102,13 +129,20 @@ func SaveConfig() error {
 
 // User returns an User from the global config matching the given email.
 // User returns nil when an empty email is given or c is nil.
-func (c *ConfigRoot) User(email string) *User {
+func (c *ConfigRoot) UserByMail(email string) *User {
+	defer func() {
+		if cfg != nil {
+			cfg.CurrentContext.Clear()
+			cfg.CurrentContext.Email = email
+		}
+	}()
 	if c == nil || email == "" {
 		return nil
 	}
 
 	for _, u := range c.Users {
 		if u.Email == email {
+			u.LcApiKey = ""
 			return u
 		}
 	}
@@ -121,14 +155,81 @@ func (c *ConfigRoot) User(email string) *User {
 	return &u
 }
 
+// User returns an User from the global config matching the given email.
+// User returns nil when an empty email is given or c is nil.
+func (c *ConfigRoot) UserByLcApiKey(lcApiKey string) (u *User) {
+	defer func() {
+		cfg.CurrentContext.Clear()
+		cfg.CurrentContext.LcApiKey = lcApiKey
+	}()
+	if c == nil || lcApiKey == "" {
+		return nil
+	}
+
+	for _, u := range c.Users {
+		if u.LcApiKey == lcApiKey {
+			return u
+		}
+	}
+
+	u = &User{
+		LcApiKey: lcApiKey,
+	}
+
+	c.Users = append(c.Users, u)
+	return u
+}
+
+// User returns an User from the global config matching the given email.
+// User returns nil when an empty email is given or c is nil.
+func (c *ConfigRoot) NewLcUser(lcApiKey string, host string, port string) (u *User) {
+	defer func() {
+		cfg.CurrentContext.Clear()
+		cfg.CurrentContext.LcApiKey = lcApiKey
+		cfg.CurrentContext.LcHost = host
+		cfg.CurrentContext.LcPort = port
+	}()
+	if c == nil || lcApiKey == "" {
+		return nil
+	}
+
+	for _, u := range c.Users {
+		if u.LcApiKey == lcApiKey {
+			return u
+		}
+	}
+
+	u = &User{
+		LcApiKey: lcApiKey,
+	}
+
+	c.Users = append(c.Users, u)
+	return u
+}
+
 // RemoveUser removes an user from config matching the given email, if not found return false
-func (c *ConfigRoot) RemoveUser(email string) bool {
+func (c *ConfigRoot) RemoveUserByMail(email string) bool {
 	if c == nil {
 		return false
 	}
 
 	for i, u := range c.Users {
 		if u.Email == email {
+			c.Users = append(c.Users[i:], c.Users[i+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
+// RemoveUser removes an user from config matching the given lc api key, if not found return false
+func (c *ConfigRoot) RemoveUserByLcApiKey(lcApiKey string) bool {
+	if c == nil {
+		return false
+	}
+
+	for i, u := range c.Users {
+		if u.LcApiKey == lcApiKey {
 			c.Users = append(c.Users[i:], c.Users[i+1:]...)
 			return true
 		}
@@ -144,5 +245,5 @@ func (c *ConfigRoot) ClearContext() {
 	for _, u := range c.Users {
 		u.Token = ""
 	}
-	c.CurrentContext = ""
+	c.CurrentContext = CurrentContext{}
 }

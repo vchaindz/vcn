@@ -1,6 +1,6 @@
 SHELL=/bin/bash -o pipefail
 
-VERSION=0.8.3
+VERSION=0.9
 TARGETS=linux/amd64 windows/amd64 darwin/amd64 linux/s390x linux/ppc64le linux/arm-7 linux/arm64
 
 GO ?= go
@@ -65,7 +65,7 @@ build/makensis:
 		./build/makensis
 
 .PHONY: clean/dist
-clean/dist: 
+clean/dist:
 	rm -Rf ./dist
 
 .PHONY: clean
@@ -85,7 +85,7 @@ dist: clean/dist build/xgo
 	mkdir -p dist
 	$(GO) build -a -tags netgo -ldflags '${LDFLAGS_STATIC}' \
 			-o ./dist/vcn-v${VERSION}-linux-amd64-static \
-			./cmd/vcn 
+			./cmd/vcn
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist:/dist \
 			-v ${PWD}:/source:ro \
@@ -140,3 +140,15 @@ dist/binary.md:
 		shm_id=$$(sha256sum $$f | awk '{print $$1}'); \
 		printf "[$$ff](https://github.com/vchain-us/vcn/releases/download/v${VERSION}/$$ff) | $$shm_id \n" ; \
 	done
+
+.PHONY: build/codegen
+build/codegen:
+	protoc -I pkg/lcgrpc pkg/lcgrpc/lc.proto  \
+	-I${GOPATH}/pkg/mod \
+	-I${GOPATH}/pkg/mod/github.com/codenotary/immudb@v0.8.0/pkg/api/schema \
+	-I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.14.4/third_party/googleapis \
+	-I${GOPATH}/pkg/mod/github.com/dgraph-io/badger/v2@v2.0.0-20200408100755-2e708d968e94 \
+	-I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.14.4 \
+	--go_out=pkg/lcgrpc --go-grpc_out=pkg/lcgrpc \
+	--go_opt=paths=source_relative \
+	--go-grpc_opt=paths=source_relative

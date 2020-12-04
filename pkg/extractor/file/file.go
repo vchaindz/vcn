@@ -24,9 +24,9 @@ import (
 const Scheme = "file"
 
 // Artifact returns a file *api.Artifact from a given u
-func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) ([]*api.Artifact, error) {
 
-	if u.Scheme != "" && u.Scheme != Scheme {
+	if u.Scheme != Scheme {
 		return nil, nil
 	}
 
@@ -70,12 +70,12 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 		m.SetValues(data)
 	}
 
-	return &api.Artifact{
+	return []*api.Artifact{{
 		Kind:        Scheme,
 		Name:        stat.Name(),
 		Hash:        hex.EncodeToString(checksum),
 		Size:        uint64(stat.Size()),
 		ContentType: ct,
 		Metadata:    m,
-	}, nil
+	}}, nil
 }

@@ -31,7 +31,7 @@ type User struct {
 // NewUser returns a new User instance for the given email.
 func NewUser(email string) *User {
 	return &User{
-		cfg: store.Config().User(email),
+		cfg: store.Config().UserByMail(email),
 	}
 }
 
@@ -41,6 +41,11 @@ func (u User) Email() string {
 		return u.cfg.Email
 	}
 	return ""
+}
+
+// User configures current user with a custom values
+func (u *User) User(cfg *store.User) {
+	u.cfg = cfg
 }
 
 // Authenticate the User against the CodeNotary platform.
@@ -159,7 +164,7 @@ func (u User) getWallet() (address, keystore string, offline bool, err error) {
 }
 
 // Secret fetches the User's secret and returns an io.Reader for reading it.
-func (u User) Secret() (reader io.Reader, id string, offline bool, err error) {
+func (u User) Secret() (reader, id string, offline bool, err error) {
 	id, keystore, offline, err := u.getWallet()
 
 	switch true {
@@ -172,7 +177,7 @@ func (u User) Secret() (reader io.Reader, id string, offline bool, err error) {
 	case keystore == "":
 		err = fmt.Errorf("no secret found for %s", u.Email())
 	default:
-		reader = bytes.NewReader([]byte(keystore))
+		reader = keystore
 	}
 
 	return

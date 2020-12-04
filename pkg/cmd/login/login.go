@@ -26,7 +26,7 @@ func NewCommand() *cobra.Command {
 		Short: "Log in to codenotary.io",
 		Long: `Log in to codenotary.io.
 
-VCN_USER and VCN_PASSWORD env vars can be used to pass credentials 
+VCN_USER and VCN_PASSWORD env vars can be used to pass credentials
 in a non-interactive environment.
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -34,6 +34,18 @@ in a non-interactive environment.
 			output, err := cmd.Flags().GetString("output")
 			if err != nil {
 				return err
+			}
+
+			lcHost, err := cmd.Flags().GetString("lc-host")
+			if err != nil {
+				return err
+			}
+			lcPort, err := cmd.Flags().GetString("lc-port")
+			if err != nil {
+				return err
+			}
+			if lcHost != "" || lcPort != "" {
+				return ExecuteLC(lcHost, lcPort)
 			}
 
 			if err := Execute(); err != nil {
@@ -44,9 +56,10 @@ in a non-interactive environment.
 			}
 			return nil
 		},
-		Args: cobra.NoArgs,
+		Args: cobra.MaximumNArgs(2),
 	}
-
+	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	return cmd
 }
 
@@ -76,7 +89,7 @@ func Execute() error {
 	if err := user.Authenticate(password, otp); err != nil {
 		return err
 	}
-	cfg.CurrentContext = user.Email()
+	cfg.CurrentContext.Email = user.Email()
 
 	// Store the new config
 	if err := store.SaveConfig(); err != nil {

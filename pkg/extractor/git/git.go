@@ -23,7 +23,7 @@ import (
 const Scheme = "git"
 
 // Artifact returns a git *api.Artifact from a given u
-func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
+func Artifact(u *uri.URI, options ...extractor.Option) ([]*api.Artifact, error) {
 
 	if u.Scheme != Scheme {
 		return nil, nil
@@ -78,11 +78,11 @@ func Artifact(u *uri.URI, options ...extractor.Option) (*api.Artifact, error) {
 	}
 	name += "@" + commit.Hash.String()[:7]
 
-	return &api.Artifact{
+	return []*api.Artifact{{
 		Kind:     Scheme,
 		Hash:     hash,
 		Size:     size,
 		Name:     name,
 		Metadata: m,
-	}, nil
+	}}, nil
 }

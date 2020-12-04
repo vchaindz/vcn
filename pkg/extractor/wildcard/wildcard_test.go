@@ -1,27 +1,18 @@
-/*
- * Copyright (c) 2018-2020 vChain, Inc. All Rights Reserved.
- * This software is released under GPL3.
- * The full license information can be found under:
- * https://www.gnu.org/licenses/gpl-3.0.en.html
- *
- */
-
-package file
+package wildcard
 
 import (
-	"io/ioutil"
+	file2 "github.com/vchain-us/vcn/pkg/extractor/file"
 	"log"
-	"path/filepath"
 
 	"github.com/stretchr/testify/assert"
-
-	"os"
-	"testing"
-
 	"github.com/vchain-us/vcn/pkg/uri"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"testing"
 )
 
-func TestFile(t *testing.T) {
+func TestWildcard(t *testing.T) {
 	file, err := ioutil.TempFile("", "vcn-test-scheme-file")
 	if err != nil {
 		log.Fatal(err)
@@ -31,13 +22,19 @@ func TestFile(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	u, _ := uri.Parse("file://" + file.Name())
 
+	// Default empty schema is wildcard
+	u, _ := uri.Parse(file.Name())
 	artifacts, err := Artifact(u)
 	assert.NoError(t, err)
-	assert.NotNil(t, artifacts)
-	assert.Equal(t, Scheme, artifacts[0].Kind)
+	assert.NotNil(t, artifacts[0])
+	assert.Equal(t, file2.Scheme, artifacts[0].Kind)
 	assert.Equal(t, filepath.Base(file.Name()), artifacts[0].Name)
 	assert.Equal(t, "181210f8f9c779c26da1d9b2075bde0127302ee0e3fca38c9a83f5b1dd8e5d3b", artifacts[0].Hash)
 
+	u, _ = uri.Parse("../../../docs/vcncheatsheet.pdf")
+	artifacts, err = Artifact(u)
+	assert.NoError(t, err)
+	assert.NotNil(t, artifacts)
+	assert.Equal(t, artifacts[0].ContentType, "application/pdf")
 }

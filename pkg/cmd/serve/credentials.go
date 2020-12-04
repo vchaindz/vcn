@@ -31,3 +31,8 @@ func getCredential(r *http.Request) (user *api.User, passphrase string, err erro
 	}
 	return
 }
+
+func getLcUser(r *http.Request, lcHost string, lcPort string) *api.LcUser {
+	apikey := r.Header.Get("x-notarization-lc-api-key")
+	return api.NewLcUser(apikey, lcHost, lcPort)
+}

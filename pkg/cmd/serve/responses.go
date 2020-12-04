@@ -42,6 +42,36 @@ func writeResult(w http.ResponseWriter, code int, r *types.Result) {
 	writeResponse(w, code, b)
 }
 
+func writeResults(w http.ResponseWriter, code int, r []types.Result) {
+	b, err := json.Marshal(r)
+	if err != nil || b == nil {
+		writeError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	writeResponse(w, code, b)
+}
+
+func writeLcResult(w http.ResponseWriter, code int, r *types.LcResult) {
+	b, err := json.Marshal(r)
+	if err != nil || b == nil {
+		writeError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	writeResponse(w, code, b)
+}
+
+func writeLcResults(w http.ResponseWriter, code int, r []*types.LcResult) {
+	b, err := json.Marshal(r)
+	if err != nil || b == nil {
+		writeError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	writeResponse(w, code, b)
+}
+
 func writeError(w http.ResponseWriter, code int, err error) {
 	eR := errorResponse{
 		Message: http.StatusText(code),

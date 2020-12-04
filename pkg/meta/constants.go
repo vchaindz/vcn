@@ -65,7 +65,17 @@ const (
 	VcnNotarizationPassword      string = "VCN_NOTARIZATION_PASSWORD"
 	VcnNotarizationPasswordEmpty string = "VCN_NOTARIZATION_PASSWORD_EMPTY"
 	VcnOtp                       string = "VCN_OTP"
+	VcnOtpEmpty                  string = "VCN_OTP_EMPTY"
+	VcnLcApiKey                  string = "VCN_LC_API_KEY"
 )
+
+// Ledger compliance
+const VcnLCPrefix string = "vcn"
+const VcnLCPluginTypeHeaderName string = "lc-plugin-type"
+const VcnLCPluginTypeHeaderValue string = "vcn"
+
+const VcnLcPortFlagDesc string = "if set with port, action will be route to ledger compliance"
+const VcnLcHostFlagDesc string = "if set with host, action will be route to ledger compliance"
 
 // UserAgent returns the vcn's User-Agent string
 func UserAgent() string {
@@ -139,3 +149,6 @@ func VisibilityForFlag(public bool) Visibility {
 	}
 	return VisibilityPrivate
 }
+
+const DateShortForm = "2006/1/2-15:04:05"
+const IndexDateRangePrefix = "_INDEX.ITEM.INSERTION-DATE."

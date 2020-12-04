@@ -13,17 +13,15 @@ import (
 )
 
 // SignOption is a functional option for signing operations
-type SignOption func(*signOpts) error
+type LcSignOption func(*lcSignOpts) error
 
-type signOpts struct {
+type lcSignOpts struct {
 	status     meta.Status
 	visibility meta.Visibility
-	keyin      string
-	passphrase string
 }
 
-func makeSignOpts(opts ...SignOption) (o *signOpts, err error) {
-	o = &signOpts{
+func makeLcSignOpts(opts ...LcSignOption) (o *lcSignOpts, err error) {
+	o = &lcSignOpts{
 		status:     meta.StatusTrusted,
 		visibility: meta.VisibilityPrivate,
 	}
@@ -41,26 +39,17 @@ func makeSignOpts(opts ...SignOption) (o *signOpts, err error) {
 }
 
 // SignWithStatus returns the functional option for the given status.
-func SignWithStatus(status meta.Status) SignOption {
-	return func(o *signOpts) error {
+func LcSignWithStatus(status meta.Status) LcSignOption {
+	return func(o *lcSignOpts) error {
 		o.status = status
 		return nil
 	}
 }
 
 // SignWithVisibility returns the functional option for the given visibility.
-func SignWithVisibility(visibility meta.Visibility) SignOption {
-	return func(o *signOpts) error {
+func LcSignWithVisibility(visibility meta.Visibility) LcSignOption {
+	return func(o *lcSignOpts) error {
 		o.visibility = visibility
-		return nil
-	}
-}
-
-// SignWithKey returns the functional option for the given keyin and passphrase.
-func SignWithKey(keyin, passphrase string) SignOption {
-	return func(o *signOpts) error {
-		o.keyin = keyin
-		o.passphrase = passphrase
 		return nil
 	}
 }
