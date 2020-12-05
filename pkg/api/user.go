@@ -43,11 +43,6 @@ func (u User) Email() string {
 	return ""
 }
 
-// User configures current user with a custom values
-func (u *User) User(cfg *store.User) {
-	u.cfg = cfg
-}
-
 // Authenticate the User against the CodeNotary platform.
 // If successful the auth token in stored within the User's config and used for subsequent API call.
 func (u *User) Authenticate(password string, otp string) (err error) {

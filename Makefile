@@ -1,7 +1,7 @@
 SHELL=/bin/bash -o pipefail
 
-VERSION=0.9
-TARGETS=linux/amd64 windows/amd64 darwin/amd64 linux/s390x linux/ppc64le linux/arm-7 linux/arm64
+VERSION=0.9.0
+TARGETS=linux/amd64 windows/amd64 darwin/amd64 linux/s390x linux/ppc64le  linux/arm64
 
 GO ?= go
 DOCKER ?= docker
@@ -88,14 +88,13 @@ dist: clean/dist build/xgo
 			./cmd/vcn
 	$(DOCKER) run --rm \
 			-v ${PWD}/dist:/dist \
-			-v ${PWD}:/source:ro \
+			-v ${PWD}:/source \
 			-e GO111MODULE=on \
 			-e FLAG_LDFLAGS="${LDFLAGS}" \
 			-e TARGETS="${TARGETS}" \
 			-e PACK=cmd/vcn \
 			-e OUT=vcn-v${VERSION} \
 			vcn-xgo .
-	mv ./dist/vcn-v${VERSION}-linux-arm-7 ./dist/vcn-v${VERSION}-linux-arm
 	mv ./dist/vcn-v${VERSION}-windows-4.0-amd64.exe ./dist/${VCNEXE}
 	mv ./dist/vcn-v${VERSION}-darwin-10.6-amd64 ./dist/vcn-v${VERSION}-darwin-amd64
 
