@@ -11,7 +11,6 @@ package sign
 import (
 	"fmt"
 	"github.com/vchain-us/vcn/pkg/extractor/wildcard"
-	"io"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/extractor/dir"

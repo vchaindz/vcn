@@ -1,4 +1,6 @@
-FROM techknowlogick/xgo:go-1.13.x@sha256:5ad8a3a0a6576e50c1d3e797ab8c2e186caa83c3f062cc275e1a25e29ade1204
+FROM techknowlogick/xgo:go-1.15.6@sha256:e58c2e9ee05ab5257a3e2948717a38093e3ffe8fabed542227aeda25a74ca15e
+
+RUN mkdir -p /build
 
 # Inject the customized build script
 ADD build.sh /build.sh
