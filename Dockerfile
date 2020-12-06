@@ -5,12 +5,12 @@
 # The full license information can be found under:
 # https://www.gnu.org/licenses/gpl-3.0.en.html
 
-FROM golang:1.15-stretch as build
+FROM golang:1.15-buster as build
 WORKDIR /src
 COPY . .
 RUN GOOS=linux GOARCH=amd64 make static
 
-FROM alpine:3.9 as ca
+FROM alpine:3.12 as ca
 RUN apk add --no-cache \
 		ca-certificates
 
