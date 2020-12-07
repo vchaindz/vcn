@@ -12,7 +12,7 @@ require (
 	github.com/caarlos0/spin v1.1.0
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/cmars/basen v0.0.0-20150613233007-fe3947df716e // indirect
-	github.com/codenotary/immudb v0.8.1-0.20201125135926-5f5386d1d2d7
+	github.com/codenotary/immudb v0.8.1-0.20201126165025-7474fa6772d5
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dghubble/sling v1.3.0
 	github.com/dustin/go-humanize v1.0.0
@@ -24,8 +24,12 @@ require (
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/h2non/filetype v1.0.10
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/huin/goupnp v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0
+	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-base58 v0.0.0-20150317085156-6237cf65f3a6
+	github.com/karalabe/hid v1.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.4
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/opencontainers/go-digest v1.0.0-rc1
@@ -41,15 +45,14 @@ require (
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tyler-smith/go-bip32 v0.0.0-20170922074101-2c9cfd177564
 	github.com/tyler-smith/go-bip39 v1.0.2
-	github.com/vchain-us/ledger-compliance-go v0.0.0-20201125144549-7809e422f1b4
+	github.com/vchain-us/ledger-compliance-go v0.0.0-20201207084231-390100251d6f
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0
 	google.golang.org/grpc v1.31.1
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
+	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
-	src.techknowlogick.com/xgo v1.2.1-0.20201205054834-c7ddcb19c3f8 // indirect
-
 )
 
 replace github.com/codenotary/immudb v0.8.0 => github.com/codenotary/immudb v0.8.1-0.20201106152514-888ed37bf6cc
