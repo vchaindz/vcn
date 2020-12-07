@@ -326,8 +326,8 @@ Thanks to this `vcn` is faster and provides more powerful functionalities like t
 
 ### Obtain an api key
 To provide access to Ledger Compliance a valid api key is required.
-This api key is binded to a specific ledger and it's required during vcn login.
-To obtain a valid key register yourself on CodeNotary Ledger Compliance platform.
+This api key is bound to a specific ledger and it's required during vcn login.
+To obtain a valid key you need to get access to a licensed CodeNotary Ledger Compliance platform.
 
 ### Login
 
