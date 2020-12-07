@@ -9,7 +9,6 @@
 package api
 
 import (
-	"github.com/vchain-us/ledger-compliance-go/grpcclient"
 	sdk "github.com/vchain-us/ledger-compliance-go/grpcclient"
 	"github.com/vchain-us/vcn/pkg/store"
 	"strconv"
@@ -17,17 +16,20 @@ import (
 
 // User represent a CodeNotary platform user.
 type LcUser struct {
-	Client *grpcclient.LcClient
+	Client *sdk.LcClient
 	cfg    *store.User
 }
 
 // NewUser returns a new User instance for the given email.
-func NewLcUser(lcApiKey string, host string, port string) *LcUser {
-	p, _ := strconv.Atoi(port)
-	return &LcUser{
-		Client: sdk.NewLcClient(sdk.ApiKey(lcApiKey), sdk.Host(host), sdk.Port(p), sdk.Dir(store.CurrentConfigFilePath())),
-		cfg:    store.Config().NewLcUser(lcApiKey, host, port),
+func NewLcUser(lcApiKey, host, port, lcCert string) (*LcUser, error) {
+	client, err := NewLcClient(lcApiKey, host, port, lcCert)
+	if err != nil {
+		return nil, err
 	}
+	return &LcUser{
+		Client: client,
+		cfg:    store.Config().NewLcUser(lcApiKey, host, port, lcCert),
+	}, nil
 }
 
 // NewLcUserVolatile returns a new User instance without a backing cfg file.
@@ -35,7 +37,7 @@ func NewLcUserVolatile(lcApiKey string, host string, port string) *LcUser {
 	p, _ := strconv.Atoi(port)
 	return &LcUser{
 		Client: sdk.NewLcClient(sdk.ApiKey(lcApiKey), sdk.Host(host), sdk.Port(p), sdk.Dir(store.CurrentConfigFilePath())),
-		cfg:   &store.User{LcApiKey: lcApiKey},
+		cfg:    &store.User{LcApiKey: lcApiKey},
 	}
 }
 

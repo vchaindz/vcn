@@ -27,7 +27,13 @@ func (sh *handler) inspectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if sh.lcHost != "" && sh.lcPort != "" {
-		lcInspect(getLcUser(r, sh.lcHost, sh.lcPort), hash, signerID, w)
+		// todo @Michele move getLcUser in handler sh constructor
+		user, err := getLcUser(r, sh.lcHost, sh.lcPort, sh.lcCert)
+		if err != nil {
+			writeError(w, http.StatusBadGateway, err)
+			return
+		}
+		lcInspect(user, hash, signerID, w)
 		return
 	}
 

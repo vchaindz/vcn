@@ -147,7 +147,7 @@ func ProvideOtp() (otp string, err error) {
 		logs.LOG.Trace("Otp provided (environment)")
 		return otp, nil
 	}
-	fmt.Print("One time password: ")
+	fmt.Print("One time password (press enter if null): ")
 	w := bufio.NewReader(os.Stdin)
 	otp, err = w.ReadString('\n')
 	if err != nil {

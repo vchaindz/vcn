@@ -7,13 +7,16 @@ import (
 )
 
 // Execute the login action
-func ExecuteLC(host, port string) error {
+func ExecuteLC(host, port, lcCert string) error {
 	apiKey, err := cli.ProvideLcApiKey()
 	if err != nil {
 		return err
 	}
 	if apiKey != "" {
-		_ = api.NewLcUser(apiKey, host, port)
+		_, err = api.NewLcUser(apiKey, host, port, lcCert)
+		if err != nil {
+			return err
+		}
 		// Store the new config
 		if err := store.SaveConfig(); err != nil {
 			return err

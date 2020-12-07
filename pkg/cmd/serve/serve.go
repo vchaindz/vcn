@@ -38,6 +38,7 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
+	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
 
 	return cmd
 }
@@ -70,10 +71,14 @@ func runServe(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-
+	lcCert, err := cmd.Flags().GetString("lc-cert")
+	if err != nil {
+		return err
+	}
 	sh := handler{
 		lcHost: lcHost,
 		lcPort: lcPort,
+		lcCert: lcCert,
 	}
 
 	router := mux.NewRouter().StrictSlash(true)

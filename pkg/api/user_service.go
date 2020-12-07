@@ -9,9 +9,7 @@
 package api
 
 import (
-	sdk "github.com/vchain-us/ledger-compliance-go/grpcclient"
 	"github.com/vchain-us/vcn/pkg/store"
-	"strconv"
 )
 
 // GetUserFromContext returns a new the correct user based on the context
@@ -22,12 +20,12 @@ func GetUserFromContext(context store.CurrentContext) (interface{}, error) {
 		}, nil
 	}
 	if context.LcApiKey != "" {
-		p, err := strconv.Atoi(context.LcPort)
+		client, err := NewLcClient(context.LcApiKey, context.LcHost, context.LcPort, context.LcCert)
 		if err != nil {
 			return nil, err
 		}
 		return &LcUser{
-			Client: sdk.NewLcClient(sdk.Host(context.LcHost), sdk.Port(p), sdk.ApiKey(context.LcApiKey), sdk.Dir(store.CurrentConfigFilePath())),
+			Client: client,
 			cfg:    store.Config().UserByLcApiKey(context.LcApiKey),
 		}, nil
 	}

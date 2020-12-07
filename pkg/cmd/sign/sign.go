@@ -92,6 +92,7 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().BoolP("recursive", "r", false, "if set, wildcard usage will walk inside subdirectories of provided path")
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
+	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
 	)
@@ -189,6 +190,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	if err != nil {
 		return err
 	}
+	lcCert, err := cmd.Flags().GetString("lc-cert")
+	if err != nil {
+		return err
+	}
 
 	//check if an lcUser is present inside the context
 	var lcUser *api.LcUser
@@ -207,8 +212,10 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 			return err
 		}
 		if apiKey != "" {
-			lcUser = api.NewLcUser(apiKey, host, port)
-			// Store the new config
+			lcUser, err = api.NewLcUser(apiKey, host, port, lcCert)
+			if err != nil {
+				return err
+			} // Store the new config
 			if err := store.SaveConfig(); err != nil {
 				return err
 			}

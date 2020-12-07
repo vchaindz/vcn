@@ -71,6 +71,7 @@ vcn inspect document.pdf --signerID CygBE_zb8XnprkkO6ncIrbbwYoUq5T1zfyEF6DhqcAI=
 	// ledger compliance flags
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
+	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
 	cmd.Flags().String("signerID", "", "specify a signerID to refine inspection result on ledger compliance")
 
 	cmd.Flags().Uint64("first", 0, "set the limit for the first elements filter")
@@ -128,7 +129,10 @@ func runInspect(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-
+	lcCert, err := cmd.Flags().GetString("lc-cert")
+	if err != nil {
+		return err
+	}
 	//check if an lcUser is present inside the context
 	var lcUser *api.LcUser
 	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
@@ -146,8 +150,10 @@ func runInspect(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if apiKey != "" {
-			lcUser = api.NewLcUser(apiKey, host, port)
-			// Store the new config
+			lcUser, err = api.NewLcUser(apiKey, host, port, lcCert)
+			if err != nil {
+				return err
+			} // Store the new config
 			if err := store.SaveConfig(); err != nil {
 				return err
 			}

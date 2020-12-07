@@ -29,6 +29,8 @@ func NewCommand() *cobra.Command {
 VCN_USER and VCN_PASSWORD env vars can be used to pass credentials
 in a non-interactive environment.
 `,
+		Example: `./vcn login
+				  ./vcn login --lc-port 33443 --lc-host lc.vchain.us --lc-cert lc.vchain.us`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
 			output, err := cmd.Flags().GetString("output")
@@ -44,8 +46,12 @@ in a non-interactive environment.
 			if err != nil {
 				return err
 			}
+			lcCert, err := cmd.Flags().GetString("lc-cert")
+			if err != nil {
+				return err
+			}
 			if lcHost != "" || lcPort != "" {
-				return ExecuteLC(lcHost, lcPort)
+				return ExecuteLC(lcHost, lcPort, lcCert)
 			}
 
 			if err := Execute(); err != nil {
@@ -60,6 +66,7 @@ in a non-interactive environment.
 	}
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
+	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
 	return cmd
 }
 

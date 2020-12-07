@@ -26,6 +26,7 @@ type User struct {
 	Token    string `json:"token,omitempty"`
 	KeyStore string `json:"keystore,omitempty"`
 	LcApiKey string `json:"lcApiKey,omitempty"`
+	LcCert   string `json:"lcCert,omitempty"`
 }
 
 // ConfigRoot holds root fields of the configuration file.
@@ -40,6 +41,7 @@ type CurrentContext struct {
 	LcApiKey string `json:"lcApiKey,omitempty"`
 	LcHost   string `json:"LcHost,omitempty"`
 	LcPort   string `json:"LcPort,omitempty"`
+	LcCert   string `json:"LcCert,omitempty"`
 }
 
 func (cc *CurrentContext) Clear() {
@@ -47,6 +49,7 @@ func (cc *CurrentContext) Clear() {
 	cc.LcApiKey = ""
 	cc.LcHost = ""
 	cc.LcPort = ""
+	cc.LcCert = ""
 }
 
 var cfg *ConfigRoot
@@ -182,12 +185,13 @@ func (c *ConfigRoot) UserByLcApiKey(lcApiKey string) (u *User) {
 
 // User returns an User from the global config matching the given email.
 // User returns nil when an empty email is given or c is nil.
-func (c *ConfigRoot) NewLcUser(lcApiKey string, host string, port string) (u *User) {
+func (c *ConfigRoot) NewLcUser(lcApiKey, host, port, lcCert string) (u *User) {
 	defer func() {
 		cfg.CurrentContext.Clear()
 		cfg.CurrentContext.LcApiKey = lcApiKey
 		cfg.CurrentContext.LcHost = host
 		cfg.CurrentContext.LcPort = port
+		cfg.CurrentContext.LcCert = lcCert
 	}()
 	if c == nil || lcApiKey == "" {
 		return nil

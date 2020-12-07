@@ -118,6 +118,7 @@ ARG must be one of:
 	cmd.Flags().Bool("raw-diff", false, "print raw a diff, if any")
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
+	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
 	cmd.Flags().MarkHidden("raw-diff")
 
 	return cmd
@@ -151,7 +152,10 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-
+	lcCert, err := cmd.Flags().GetString("lc-cert")
+	if err != nil {
+		return err
+	}
 	//check if an lcUser is present inside the context
 	var lcUser *api.LcUser
 	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
@@ -169,7 +173,10 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if apiKey != "" {
-			lcUser = api.NewLcUser(apiKey, host, port)
+			lcUser, err = api.NewLcUser(apiKey, host, port, lcCert)
+			if err != nil {
+				return err
+			}
 			// Store the new config
 			if err := store.SaveConfig(); err != nil {
 				return err

@@ -25,12 +25,17 @@ func (sh *handler) verify(w http.ResponseWriter, r *http.Request) {
 	hash := strings.ToLower(vars["hash"])
 
 	if sh.lcHost != "" && sh.lcPort != "" {
-		lcUser := getLcUser(r, sh.lcHost, sh.lcPort)
+		// todo @Michele move getLcUser in handler sh constructor
+		lcUser, err := getLcUser(r, sh.lcHost, sh.lcPort, sh.lcCert)
+		if err != nil {
+			writeError(w, http.StatusBadGateway, err)
+			return
+		}
 		if lcUser.Client.ApiKey == "" {
 			writeError(w, http.StatusUnauthorized, fmt.Errorf("api key not provided"))
 			return
 		}
-		err := lcUser.Client.Connect()
+		err = lcUser.Client.Connect()
 		if err != nil {
 			writeError(w, http.StatusBadGateway, err)
 			return
