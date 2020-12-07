@@ -30,6 +30,8 @@ Everything is done in a global, collaborative way to break the common silo solut
 - [Documentation](#documentation)
 - [Testing](#testing)
 - [Cross-compiling for various platforms](#cross-compiling-for-various-platforms)
+- [CodeNotary Ledger Compliance](#codenotary-ledger-compliance)
+
 - [License](#license)
 
 ## Quick start
@@ -131,7 +133,13 @@ Basically, `vcn` can notarize or authenticate any of the following kind of asset
 - a **git commit** (by prefixing the local git working directory path with `git://`)
 - a **container image** (by using `docker://` or `podman://` followed by the name of an image present in the local registry of docker or podman, respectively)
 
-> It's also possible to provide a hash value directly by using the `--hash` flag.
+> It's possible to provide a hash value directly by using the `--hash` flag.
+
+> It's also possible to notarize assets using wildcard.
+> With `--recursive` flag is possible to iterate over inner directories.
+>```shell script
+>./vcn n "*.md" --recursive
+>```
 
 For detailed **command line usage** see [docs/cmd/vcn.md](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md) or just run `vcn help`.
 
@@ -212,7 +220,6 @@ vcn authenticate --output=yaml <asset>
 * [Environments](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/environments.md)
 * [Formatted output (json/yaml)](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/formatted-output.md)
 * [Notarization explained](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/notarization.md)
-* [CodeNotary Ledger Compliance](https://github.com/vchain-us/vcn/blob/master/docs/user-guide/ledger-compliance.md)
 
 ## Examples
 
@@ -287,7 +294,10 @@ export VCN_USER=<email>
 export VCN_PASSWORD=<login password>
 export VCN_NOTARIZATION_PASSWORD=<notarization password>
 ```
-
+> It's possible to disable one time password requirement with:
+>```bash
+> export VCN_OTP_EMPTY=true
+> ```
 Once done, you can use `vcn` in your non-interactive environment using:
 
 ```
@@ -307,12 +317,52 @@ The C libraries of [go-ethereum](https://github.com/ethereum/go-ethereum) make a
 necessary.
 The `make dist` target takes care of all steps by using [xgo](https://github.com/techknowlogick/xgo) and [docker](https://github.com/docker).
 
-### gRPC code generation
 
-As prerequisite follow:
+## CodeNotary Ledger Compliance
 
-https://grpc.io/docs/languages/go/quickstart/
-(cd ../../../grpc-go/cmd/protoc-gen-go-grpc && go install .)
+Vcn was extended in order to be compatible with [CodeNotary Ledger Compliance](https://codenotary.com/) .
+Notarized assets informations are stored in a tamperproof ledger with cryptographic verification backed by [immudb](https://codenotary.com/technologies/immudb/), the immutable database.
+Thanks to this `vcn` is faster and provides more powerful functionalities like the local data inclusion and consistency verification and an enhanced cli filter system.
+
+### Obtain an api key
+To provide access to Ledger Compliance a valid api key is required.
+This api key is binded to a specific ledger and it's required during vcn login.
+To obtain a valid key register yourself on CodeNotary Ledger Compliance platform.
+
+### Login
+
+To login in Ledger Compliance provides --lc-port and --lc-host flag and submit api key when requested.
+Once host port and api key are provided it's possible to omit them in following commands; it's also possible to provide them in other commands like `notarize`, `verify` or `inspect`.
+```shell script
+vcn login --lc-port 3324 --lc-host 127.0.0.1
+```
+> One time password (otp) is not mandatory
+
+> To set up a secure connection (tls) with Ledger Compliance server it's possible to provide a certificate
+>```shell script
+>vcn login --lc-port 3324 --lc-host 127.0.0.1  --lc-cert mycert.pem
+>```
+
+### Commands
+All commands reference didn't change.
+
+### Inspect
+Inspect is extended with the addition of new filter: `--last`, `--first`, `--start` and `--end`.
+With `--last` and `--first` are returned the N first or last respectively.
+```shell script
+vcn inspect document.pdf --last 10
+```
+With `--start` and `--end` it's possible to use a time range filter
+```shell script
+vcn inspect document.pdf --start 2020/10/28-08:00:00 --end 2020/10/28-17:00:00
+```
+If no filters are provided only maximum 100 items are returned.
+
+### Signer Identifier
+It's possible to filter results with a single signer identifier
+```shell script
+vcn inspect document.pdf --signerID CygBE_zb8XnprkkO6ncIrbbwYoUq5T1zfyEF6DhqcAI=
+```
 
 ## Generating smart contracts on linux
 
