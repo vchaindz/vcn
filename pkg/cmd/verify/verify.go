@@ -238,10 +238,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	user, ok := uif.(*api.User)
-	if !ok {
-		return fmt.Errorf("cannot load the current user")
-	}
+	user := api.NewUser(store.Config().CurrentContext.Email)
 
 	// by alerts
 	if useAlerts {
