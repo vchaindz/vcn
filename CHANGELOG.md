@@ -4,8 +4,61 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.9.0"></a>
+## [v0.9.0] - 2020-12-08
+### Bug Fixes
+- restore verification with the highest level available when not logged
+- fix integration tests and add circleci job for go 1.15
+- fix dist release go1.15.6
+- fix ledger-compliance-go dependency
+- **pkg/api:** swap signerID position with the hash in the vcn lc key format
+- **pkg/api:** fix artifact status json unmarshall
+- **pkg/cmd:** don't track untrusted verification
+- **pkg/cmd/inspect:** fix inspect ux, examples and errors
+- **pkg/cmd/verify:** fix empty signerid handling
+- **pkg/meta:** add apikey env var
+
+### Changes
+- bump sdk version, remove useless package
+- bump lc sdk version
+- add swagger.json
+- bumb version of go-ethereum and smart contracts
+- fix inspect full history message
+- upgrade go version to 1.15 and sdk
+- remove all whitespaces from otp
+- **pkg/cmd:** show status unknown if tamper is detected
+- **pkg/cmd/serve:** handle missing api key error
+- **pkg/extractor:** fix typo
+- **pkg/extractor/wildcard:** remove max notarization limit
+- **pkg/extractor/wildcard:** improve max notarized files number with wildcard
+
+### Code Refactoring
+- change api in order to make atomic indexing of notarized items in lc
+- **pkg/extractor:** handle array of artifacts instead of a single one in extractor
+
+### Features
+- vcn accepts a certificate to setup a tls connection
+- if no limit or filter are submitted inspect return last 100 items
+- add multiple notarizations capability with wildcard
+- add wildcard extractor
+- add serve lc inspect
+- improve inspect result with timestamp for each element
+- add verify filter by LC signerID. fix [#104](https://github.com/vchain-us/vcn/issues/104)
+- add vcn lc login. fix [#103](https://github.com/vchain-us/vcn/issues/103)
+- partial parallel notarizations support
+- add inspect for ledger compliance
+- add otp_empty environment var
+- add lc operations for vcn server
+- add verify asset on ledger compliance
+- add ledger compliance authentication and notarization
+- Add otp support. close [#87](https://github.com/vchain-us/vcn/issues/87) close [#88](https://github.com/vchain-us/vcn/issues/88)
+- **pkg/cmd:** add inspect api
+- **pkg/cmd/inspect:** improve inspect in lc
+- **pkg/cmd/verify:** manage verify by hash in lc mode
+
+
 <a name="v0.8.3"></a>
-## [v0.8.3] - 2020-02-11
+## [v0.8.3] - 2020-02-19
 ### Changes
 - distinct event for alert verification
 - **cmd/sign:** allow notarization when no dir with write access by default
@@ -572,7 +625,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.8.3...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.0...HEAD
+[v0.9.0]: https://github.com/vchain-us/vcn/compare/v0.8.3...v0.9.0
 [v0.8.3]: https://github.com/vchain-us/vcn/compare/v0.8.2...v0.8.3
 [v0.8.2]: https://github.com/vchain-us/vcn/compare/v0.8.1...v0.8.2
 [v0.8.1]: https://github.com/vchain-us/vcn/compare/v0.8.0...v0.8.1
