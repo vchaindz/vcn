@@ -31,10 +31,10 @@ in a non-interactive environment.
 `,
 		Example: `  # blockchain login:
   ./vcn login
-  # Codenotary Ledger Compliance login:
+  # CodeNotary Ledger Compliance login:
   ./vcn login --lc-port 33443 --lc-host lc.vchain.us --lc-cert lc.vchain.us
   ./vcn login --lc-port 3324 --lc-host 127.0.0.1 --lc-no-tls
-  ./vcn login --lc-port 443 --lc-host lc.vchain.us --lc-cert lc.vchain.us --llc-skip-tls-verify`,
+  ./vcn login --lc-port 443 --lc-host lc.vchain.us --lc-cert lc.vchain.us --lc-skip-tls-verify`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
 			output, err := cmd.Flags().GetString("output")
