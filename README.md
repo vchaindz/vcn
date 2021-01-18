@@ -29,7 +29,6 @@ Everything is done in a global, collaborative way to break the common silo solut
 - [Integrations](#integrations)
 - [Documentation](#documentation)
 - [Testing](#testing)
-- [Cross-compiling for various platforms](#cross-compiling-for-various-platforms)
 - [CodeNotary Ledger Compliance](#codenotary-ledger-compliance)
 
 - [License](#license)
@@ -135,15 +134,17 @@ Basically, `vcn` can notarize or authenticate any of the following kind of asset
 
 > It's possible to provide a hash value directly by using the `--hash` flag.
 
-> It's also possible to notarize assets using wildcard.
-> With `--recursive` flag is possible to iterate over inner directories.
->```shell script
->./vcn n "*.md" --recursive
->```
-
 For detailed **command line usage** see [docs/cmd/vcn.md](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md) or just run `vcn help`.
 
-### Local api server
+### Wildcard support and recursive notarization
+
+ It's also possible to notarize assets using wildcard.
+ With `--recursive` flag is possible to iterate over inner directories.
+```shell script
+./vcn n "*.md" --recursive
+```
+
+### Local API server
 
 It's possible to start a local API server. All commands are supported.
 The notarization password can be submitted with the `x-notarization-password` header.
@@ -330,63 +331,108 @@ vcn notarize <asset>
 make test
 ```
 
-## Cross-compiling for various platforms
-
-The C libraries of [go-ethereum](https://github.com/ethereum/go-ethereum) make a more sophisticated cross-compilation
-necessary.
-The `make dist` target takes care of all steps by using [xgo](https://github.com/techknowlogick/xgo) and [docker](https://github.com/docker).
-
-
 ## CodeNotary Ledger Compliance
 
 Vcn was extended in order to be compatible with [CodeNotary Ledger Compliance](https://codenotary.com/) .
 Notarized assets informations are stored in a tamperproof ledger with cryptographic verification backed by [immudb](https://codenotary.com/technologies/immudb/), the immutable database.
-Thanks to this `vcn` is faster and provides more powerful functionalities like the local data inclusion and consistency verification and an enhanced cli filter system.
+Thanks to this `vcn` is faster and provides more powerful functionalities like local data inclusion, consistency verification and enhanced CLI filters.
 
-### Obtain an api key
-To provide access to Ledger Compliance a valid api key is required.
-This api key is bound to a specific ledger and it's required during vcn login.
-To obtain a valid key you need to get access to a licensed CodeNotary Ledger Compliance platform.
+### Obtain an API Key
+To provide access to Ledger Compliance a valid API Key is required.
+This API Key is bound to a specific Ledger and it's required during vcn login.
+To obtain a valid key you need to get access to a licensed CodeNotary Ledger Compliance installation.
 
 ### Login
 
-To login in Ledger Compliance provides --lc-port and --lc-host flag and submit api key when requested.
-Once host port and api key are provided it's possible to omit them in following commands; it's also possible to provide them in other commands like `notarize`, `verify` or `inspect`.
+To login in Ledger Compliance provides `--lc-port` and `--lc-host` flag, also the user submit API Key when requested.
+Once host, port and API Key are provided, it's possible to omit them in following commands. Otherwise, the user can provide them in other commands like `notarize`, `verify` or `inspect`.
+
 ```shell script
-vcn login --lc-port 3324 --lc-host 127.0.0.1
+vcn login --lc-port 443 --lc-host cnlc-host.com
 ```
+
 > One time password (otp) is not mandatory
 
-> To set up a secure connection (tls) with Ledger Compliance server it's possible to provide a certificate
->```shell script
->vcn login --lc-port 3324 --lc-host 127.0.0.1  --lc-cert mycert.pem
->```
+Alternatively, for using vcn in non-interactive mode, the user can supply the API Key via the `VCN_LC_API_KEY` environment variable, e.g.:
+
+```shell script
+export VCN_LC_API_KEY=apikeyhere
+
+# No vcn login command needed
+
+# Other vcn commands...
+vcn notarize asset.txt --lc-host cnlc-host.com --lc-port 443
+```
+
+#### TLS
+
+By default, vcn will try to establish a secure connection (TLS) with a Ledger Compliance server.
+
+The user can also provide a custom TLS certificate for the server, in case vcn is not able to download it automatically:
+
+```shell script
+vcn login --lc-port 443 --lc-host cnlc-host.com --lc-cert mycert.pem
+```
+
+For testing purposes or in case the provided certificate should be always trusted by the client, the user can
+configure vcn to skip TLS certificate verification with the `--lc-skip-tls-verify` option:
+
+```shell script
+vcn login --lc-port 443 --lc-host cnlc-host.com --lc-cert mycert.pem --lc-skip-tls-verify
+```
+
+Finally in case the Ledger Compliance Server is not exposed through a TLS endpoint, the user can request a cleartext
+connection using the `--lc-no-tls` option:
+
+```shell script
+vcn login --lc-port 80 --lc-host cnlc-host.com --lc-no-tls
+```
 
 ### Commands
 All commands reference didn't change.
 
+### Add custom metadata when signing assets
+The user can upload custom metadata when doing an asset notarization using the `--attr` option, e.g.:
+
+```shell script
+vcn n README.md --attr Testme=yes --attr project=5 --attr pipeline=test
+```
+
+This command would add the custom asset metadata Testme: yes, project: 5, pipeline: test.
+
+The user can read the metadata back on asset authentication, i.e. using the `jq` utility:
+
+```shell script
+vcn a README.md -o json | jq .metadata
+```
+
 ### Inspect
-Inspect is extended with the addition of new filter: `--last`, `--first`, `--start` and `--end`.
+Inspect has been extended with the addition of new filter: `--last`, `--first`, `--start` and `--end`.
 With `--last` and `--first` are returned the N first or last respectively.
+
 ```shell script
 vcn inspect document.pdf --last 10
 ```
-With `--start` and `--end` it's possible to use a time range filter
+
+With `--start` and `--end` it's possible to use a time range filter:
+
 ```shell script
 vcn inspect document.pdf --start 2020/10/28-08:00:00 --end 2020/10/28-17:00:00
 ```
+
 If no filters are provided only maximum 100 items are returned.
 
 ### Signer Identifier
-It's possible to filter results with a single signer identifier
+It's possible to filter results by signer identifier:
+
 ```shell script
 vcn inspect document.pdf --signerID CygBE_zb8XnprkkO6ncIrbbwYoUq5T1zfyEF6DhqcAI=
 ```
 
-### Local api server
+### Local API server
 
 Local API server is supported.
-The `api key` can be submitted with the `x-notarization-lc-api-key` header.
+The `API Key` can be submitted with the `x-notarization-lc-api-key` header.
 
 Notarize example:
 ```bash
@@ -428,23 +474,6 @@ curl --location --request POST '127.0.0.1:8081/untrust' \
 	"Size":		1400,
 	"ContentType":	"text/plain; charset=utf-8"
 }'
-```
-## Generating smart contracts on linux
-
-Clone https://github.com/ethereum/go-ethereum and compile `abigen` command in ./cmd/abigen
-
-Download solc at https://github.com/ethereum/solidity/releases?after=v0.5.0 and chmod +x on it and copy in /usr/bin
-solc version must be:
-```bash
-solc --version
-solc, the solidity compiler commandline interface
-Version: 0.4.24+commit.e67f0147.Linux.g++
-```
-
-Place at the root of the contracts repo and generate go files with:
-```
-abigen --sol organisations/contracts/OrganisationsRelay.sol --pkg blockchain --out organisationsrelay.go
-abigen --sol assets/contracts/AssetsRelay.sol --pkg blockchain --out assetsrelay.go
 ```
 
 ## License
