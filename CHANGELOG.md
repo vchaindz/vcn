@@ -4,8 +4,34 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.9.1"></a>
+## [v0.9.1] - 2021-01-18
+### Bug Fixes
+- load artifact wait for immudb set to be indexed
+- fix state service and verified methods
+- **pkg:** fix vcn blockchain login
+- **pkg/cmd/serve:** improving error if no content is submitted while signing
+- **pkg/cmd/sign:** sign error handler fix
+- **pkg/cmd/verify:** load artifact error handler fix
+
+### Changes
+- bump lc sdk version
+- bumb lc sdk version
+- restore lc inspect capabilities
+- enable InsecureSkipVerify when tls-skip-verify is active
+- disable verified set in lc artifact creation
+- bump lc sdk version
+- **pkg/api:** artifact load uses getAt
+
+### Features
+- add lc sdk file lock
+- add no-tls mode
+- add support for tls insecure connections
+- align to new immudb implementation
+
+
 <a name="v0.9.0"></a>
-## [v0.9.0] - 2020-12-08
+## [v0.9.0] - 2020-12-14
 ### Bug Fixes
 - restore verification with the highest level available when not logged
 - fix integration tests and add circleci job for go 1.15
@@ -625,7 +651,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.1...HEAD
+[v0.9.1]: https://github.com/vchain-us/vcn/compare/v0.9.0...v0.9.1
 [v0.9.0]: https://github.com/vchain-us/vcn/compare/v0.8.3...v0.9.0
 [v0.8.3]: https://github.com/vchain-us/vcn/compare/v0.8.2...v0.8.3
 [v0.8.2]: https://github.com/vchain-us/vcn/compare/v0.8.1...v0.8.2
