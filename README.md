@@ -134,13 +134,15 @@ Basically, `vcn` can notarize or authenticate any of the following kind of asset
 
 > It's possible to provide a hash value directly by using the `--hash` flag.
 
-> It's also possible to notarize assets using wildcard.
-> With `--recursive` flag is possible to iterate over inner directories.
->```shell script
->./vcn n "*.md" --recursive
->```
-
 For detailed **command line usage** see [docs/cmd/vcn.md](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md) or just run `vcn help`.
+
+### Wildcard support and recursive notarization
+
+ It's also possible to notarize assets using wildcard.
+ With `--recursive` flag is possible to iterate over inner directories.
+```shell script
+./vcn n "*.md" --recursive
+```
 
 ### Local API server
 

@@ -131,14 +131,17 @@ Basically, `vcn` can notarize or authenticate any of the following kind of asset
 - a **container image** (by using `docker://` or `podman://` followed by the name of an image present in the local registry of docker or podman, respectively)
 
 It's possible to provide a hash value directly by using the `--hash` flag.
+
+For detailed **command line usage** see [docs/cmd/vcn.md](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md) or just run `vcn help`.
+
+### Wildcard support and recursive notarization
+
 It's also possible to notarize assets using a wildcard pattern.
 
 With `--recursive` flag the utility can recursively notarize inner directories.
 ```shell script
 ./vcn n "*.md" --recursive
 ```
-
-For detailed **command line usage** see [docs/cmd/vcn.md](https://github.com/vchain-us/vcn/blob/master/docs/cmd/vcn.md) or just run `vcn help`.
 
 ### Local API server
 
