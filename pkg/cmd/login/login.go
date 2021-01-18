@@ -23,13 +23,13 @@ import (
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Log in to codenotary.io",
-		Long: `Log in to codenotary.io.
+		Short: "Log in to codenotary.io or CodeNotary Ledger Compliance",
+		Long: `Log in to codenotary.io or CodeNotary Ledger Compliance.
 
 VCN_USER and VCN_PASSWORD env vars can be used to pass credentials
 in a non-interactive environment.
 `,
-		Example: `  # blockchain login:
+		Example: `  # Codenotary.io login:
   ./vcn login
   # CodeNotary Ledger Compliance login:
   ./vcn login --lc-port 33443 --lc-host lc.vchain.us --lc-cert lc.vchain.us
