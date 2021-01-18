@@ -16,14 +16,16 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changes
 - bump lc sdk version
+- bump lc sdk version
 - bumb lc sdk version
 - restore lc inspect capabilities
 - enable InsecureSkipVerify when tls-skip-verify is active
 - disable verified set in lc artifact creation
-- bump lc sdk version
 - **pkg/api:** artifact load uses getAt
+- **pkg/cmd/login:** fix typo in example
 
 ### Features
+- add metadatas in lc sign
 - add lc sdk file lock
 - add no-tls mode
 - add support for tls insecure connections
