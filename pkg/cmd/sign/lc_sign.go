@@ -11,7 +11,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/meta"
 )
 
-func LcSign(u *api.LcUser, artifacts []*api.Artifact, state meta.Status, output string) error {
+func LcSign(u *api.LcUser, artifacts []*api.Artifact, state meta.Status, output string, name string, metadata map[string]interface{}) error {
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
@@ -29,7 +29,17 @@ func LcSign(u *api.LcUser, artifacts []*api.Artifact, state meta.Status, output 
 		bar = progressbar.Default(int64(lenArtifacts))
 	}
 
+	if len(artifacts) == 1 {
+		// Override the asset's name, if provided by --name
+		if name != "" {
+			artifacts[0].Name = name
+		}
+	}
+
 	for _, a := range artifacts {
+		// Copy user provided custom attributes
+		a.Metadata.SetValues(metadata)
+
 		// @todo mmeloni use verified sign
 		verified, tx, err := u.Sign(
 			*a,

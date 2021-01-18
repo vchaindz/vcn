@@ -240,7 +240,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		if err != nil {
 			return err
 		}
-		return LcSign(lcUser, artifacts, state, output)
+		return LcSign(lcUser, artifacts, state, output, name, metadata)
 	}
 
 	// User
@@ -285,11 +285,12 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		if name != "" {
 			artifacts[0].Name = name
 		}
-		// Copy user provided custom attributes
-		artifacts[0].Metadata.SetValues(metadata)
 	}
 
 	for _, a := range artifacts {
+		// Copy user provided custom attributes
+		a.Metadata.SetValues(metadata)
+
 		err := sign(*u, *a, state, meta.VisibilityForFlag(public), output, silentMode, readOnly, alert)
 		if err != nil {
 			return err
