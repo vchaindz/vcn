@@ -261,17 +261,6 @@ By adding `--signerID`, you can authenticate that your asset has been signed by 
 vcn authenticate --signerID 0x8f2d1422aed72df1dba90cf9a924f2f3eb3ccd87 docker://hello-world
 ```
 
-#### Authenticate by a list of signers
-
-If an asset you or your organization wants to trust needs to be verified against a list of signers as a prerequisite, then use the `vcn authenticate` command and the following syntax:
-
-- Add a `--signerID` flag in front of each SignerID you want to add
-(eg. `--signerID 0x0...1 --signerID 0x0...2`)
-- Or set the env var `VCN_SIGNERID` correctly by using a space to separate each SignerID (eg. `VCN_SIGNERID=0x0...1 0x0...2`)
-> Be aware that using the `--signerID` flag will take precedence over `VCN_SIGNERID`.
-
-The asset authentication will succeed only if the asset has been signed by at least one of the signers.
-
 #### Authenticate using the asset's hash
 
 If you want to authenticate an asset using only its hash, you can do so by using the command as shown below:
