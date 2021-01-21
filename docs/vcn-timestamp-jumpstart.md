@@ -11,7 +11,7 @@
 Every build has a story to tell - Tamperproof provenance for your code and CI/CD pipeline
 
 vcn is the command interface for [CodeNotary Timestamp](https://timestamp.codenotary.com/).
-Notarized assets informations are stored in a tamperproof ledger with cryptographic verification backed by [immudb](https://codenotary.com/technologies/immudb/), the immutable database.
+Notarized assets informations is stored in a tamperproof ledger with cryptographic verification backed by [immudb](https://codenotary.com/technologies/immudb/), the immutable database.
 Thanks to this `vcn` is extremely fast and provides full immutability for all data ever stored including its history and is cryptographically verifiable.
 
 There are plenty of different use cases:
@@ -21,7 +21,10 @@ There are plenty of different use cases:
 * Trust or remove trust for digital assets and act on the status (within your script or pipeline)
 * Simply timestamp files and sources to doublecheck at any time in the future if these are still the same (backup/restore)
 
-**Simply request your API key and get started within a minute! This service is free forever and was built using Open Source!**
+
+**Simply request your API key and get started within a minute! This service is free forever and was built using Open Source!** :trophy:
+
+
 
 ### Obtain an API Key
 To provide access to our timestamping service a valid API Key is required. If you don't have one yet, simply signup here [CodeNotary Timestamp](https://timestamp.codenotary.com/)
@@ -37,21 +40,17 @@ bash <(curl https://getvcn.codenotary.com -L)
 
 You can also [download the latest release](https://github.com/vchain-us/vcn/releases/latest)
 
-2. **Login** to timestamp.codenotary.com
-
+2. **Login** to [timestamp.codenotary.com](https://timestamp.codenotary.com/)
 ```bash
 vcn login --lc-host timestamp.codenotary.com # type in your API key when requested
-
 # or setting the API key
-
 VCN_LC_API_KEY=<Your-API-Key vcn login --lc-host timestamp.codenotary.com
 ```
 
-
 3. **Notarize existing digital objects** Once you have an account you can start notarizing digital assets to give them an identity.
-
-   ```bash
-   vcn n <file|dir://directory|docker://dockerimage|git://gitdirectory>
+```bash
+vcn n <file|dir://directory|docker://dockerimage|git://gitdirectory>
+```
 
 4. **Authenticate digital objects** You can use the command as a starting point.
 
@@ -59,7 +58,7 @@ VCN_LC_API_KEY=<Your-API-Key vcn login --lc-host timestamp.codenotary.com
    vcn a <file|dir://directory|docker://dockerimage|git://gitdirectory>
    ```
 
-For detailed **command line usage** just run `vcn help`.
+For detailed **command line usage**, just run `vcn help`.
 
 ## Usage
 
@@ -69,7 +68,7 @@ It's also possible to notarize assets using a wildcard pattern.
 
 With `--recursive` flag the utility can recursively notarize inner directories.
 ```shell script
-./vcn n "*.md" --recursive
+vcn n "*.md" --recursive
 ```
 
 ### Notarization
@@ -80,7 +79,7 @@ Start with the `login` command. `vcn` will walk you through login and importing 
 vcn login --lc-host timestamp.codenotary.com
 ```
 
-Once your secret is set you can notarize assets like in the following examples:
+Once your secret is set, you can notarize assets like in the following examples:
 
 ```
 vcn notarize <file>
@@ -218,7 +217,7 @@ With `--start` and `--end` it's possible to use a time range filter:
 vcn inspect document.pdf --start 2020/10/28-08:00:00 --end 2020/10/28-17:00:00
 ```
 
-If no filters are provided only maximum 100 items are returned.
+If no filters are provided, only a maximum of 100 items are returned.
 
 #### Signer Identifier
 It's possible to filter results by signer identifier:
