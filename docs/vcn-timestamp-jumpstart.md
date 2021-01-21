@@ -40,7 +40,7 @@ You can also [download the latest release](https://github.com/vchain-us/vcn/rele
 2. **Login** to timestamp.codenotary.com
 
 ```bash
-vcn login --lc-host timestamp.codenotary.com # type in your API key if requested
+vcn login --lc-host timestamp.codenotary.com # type in your API key when requested
 
 # or setting the API key
 
@@ -136,12 +136,14 @@ If an image was not verified, it will not run and nothing will execute.
 #### Authenticate multiple assets
 You can authenticate multiple assets by piping other command outputs into `vcn`:
 ```
-ls | xargs vcn authenticate
+ls | xargs -n 1 vcn authenticate
 ```
 > The exit code will be `0` only if all the assets in you other command outputs are verified.
 
 #### Authenticate by a specific signer
 By adding `--signerID`, you can authenticate that your asset has been signed by a specific SignerID.
+You can find your own signer id in the output of `vcn n` or `vcn a` (Signer).
+
 > A SignerID is the signer public address (represented as a 40 hex characters long string prefixed with `0x`).
 
 ```

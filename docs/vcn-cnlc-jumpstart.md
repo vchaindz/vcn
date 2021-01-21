@@ -249,7 +249,7 @@ If an image was not verified, it will not run and nothing will execute.
 #### Authenticate multiple assets
 You can authenticate multiple assets by piping other command outputs into `vcn`:
 ```
-ls | xargs vcn authenticate
+ls | xargs -n 1 vcn authenticate
 ```
 > The exit code will be `0` only if all the assets in you other command outputs are verified.
 
