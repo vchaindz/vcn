@@ -1,4 +1,4 @@
-# vcn - CodeNotary Ledger Compliance jumpstart  <img align="right" src="https://github.com/vchain-us/vcn/blob/master/docs/img/cn-color.eeadbabe.svg" width="160px"/>
+# vcn - CodeNotary Ledger Compliance jumpstart
 
 ## Table of contents
 
