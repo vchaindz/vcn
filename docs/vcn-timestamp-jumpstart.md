@@ -1,5 +1,9 @@
 # CodeNotary Timestamp Service https://timestamp.codenotary.com jumpstart
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/vchain-us/vcn/master/docs/timestamp.svg?sanitize=true" width="1024" alt="CodeNotary Timestamp Jumpstart">
+</p>
+
 ## Table of contents
 
 - [CodeNotary Timestamp](#codenotary-timestamp)
