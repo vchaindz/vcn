@@ -1,7 +1,5 @@
 # CodeNotary Timestamp Service https://timestamp.codenotary.com jumpstart
 
-![Jumpstart-Screenshare](./timestamp.svg)
-
 ## Table of contents
 
 - [CodeNotary Timestamp](#codenotary-timestamp)
