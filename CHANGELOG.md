@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.9.2"></a>
+## [v0.9.2] - 2021-01-28
+### Bug Fixes
+- fix autodiscover dir artifact
+- **pkg/cmd/internal/cli:** return an error if empty api key is provided
+
+### Changes
+- update lc-sdk dependency
+- list of signers is not supported in CNLC
+- wildcard instructions in their own section
+- add a separated CNLC jumpstart
+- fix login help message
+
+### Features
+- **pkg/cmd:** add lc info and list method
+- **pkg/cmd:** improve lc login method in order to check if connection and api key are valid
+
+
 <a name="v0.9.1"></a>
 ## [v0.9.1] - 2021-01-18
 ### Bug Fixes
@@ -653,7 +671,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.2...HEAD
+[v0.9.2]: https://github.com/vchain-us/vcn/compare/v0.9.1...v0.9.2
 [v0.9.1]: https://github.com/vchain-us/vcn/compare/v0.9.0...v0.9.1
 [v0.9.0]: https://github.com/vchain-us/vcn/compare/v0.8.3...v0.9.0
 [v0.8.3]: https://github.com/vchain-us/vcn/compare/v0.8.2...v0.8.3
