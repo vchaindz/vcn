@@ -16,7 +16,7 @@ require (
 	github.com/caarlos0/spin v1.1.0
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/cmars/basen v0.0.0-20150613233007-fe3947df716e // indirect
-	github.com/codenotary/immudb v0.9.1-0.20210116234611-354c138186a5
+	github.com/codenotary/immudb v0.9.1-0.20210128143006-bd66cd19ff12
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dghubble/sling v1.3.0
 	github.com/dustin/go-humanize v1.0.0

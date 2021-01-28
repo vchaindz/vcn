@@ -163,7 +163,7 @@ func getHistoryResults(ctx context.Context, key []byte, u *api.LcUser, first, la
 
 	items, err = u.Client.HistoryExt(ctx, &immuschema.HistoryRequest{
 		Key:   key,
-		Limit: limit,
+		Limit: int32(limit),
 		Desc:  desc,
 	})
 	if err != nil {
