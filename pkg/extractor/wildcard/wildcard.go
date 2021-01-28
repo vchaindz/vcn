@@ -56,12 +56,19 @@ func Artifact(u *uri.URI, options ...extractor.Option) ([]*api.Artifact, error) 
 	}
 
 	// provided path is a file
-	if _, err := os.Stat(p); err == nil {
-		u, err := uri.Parse("file://" + p)
+	if fileInfo, err := os.Stat(p); err == nil {
+		if !fileInfo.IsDir() {
+			u, err := uri.Parse("file://" + p)
+			if err != nil {
+				return nil, err
+			}
+			return file.Artifact(u)
+		}
+		u, err := uri.Parse("dir://" + p)
 		if err != nil {
 			return nil, err
 		}
-		return file.Artifact(u)
+		return dir.Artifact(u)
 	}
 
 	root := filepath.Dir(p)
