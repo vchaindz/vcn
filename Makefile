@@ -126,7 +126,7 @@ dist/NSIS: build/makensis
 	rm -Rf ./dist/NSIS
 
 .PHONY: dist/sign
-dist/sign: vendor vcn
+dist/sign: vcn
 	for f in ./dist/*; do ./vcn sign -p $$f; printf "\n\n"; done
 
 .PHONY: dist/all
