@@ -26,7 +26,7 @@ func StatusColor(status Status) (color.Attribute, color.Attribute, color.Attribu
 
 // StyleAffordance returns color.Attribute(s) for affordance messages
 func StyleAffordance() (color.Attribute, color.Attribute, color.Attribute) {
-	return color.FgBlue, color.Bold, color.BgHiWhite
+	return color.FgGreen, color.Bold, color.BgBlack
 }
 
 // StyleError returns color.Attribute(s) for error messages
