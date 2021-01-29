@@ -209,7 +209,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			a := &api.Artifact{
 				Hash: strings.ToLower(hash),
 			}
-			return lcVerify(a, lcUser, signerID, output)
+			return lcVerify(cmd, a, lcUser, signerID, output)
 		}
 
 		artifacts, err := extractor.Extract(args[0])
@@ -217,7 +217,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		for _, a := range artifacts {
-			err := lcVerify(a, lcUser, signerID, output)
+			err := lcVerify(cmd, a, lcUser, signerID, output)
 			if err != nil {
 				return err
 			}
@@ -399,7 +399,7 @@ func verify(cmd *cobra.Command, a *api.Artifact, keys []string, org string, user
 		return fmt.Errorf("unable to authenticate the hash: %s", err)
 	}
 
-	err = hook.finalize(verification, alertConfig, output)
+	err = hook.finalize(alertConfig, output)
 	if err != nil {
 		return err
 	}

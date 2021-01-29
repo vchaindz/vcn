@@ -46,3 +46,17 @@ func (h *hook) finalize(v *api.BlockchainVerification, readOnly bool) error {
 	}
 	return nil
 }
+
+func (h *hook) finalizeWithoutVerification(readOnly bool) error {
+	if h != nil {
+		manifest, path := dir.Metadata(h.a)
+		if manifest != nil && path != "" {
+			// manifest is optional, we can ignore errors
+			store.SaveManifest(h.a.Kind, path, *manifest)
+			if !readOnly {
+				bundle.WriteManifest(*manifest, filepath.Join(path, bundle.ManifestFilename))
+			}
+		}
+	}
+	return nil
+}

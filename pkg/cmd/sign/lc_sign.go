@@ -29,7 +29,9 @@ func LcSign(u *api.LcUser, artifacts []*api.Artifact, state meta.Status, output 
 		bar = progressbar.Default(int64(lenArtifacts))
 	}
 
+	var hook *hook
 	if len(artifacts) == 1 {
+		hook = newHook(artifacts[0])
 		// Override the asset's name, if provided by --name
 		if name != "" {
 			artifacts[0].Name = name
@@ -54,6 +56,14 @@ func LcSign(u *api.LcUser, artifacts []*api.Artifact, state meta.Status, output 
 			color.Unset()
 			fmt.Println()
 			return nil
+		}
+
+		// writingManifest
+		if hook != nil && len(artifacts) == 1 {
+			err = hook.finalizeWithoutVerification(false)
+			if err != nil {
+				return cli.PrintWarning(output, err.Error())
+			}
 		}
 
 		if err != nil {

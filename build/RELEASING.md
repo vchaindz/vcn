@@ -9,7 +9,7 @@ Before relasing, ensure that all modifications have been tested and pushed. When
 
 ### About the branching model
 
-Although `vcn` aims to have a "[OneFlow](https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow)" git branching model, [release branches](https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow#release-branches) have never been used. 
+Although `vcn` aims to have a "[OneFlow](https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow)" git branching model, [release branches](https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow#release-branches) have never been used.
 Thus, the instructions on the current document assume that just the `master` branch is used for the release process (with all modifications previously merged in). However the whole process can be easily adapter to a release branch if needed.
 
 ## 1. Bump version (vX.Y.Z)
@@ -126,5 +126,5 @@ Once a new `vcn` version has been released, the [vcn Homebrew formula](https://g
 
 ### CodeNotary platform
 
-Once a new `vcn` version has been released, the latest version should be set on the CodeNotary platform backend. 
+Once a new `vcn` version has been released, the latest version should be set on the CodeNotary platform backend.
 Then you can check the latest version has been set properly [here](https://api.codenotary.io/foundation/v1/version/vcn/latest).
