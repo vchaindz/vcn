@@ -304,8 +304,9 @@ func sign(u api.User, a api.Artifact, state meta.Status, visibility meta.Visibil
 
 	if output == "" {
 		color.Set(meta.StyleAffordance())
-		fmt.Println("Your assets will not be uploaded. They will be processed locally.")
+		fmt.Print("Your assets will not be uploaded. They will be processed locally.")
 		color.Unset()
+		fmt.Println()
 		fmt.Println()
 		fmt.Println("Signer:\t" + u.Email())
 	}

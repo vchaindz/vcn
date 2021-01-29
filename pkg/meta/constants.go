@@ -128,8 +128,8 @@ func (s Status) String() string {
 
 // StatusNameStyled returns the colorized name of the given status as string
 func StatusNameStyled(status Status) string {
-	c, s := StatusColor(status)
-	return color.New(c, s).Sprintf(status.String())
+	c, s, b := StatusColor(status)
+	return color.New(c, s, b).Sprintf(status.String())
 }
 
 // String returns the name of the given visibility as string

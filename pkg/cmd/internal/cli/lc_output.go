@@ -103,8 +103,7 @@ func WriteLcResultTo(r *types.LcResult, out io.Writer) (n int64, err error) {
 	}
 
 	for _, e := range r.Errors {
-		c, s := meta.StyleError()
-		err = printf("Error:\t%s\n", color.New(c, s).Sprintf(e.Error()))
+		err = printf("Error:\t%s\n", color.New(meta.StyleError()).Sprintf(e.Error()))
 		if err != nil {
 			return
 		}

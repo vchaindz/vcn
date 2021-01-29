@@ -13,7 +13,7 @@ import (
 )
 
 // StatusColor returns color.Attribute(s) for the given status
-func StatusColor(status Status) (color.Attribute, color.Attribute) {
+func StatusColor(status Status) (color.Attribute, color.Attribute, color.Attribute) {
 	switch status {
 	case StatusTrusted:
 		return StyleSuccess()
@@ -25,21 +25,21 @@ func StatusColor(status Status) (color.Attribute, color.Attribute) {
 }
 
 // StyleAffordance returns color.Attribute(s) for affordance messages
-func StyleAffordance() (color.Attribute, color.Attribute) {
-	return color.FgHiBlue, color.Bold
+func StyleAffordance() (color.Attribute, color.Attribute, color.Attribute) {
+	return color.FgHiBlue, color.Bold, color.BgBlack
 }
 
 // StyleError returns color.Attribute(s) for error messages
-func StyleError() (color.Attribute, color.Attribute) {
-	return color.FgRed, color.Bold
+func StyleError() (color.Attribute, color.Attribute, color.Attribute) {
+	return color.FgRed, color.Bold, color.BgBlack
 }
 
 // StyleWarning returns color.Attribute(s) for warning messages
-func StyleWarning() (color.Attribute, color.Attribute) {
-	return color.FgYellow, color.Bold
+func StyleWarning() (color.Attribute, color.Attribute, color.Attribute) {
+	return color.FgYellow, color.Bold, color.BgBlack
 }
 
 // StyleSuccess returns color.Attribute(s) for success messages
-func StyleSuccess() (color.Attribute, color.Attribute) {
-	return color.FgGreen, color.Bold
+func StyleSuccess() (color.Attribute, color.Attribute, color.Attribute) {
+	return color.FgGreen, color.Bold, color.BgBlack
 }
