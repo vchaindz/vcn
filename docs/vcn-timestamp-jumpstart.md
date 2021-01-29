@@ -1,8 +1,6 @@
 # CodeNotary Timestamp Service https://timestamp.codenotary.com jumpstart
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/vchain-us/vcn/master/docs/timestamp.svg?sanitize=true" width="1024" alt="CodeNotary Timestamp Jumpstart">
-</p>
+[![asciicast](https://asciinema.org/a/387623.png)](https://asciinema.org/a/387623)
 
 ## Table of contents
 
@@ -61,6 +59,9 @@ vcn n <file|dir://directory|docker://dockerimage|git://gitdirectory>
    ```bash
    vcn a <file|dir://directory|docker://dockerimage|git://gitdirectory>
    ```
+
+**Tip**: the timestamping and verification calculates a SHA256, so larger files might take a bit longer depending on your system.
+
 
 For detailed **command line usage**, just run `vcn help`.
 
