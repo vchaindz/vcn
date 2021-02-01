@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.9.3"></a>
+## [v0.9.3] - 2021-01-29
+### Changes
+- adjust colors settings with fgreen
+- adjust colors settings
+- handle blue screen colors
+- minor changes on releasing guide, makefile and minor dependencies updates
+
+### Features
+- add manifest management for dir artifacts
+
+
 <a name="v0.9.2"></a>
 ## [v0.9.2] - 2021-01-28
 ### Bug Fixes
@@ -671,7 +683,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.2...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.3...HEAD
+[v0.9.3]: https://github.com/vchain-us/vcn/compare/v0.9.2...v0.9.3
 [v0.9.2]: https://github.com/vchain-us/vcn/compare/v0.9.1...v0.9.2
 [v0.9.1]: https://github.com/vchain-us/vcn/compare/v0.9.0...v0.9.1
 [v0.9.0]: https://github.com/vchain-us/vcn/compare/v0.8.3...v0.9.0
