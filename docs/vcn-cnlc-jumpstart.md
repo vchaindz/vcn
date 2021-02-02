@@ -183,12 +183,6 @@ vcn notarize git://<path_to_git_repo>
 vcn notarize --hash <hash>
 ```
 
-By default all assets are notarized private, so not much information is disclosed about the asset. If you want to make that public and therefore, more trusted, please use the `--public` flag.
-
-```
-vcn notarize --public <asset>
-```
-
 Change the asset's status:
 
 ```
