@@ -225,7 +225,7 @@ func (c *ConfigRoot) RemoveUserByMail(email string) bool {
 
 	for i, u := range c.Users {
 		if u.Email == email {
-			c.Users = append(c.Users[i:], c.Users[i+1:]...)
+			c.Users = append(c.Users[:i], c.Users[i+1:]...)
 			return true
 		}
 	}
@@ -240,7 +240,7 @@ func (c *ConfigRoot) RemoveUserByLcApiKey(lcApiKey string) bool {
 
 	for i, u := range c.Users {
 		if u.LcApiKey == lcApiKey {
-			c.Users = append(c.Users[i:], c.Users[i+1:]...)
+			c.Users = append(c.Users[:i], c.Users[i+1:]...)
 			return true
 		}
 	}
