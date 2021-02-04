@@ -66,7 +66,7 @@ func Execute() {
 	}
 	// disable version check on lc context
 	var versionCheck = false
-	if store.Config().CurrentContext.Email != "" {
+	if store.Config() != nil && store.Config().CurrentContext.Email != "" {
 		versionCheck = true
 	}
 	preExitHook(rootCmd, versionCheck)
