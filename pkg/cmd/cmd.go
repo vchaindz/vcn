@@ -57,7 +57,6 @@ func Root() *cobra.Command {
 func Execute() {
 	var err error
 	var cmd *cobra.Command
-	var lcContext = false
 	if cmd, err = rootCmd.ExecuteC(); err != nil {
 		output, _ := rootCmd.PersistentFlags().GetString("output")
 		if output != "" && !cmd.SilenceErrors {
@@ -65,10 +64,12 @@ func Execute() {
 		}
 		defer os.Exit(1)
 	}
-	if lcHost, err := cmd.Flags().GetString("lc-host"); err == nil && lcHost != "" {
-		lcContext = true
+	// disable version check on lc context
+	var versionCheck = false
+	if store.Config().CurrentContext.Email != "" {
+		versionCheck = true
 	}
-	preExitHook(rootCmd, lcContext)
+	preExitHook(rootCmd, versionCheck)
 }
 
 func init() {
@@ -127,8 +128,8 @@ func init() {
 
 }
 
-func preExitHook(cmd *cobra.Command, lcContext bool) {
-	if output, _ := rootCmd.PersistentFlags().GetString("output"); output == "" && !lcContext {
+func preExitHook(cmd *cobra.Command, versionCheck bool) {
+	if output, _ := rootCmd.PersistentFlags().GetString("output"); output == "" && versionCheck {
 		cli.CheckVersion()
 	}
 
