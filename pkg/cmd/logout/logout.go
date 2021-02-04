@@ -45,7 +45,6 @@ func NewCommand() *cobra.Command {
 
 // Execute logout action for both Ledger Compliance and CodeNotary.io
 func Execute() error {
-	store.Config().RemoveUserByLcApiKey(store.Config().CurrentContext.LcApiKey)
 	store.Config().ClearContext()
 	if err := store.SaveConfig(); err != nil {
 		return err

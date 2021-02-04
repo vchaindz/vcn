@@ -203,17 +203,10 @@ func (c *ConfigRoot) NewLcUser(lcApiKey, host, port, lcCert string, lcSkipTlsVer
 		return nil
 	}
 
-	for _, u := range c.Users {
-		if u.LcApiKey == lcApiKey {
-			return u
-		}
-	}
-
 	u = &User{
 		LcApiKey: lcApiKey,
 	}
 
-	c.Users = append(c.Users, u)
 	return u
 }
 
@@ -225,21 +218,6 @@ func (c *ConfigRoot) RemoveUserByMail(email string) bool {
 
 	for i, u := range c.Users {
 		if u.Email == email {
-			c.Users = append(c.Users[:i], c.Users[i+1:]...)
-			return true
-		}
-	}
-	return false
-}
-
-// RemoveUser removes an user from config matching the given lc api key, if not found return false
-func (c *ConfigRoot) RemoveUserByLcApiKey(lcApiKey string) bool {
-	if c == nil {
-		return false
-	}
-
-	for i, u := range c.Users {
-		if u.LcApiKey == lcApiKey {
 			c.Users = append(c.Users[:i], c.Users[i+1:]...)
 			return true
 		}
