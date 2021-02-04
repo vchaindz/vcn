@@ -113,11 +113,18 @@ func LoadConfig() error {
 		c.SchemaVersion = 3
 	}
 
-	for i, u := range c.Users {
+	ul := 0
+	akr := false
+	for _, u := range c.Users {
 		if u.LcApiKey != "" {
-			fmt.Println("Upgrading configuration file: api key cleaned")
-			c.Users = append(c.Users[:i], c.Users[i+1:]...)
+			c.Users = append(c.Users[:ul], c.Users[ul+1:]...)
+			ul--
+			akr = true
 		}
+		ul++
+	}
+	if akr {
+		fmt.Println("Configuration file cleaned.")
 	}
 	return SaveConfig()
 }
