@@ -55,14 +55,20 @@ func Root() *cobra.Command {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if cmd, err := rootCmd.ExecuteC(); err != nil {
+	var err error
+	var cmd *cobra.Command
+	var lcContext = false
+	if cmd, err = rootCmd.ExecuteC(); err != nil {
 		output, _ := rootCmd.PersistentFlags().GetString("output")
 		if output != "" && !cmd.SilenceErrors {
 			cli.PrintError(output, types.NewError(err))
 		}
 		defer os.Exit(1)
 	}
-	preExitHook(rootCmd)
+	if lcHost, err := cmd.Flags().GetString("lc-host"); err == nil && lcHost != "" {
+		lcContext = true
+	}
+	preExitHook(rootCmd, lcContext)
 }
 
 func init() {
@@ -121,8 +127,8 @@ func init() {
 
 }
 
-func preExitHook(cmd *cobra.Command) {
-	if output, _ := rootCmd.PersistentFlags().GetString("output"); output == "" {
+func preExitHook(cmd *cobra.Command, lcContext bool) {
+	if output, _ := rootCmd.PersistentFlags().GetString("output"); output == "" && !lcContext {
 		cli.CheckVersion()
 	}
 
