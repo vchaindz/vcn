@@ -111,10 +111,15 @@ func LoadConfig() error {
 		c.Users = []*User{}
 		c.CurrentContext.Email = oldFormat.CurrentContext
 		c.SchemaVersion = 3
-		return SaveConfig()
 	}
 
-	return nil
+	for i, u := range c.Users {
+		if u.LcApiKey != "" {
+			fmt.Println("Upgrading configuration file: api key cleaned")
+			c.Users = append(c.Users[:i], c.Users[i+1:]...)
+		}
+	}
+	return SaveConfig()
 }
 
 // SaveConfig stores the current configuration to file
