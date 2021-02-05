@@ -394,6 +394,8 @@ github.com/vchain-us/ledger-compliance-go v0.0.0-20210121113027-7750b3020f93 h1:
 github.com/vchain-us/ledger-compliance-go v0.0.0-20210121113027-7750b3020f93/go.mod h1:l4VK1vx2zZRs5roicYXrhDnz3GcKO1M25ajQ7ybwaZ8=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20210128183638-a758cffb2895 h1:x3Ezcr78y4JH/hTqrmHURjHt1FDPS5scUiJ2X6WgG9M=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20210128183638-a758cffb2895/go.mod h1:itEtx4x1SBJGIsn6aOVAstQDXnV0StFIfQoXGn/utws=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20210205093417-cf7bb714861e h1:aq7hH7ufSxn1nyz4BrSj+FvSRb0D5Dd8aIgIE0Cs4GM=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20210205093417-cf7bb714861e/go.mod h1:GYWDYf01ITEK9TMrNIPeIHTsQ7MjmqetZfozti93AMM=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
