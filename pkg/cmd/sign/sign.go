@@ -231,14 +231,36 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 		}
 	}
 
+	var artifacts []*api.Artifact
+
 	if lcUser != nil {
-		artifacts, err := extractor.Extract(args[0], extractorOptions...)
-		if err != nil {
-			return err
-		}
 		err = lcUser.Client.Connect()
 		if err != nil {
 			return err
+		}
+		if hash != "" {
+			hash = strings.ToLower(hash)
+			// Load existing artifact, if any, otherwise use an empty artifact
+			if ar, _, err := lcUser.LoadArtifact(hash, "", 0); err == nil && ar != nil {
+				artifacts = []*api.Artifact{{
+					Kind:        ar.Kind,
+					Name:        ar.Name,
+					Hash:        ar.Hash,
+					Size:        ar.Size,
+					ContentType: ar.ContentType,
+					Metadata:    ar.Metadata,
+				}}
+			} else {
+				if name == "" {
+					return fmt.Errorf("please set an asset name, by using --name")
+				}
+				artifacts = []*api.Artifact{{Hash: hash}}
+			}
+		} else {
+			artifacts, err = extractor.Extract(args[0], extractorOptions...)
+			if err != nil {
+				return err
+			}
 		}
 		return LcSign(lcUser, artifacts, state, output, name, metadata)
 	}
@@ -253,7 +275,7 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 
 	// Make the artifact to be signed
-	var artifacts []*api.Artifact
+
 	if hash != "" {
 		if alert != nil {
 			return fmt.Errorf("cannot use --create-alert with --hash")
