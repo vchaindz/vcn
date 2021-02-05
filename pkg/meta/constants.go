@@ -69,6 +69,8 @@ const (
 	VcnLcApiKey                  string = "VCN_LC_API_KEY"
 )
 
+const VcnExitCode string = "override default exit codes in case of success"
+
 // Ledger compliance
 const VcnLCPrefix string = "vcn"
 const VcnLCPluginTypeHeaderName string = "lc-plugin-type"
@@ -125,6 +127,9 @@ func (s Status) String() string {
 		return ""
 	}
 }
+func (s Status) Int() int {
+	return int(s)
+}
 
 // StatusNameStyled returns the colorized name of the given status as string
 func StatusNameStyled(status Status) string {
@@ -155,3 +160,5 @@ func VisibilityForFlag(public bool) Visibility {
 
 const DateShortForm = "2006/1/2-15:04:05"
 const IndexDateRangePrefix = "_INDEX.ITEM.INSERTION-DATE."
+
+const VcnExitCodePlaceholder = 99999

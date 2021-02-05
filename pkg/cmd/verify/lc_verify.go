@@ -9,6 +9,7 @@ import (
 	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"google.golang.org/grpc/status"
+	"strconv"
 )
 
 func lcVerify(cmd *cobra.Command, a *api.Artifact, user *api.LcUser, signerID string, output string) (err error) {
@@ -30,6 +31,16 @@ func lcVerify(cmd *cobra.Command, a *api.Artifact, user *api.LcUser, signerID st
 		color.Unset()
 		fmt.Println()
 		ar.Status = meta.StatusUnknown
+	}
+
+	exitCode, err := cmd.Flags().GetInt("exit-code")
+	if err != nil {
+		return err
+	}
+	// if exitCode == VcnExitCodePlaceholder user didn't specify to use a custom exit code in case of success.
+	// In that case we return the ar.Status as exit code.
+	if exitCode == meta.VcnExitCodePlaceholder {
+		cmd.Parent().Flag("exit-code").Value.Set(strconv.Itoa(ar.Status.Int()))
 	}
 
 	cli.PrintLc(output, types.NewLcResult(ar, verified))

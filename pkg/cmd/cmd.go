@@ -57,8 +57,9 @@ func Root() *cobra.Command {
 func Execute() {
 	var err error
 	var cmd *cobra.Command
+	var output string
 	if cmd, err = rootCmd.ExecuteC(); err != nil {
-		output, _ := rootCmd.PersistentFlags().GetString("output")
+		output, _ = rootCmd.PersistentFlags().GetString("output")
 		if output != "" && !cmd.SilenceErrors {
 			cli.PrintError(output, types.NewError(err))
 		}
@@ -70,6 +71,14 @@ func Execute() {
 		versionCheck = true
 	}
 	preExitHook(rootCmd, versionCheck)
+
+	exitCode, err := cmd.Flags().GetInt("exit-code")
+	if err != nil {
+		cli.PrintError(output, types.NewError(err))
+	}
+	if exitCode != meta.VcnExitCodePlaceholder {
+		os.Exit(exitCode)
+	}
 }
 
 func init() {
@@ -97,6 +106,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolP("silent", "S", false, "silent mode, don't show progress spinner, but it will still output the result")
 	rootCmd.PersistentFlags().BoolP("quit", "q", true, "if false, ask for confirmation before quitting")
 	rootCmd.PersistentFlags().MarkHidden("quit")
+	rootCmd.PersistentFlags().Int("exit-code", meta.VcnExitCodePlaceholder, meta.VcnExitCode)
 
 	// Root command flags
 	rootCmd.Flags().BoolP("version", "v", false, "version for vcn") // needed for -v shorthand
