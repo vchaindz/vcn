@@ -35,19 +35,23 @@ func runInfo(cmd *cobra.Command, args []string) error {
 	cmd.SilenceUsage = true
 
 	context := store.Config().CurrentContext
-	if context.Email == "" && context.LcHost == "" {
-		fmt.Println("\nNo user logged in.")
-		return nil
-	}
 
-	if context.LcHost != "" {
-
-		fmt.Printf(`
+	fmt.Printf(`
 Version:		%s
 Git Rev:		%s
 UserAgent:		%s
 Config file:		%s
 Log level:		%s
+`,
+		meta.Version(),
+		meta.GitRevision(),
+		meta.UserAgent(),
+		store.ConfigFile(),
+		logs.LOG.GetLevel().String(),
+	)
+
+	if context.LcHost != "" {
+		fmt.Printf(`
 Host:			%s
 Port:			%s
 No-tls:			%t
@@ -55,11 +59,6 @@ Skip-verify-tls:	%t
 Certificate:	%s
 Current signerID:	%s
 `,
-			meta.Version(),
-			meta.GitRevision(),
-			meta.UserAgent(),
-			store.ConfigFile(),
-			logs.LOG.GetLevel().String(),
 			context.LcHost,
 			context.LcPort,
 			context.LcNoTls,
@@ -67,45 +66,38 @@ Current signerID:	%s
 			context.LcCert,
 			api.GetSignerIDByApiKey(),
 		)
-		return nil
+
 	}
 
-	fmt.Printf(`
-Version:        %s
-Git Rev:        %s
-UserAgent:      %s
-Config file:    %s
+	if context.Email != "" {
+		fmt.Printf(`
 Stage:          %s
 Log level:      %s
 API endpoint:   %s
 MainNet:        %s
 Contract Addr.: %s
 `,
-		meta.Version(),
-		meta.GitRevision(),
-		meta.UserAgent(),
-		store.ConfigFile(),
-		meta.StageEnvironment().String(),
-		logs.LOG.GetLevel().String(),
-		meta.APIEndpoint(""),
-		meta.MainNet(),
-		meta.AssetsRelayContractAddress(),
-	)
-
-	u := api.NewUser(context.Email)
-	fmt.Printf("\nUser:		%s\n", u.Email())
-	hasAuth, err := u.IsAuthenticated()
-	if err != nil {
-		return err
+			meta.StageEnvironment().String(),
+			logs.LOG.GetLevel().String(),
+			meta.APIEndpoint(""),
+			meta.MainNet(),
+			meta.AssetsRelayContractAddress(),
+		)
+		u := api.NewUser(context.Email)
+		fmt.Printf("\nCodeNotary.io user:		%s\n", u.Email())
+		hasAuth, err := u.IsAuthenticated()
+		if err != nil {
+			return err
+		}
+		if !hasAuth {
+			fmt.Println("\nNo CodeNotary.io user authenticated (token expired).")
+			return nil
+		}
+		id, err := u.SignerID()
+		if err != nil {
+			return err
+		}
+		fmt.Printf("SignerID:	%s\n", id)
 	}
-	if !hasAuth {
-		fmt.Println("\nUser not authenticated (token expired).")
-		return nil
-	}
-	id, err := u.SignerID()
-	if err != nil {
-		return err
-	}
-	fmt.Printf("SignerID:	%s\n", id)
 	return nil
 }
