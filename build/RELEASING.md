@@ -114,8 +114,8 @@ docker run --rm -it codenotary/vcn:vX.Y.Z-docker info
 
 Sign:
 ```
-vcn n -p codenotary/vcn:vX.Y.Z
-vcn n -p codenotary/vcn:vX.Y.Z-docker
+vcn n -p docker://codenotary/vcn:X.Y.Z
+vcn n -p docker://codenotary/vcn:X.Y.Z-docker
 ```
 
 ## 6. Miscellaneous
