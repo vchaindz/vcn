@@ -7,11 +7,11 @@
  */
 package errors
 
-const AccountNotSynced = `account not yet synced 
+const AccountNotSynced = `account not yet synced
 
-We are finalizing your account configuration. We will complete the 
+We are finalizing your account configuration. We will complete the
 configuration shortly and we will update you as soon as this is done.
-We are sorry for the inconvenience and would like to thank you for 
+We are sorry for the inconvenience and would like to thank you for
 your patience.
 It only takes few seconds. Please try again in 1 minute.`
 
@@ -25,7 +25,7 @@ If you did not receive the email, please go to %s and click on the link "Resend 
 const NoRemainingSignOps = `notarization quota exceeded
 
 Unfortunately, you have used all your notarizations for this month.
-If you would like to increase the number of monthly notarizations, 
+If you would like to increase the number of monthly notarizations,
 please email us at support@codenotary.io with your request.`
 
 const TrialExpired = `your trial period has been expired
@@ -51,3 +51,5 @@ const BlockchainContractErr = `cannot instantiate contract
 Please try again later. If the problem persists contact our support.`
 
 const SignFailed = `method <sign> failed`
+
+const NoLcApiKeyEnv = `no api key found on environment. Please set VCN_LC_API_KEY env var`

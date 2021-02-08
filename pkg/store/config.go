@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
@@ -25,7 +26,6 @@ type User struct {
 	Email    string `json:"email,omitempty"`
 	Token    string `json:"token,omitempty"`
 	KeyStore string `json:"keystore,omitempty"`
-	LcApiKey string `json:"lcApiKey,omitempty"`
 	LcCert   string `json:"lcCert,omitempty"`
 }
 
@@ -38,7 +38,6 @@ type ConfigRoot struct {
 
 type CurrentContext struct {
 	Email           string `json:"email,omitempty"`
-	LcApiKey        string `json:"lcApiKey,omitempty"`
 	LcHost          string `json:"LcHost,omitempty"`
 	LcPort          string `json:"LcPort,omitempty"`
 	LcCert          string `json:"LcCert,omitempty"`
@@ -48,7 +47,6 @@ type CurrentContext struct {
 
 func (cc *CurrentContext) Clear() {
 	cc.Email = ""
-	cc.LcApiKey = ""
 	cc.LcHost = ""
 	cc.LcPort = ""
 	cc.LcCert = ""
@@ -83,6 +81,8 @@ func LoadConfig() error {
 	// Setup config file
 	cfgFile := setupConfigFile()
 
+	SetDir(filepath.Dir(cfgFile))
+
 	// Ensure working dir
 	if err := ensureDir(dir); err != nil {
 		return err
@@ -113,19 +113,6 @@ func LoadConfig() error {
 		c.SchemaVersion = 3
 	}
 
-	ul := 0
-	akr := false
-	for _, u := range c.Users {
-		if u.LcApiKey != "" {
-			c.Users = append(c.Users[:ul], c.Users[ul+1:]...)
-			ul--
-			akr = true
-		}
-		ul++
-	}
-	if akr {
-		fmt.Println("Configuration file cleaned.")
-	}
 	return SaveConfig()
 }
 
@@ -161,7 +148,6 @@ func (c *ConfigRoot) UserByMail(email string) *User {
 
 	for _, u := range c.Users {
 		if u.Email == email {
-			u.LcApiKey = ""
 			return u
 		}
 	}
@@ -176,48 +162,15 @@ func (c *ConfigRoot) UserByMail(email string) *User {
 
 // User returns an User from the global config matching the given email.
 // User returns nil when an empty email is given or c is nil.
-func (c *ConfigRoot) UserByLcApiKey(lcApiKey string) (u *User) {
+func (c *ConfigRoot) NewLcUser(host, port, lcCert string, lcSkipTlsVerify, lcNoTls bool) (u *CurrentContext) {
 	defer func() {
 		cfg.CurrentContext.Clear()
-		cfg.CurrentContext.LcApiKey = lcApiKey
-	}()
-	if c == nil || lcApiKey == "" {
-		return nil
-	}
-
-	for _, u := range c.Users {
-		if u.LcApiKey == lcApiKey {
-			return u
-		}
-	}
-
-	u = &User{
-		LcApiKey: lcApiKey,
-	}
-
-	c.Users = append(c.Users, u)
-	return u
-}
-
-// User returns an User from the global config matching the given email.
-// User returns nil when an empty email is given or c is nil.
-func (c *ConfigRoot) NewLcUser(lcApiKey, host, port, lcCert string, lcSkipTlsVerify, lcNoTls bool) (u *User) {
-	defer func() {
-		cfg.CurrentContext.Clear()
-		cfg.CurrentContext.LcApiKey = lcApiKey
 		cfg.CurrentContext.LcHost = host
 		cfg.CurrentContext.LcPort = port
 		cfg.CurrentContext.LcCert = lcCert
 		cfg.CurrentContext.LcSkipTlsVerify = lcSkipTlsVerify
 		cfg.CurrentContext.LcNoTls = lcNoTls
 	}()
-	if c == nil || lcApiKey == "" {
-		return nil
-	}
-
-	u = &User{
-		LcApiKey: lcApiKey,
-	}
 
 	return u
 }

@@ -23,8 +23,8 @@ import (
 	"time"
 )
 
-func NewLcClientByContext(context store.CurrentContext) (*sdk.LcClient, error) {
-	return NewLcClient(context.LcApiKey, context.LcHost, context.LcPort, context.LcCert, context.LcSkipTlsVerify, context.LcNoTls)
+func NewLcClientByContext(context store.CurrentContext, lcApiKey string) (*sdk.LcClient, error) {
+	return NewLcClient(lcApiKey, context.LcHost, context.LcPort, context.LcCert, context.LcSkipTlsVerify, context.LcNoTls)
 }
 
 func NewLcClient(lcApiKey, host, port, lcCertPath string, skipTlsVerify, noTls bool) (*sdk.LcClient, error) {

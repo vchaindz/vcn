@@ -11,6 +11,7 @@ package sign
 import (
 	"fmt"
 	"github.com/vchain-us/vcn/pkg/extractor/wildcard"
+	"os"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/extractor/dir"
@@ -206,7 +207,8 @@ func runSignWithState(cmd *cobra.Command, args []string, state meta.Status) erro
 	}
 	//check if an lcUser is present inside the context
 	var lcUser *api.LcUser
-	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext, os.Getenv(meta.VcnLcApiKey))
 	if err != nil {
 		return err
 	}

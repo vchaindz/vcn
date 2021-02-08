@@ -9,24 +9,28 @@
 package api
 
 import (
+	"fmt"
+	"github.com/vchain-us/vcn/internal/errors"
 	"github.com/vchain-us/vcn/pkg/store"
 )
 
 // GetUserFromContext returns a new the correct user based on the context
-func GetUserFromContext(context store.CurrentContext) (interface{}, error) {
+func GetUserFromContext(context store.CurrentContext, lcApiKey string) (interface{}, error) {
+	if lcApiKey == "" {
+		return nil, fmt.Errorf(errors.NoLcApiKeyEnv)
+	}
 	if context.Email != "" {
 		return &User{
 			cfg: store.Config().UserByMail(context.Email),
 		}, nil
 	}
-	if context.LcApiKey != "" {
-		client, err := NewLcClientByContext(context)
+	if context.LcHost != "" {
+		client, err := NewLcClientByContext(context, lcApiKey)
 		if err != nil {
 			return nil, err
 		}
 		return &LcUser{
 			Client: client,
-			cfg:    store.Config().UserByLcApiKey(context.LcApiKey),
 		}, nil
 	}
 	return nil, nil

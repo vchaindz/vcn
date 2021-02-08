@@ -10,8 +10,6 @@ package api
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	immuschema "github.com/codenotary/immudb/pkg/api/schema"
@@ -111,11 +109,7 @@ func (u LcUser) createArtifact(artifact Artifact, status meta.Status) (bool, uin
 	aR := artifact.toLcArtifact()
 	aR.Status = status
 
-	hasher := sha256.New()
-	hasher.Write([]byte(u.LcApiKey()))
-	signerId := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
-
-	aR.Signer = signerId
+	aR.Signer = GetSignerIDByApiKey()
 
 	arJson, err := json.Marshal(aR)
 
@@ -143,9 +137,7 @@ func (u *LcUser) LoadArtifact(hash, signerID string, tx uint64) (lc *LcArtifact,
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
 	if signerID == "" {
-		hasher := sha256.New()
-		hasher.Write([]byte(u.LcApiKey()))
-		signerID = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+		signerID = GetSignerIDByApiKey()
 	}
 
 	key := AppendPrefix(meta.VcnLCPrefix, []byte(signerID))

@@ -10,8 +10,6 @@ package inspect
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 	immuschema "github.com/codenotary/immudb/pkg/api/schema"
 	"github.com/vchain-us/ledger-compliance-go/schema"
@@ -27,9 +25,7 @@ import (
 )
 
 func lcInspect(hash string, signerID string, u *api.LcUser, first, last uint64, start, end string, output string) (err error) {
-	hasher := sha256.New()
-	hasher.Write([]byte(u.LcApiKey()))
-	contextSignerID := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	var contextSignerID string
 
 	if signerID == "" {
 		if output == "" {

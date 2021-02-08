@@ -11,6 +11,7 @@ package cli
 import (
 	"bufio"
 	"fmt"
+	"github.com/vchain-us/vcn/internal/errors"
 	"os"
 	"strings"
 
@@ -168,23 +169,10 @@ func ProvideLcApiKey() (ak string, err error) {
 		logs.LOG.Trace("Lc api key provided (environment)")
 		return ak, nil
 	}
-	fmt.Print("Lc api key: ")
-	w := bufio.NewReader(os.Stdin)
-	ak, err = w.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	ak = strings.ReplaceAll(strings.TrimSpace(ak), " ", "")
-	if ak == "" {
-		logs.LOG.WithFields(logrus.Fields{
-			"lc-api-key": ak,
-		}).Trace("empty lc api key provided (interactive)")
-		return "", fmt.Errorf("empty api key provided")
-	}
-	if ak != "" {
-		logs.LOG.WithFields(logrus.Fields{
-			"lc-api-key": ak,
-		}).Trace("Lc api key provided (interactive)")
-	}
-	return ak, nil
+
+	logs.LOG.WithFields(logrus.Fields{
+		"lc-api-key": ak,
+	}).Trace("no lc api key provided (interactive)")
+	return "", fmt.Errorf(errors.NoLcApiKeyEnv)
+
 }

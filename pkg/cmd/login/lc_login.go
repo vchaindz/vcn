@@ -15,6 +15,7 @@ func ExecuteLC(host, port, lcCert string, skipTlsVerify, lcNoTls bool) error {
 	if err != nil {
 		return err
 	}
+
 	if apiKey != "" {
 		u, err := api.NewLcUser(apiKey, host, port, lcCert, skipTlsVerify, lcNoTls)
 		if err != nil {

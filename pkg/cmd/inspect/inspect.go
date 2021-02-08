@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/vchain-us/vcn/internal/assert"
 	"github.com/vchain-us/vcn/pkg/meta"
+	"os"
 	"strings"
 
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
@@ -45,7 +46,7 @@ func NewCommand() *cobra.Command {
 			end, _ := cmd.Flags().GetString("end")
 
 			if (first > 0 || last > 0 || start != "" || end != "") &&
-				store.Config().CurrentContext.LcApiKey == "" {
+				store.Config().CurrentContext.LcHost == "" {
 				return fmt.Errorf("time range filter is available only in Ledger Compliance environment")
 			}
 
@@ -145,7 +146,7 @@ func runInspect(cmd *cobra.Command, args []string) error {
 	}
 	//check if an lcUser is present inside the context
 	var lcUser *api.LcUser
-	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext, os.Getenv(meta.VcnLcApiKey))
 	if err != nil {
 		return err
 	}

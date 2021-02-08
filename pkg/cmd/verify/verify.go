@@ -10,6 +10,7 @@ package verify
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 
@@ -169,7 +170,7 @@ func runVerify(cmd *cobra.Command, args []string) error {
 	}
 	//check if an lcUser is present inside the context
 	var lcUser *api.LcUser
-	uif, err := api.GetUserFromContext(store.Config().CurrentContext)
+	uif, err := api.GetUserFromContext(store.Config().CurrentContext, os.Getenv(meta.VcnLcApiKey))
 	if err != nil {
 		return err
 	}
