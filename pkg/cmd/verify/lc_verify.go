@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vchain-us/vcn/pkg/api"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/cli"
 	"github.com/vchain-us/vcn/pkg/cmd/internal/types"
@@ -37,10 +38,10 @@ func lcVerify(cmd *cobra.Command, a *api.Artifact, user *api.LcUser, signerID st
 	if err != nil {
 		return err
 	}
-	// if exitCode == VcnExitCodePlaceholder user didn't specify to use a custom exit code in case of success.
+	// if exitCode == VcnDefaultExitCode user didn't specify to use a custom exit code in case of success.
 	// In that case we return the ar.Status as exit code.
-	if exitCode == meta.VcnExitCodePlaceholder {
-		cmd.Parent().Flag("exit-code").Value.Set(strconv.Itoa(ar.Status.Int()))
+	if exitCode == meta.VcnDefaultExitCode {
+		viper.Set("exit-code", strconv.Itoa(ar.Status.Int()))
 	}
 
 	cli.PrintLc(output, types.NewLcResult(ar, verified))

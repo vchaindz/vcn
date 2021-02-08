@@ -161,4 +161,4 @@ func VisibilityForFlag(public bool) Visibility {
 const DateShortForm = "2006/1/2-15:04:05"
 const IndexDateRangePrefix = "_INDEX.ITEM.INSERTION-DATE."
 
-const VcnExitCodePlaceholder = 99999
+const VcnDefaultExitCode = 0
