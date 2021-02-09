@@ -23,6 +23,7 @@ func lcVerify(cmd *cobra.Command, a *api.Artifact, user *api.LcUser, signerID st
 	if err != nil {
 		if status.Convert(err).Message() == "key not found" {
 			err = fmt.Errorf("%s was not notarized", a.Hash)
+			viper.Set("exit-code", strconv.Itoa(meta.StatusUnknown.Int()))
 		}
 		return cli.PrintWarning(output, err.Error())
 	}
@@ -31,6 +32,7 @@ func lcVerify(cmd *cobra.Command, a *api.Artifact, user *api.LcUser, signerID st
 		fmt.Println("the ledger is compromised. Please contact the CodeNotary Ledger Compliance administrators")
 		color.Unset()
 		fmt.Println()
+		viper.Set("exit-code", strconv.Itoa(meta.StatusUnknown.Int()))
 		ar.Status = meta.StatusUnknown
 	}
 
