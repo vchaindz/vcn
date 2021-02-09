@@ -22,6 +22,30 @@ import (
 // NewCommand returns the cobra command for `vcn login`
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// set port for set up a connection to a CodeNotary Ledger Compliance server (default 443). If --lc-no-tls is provided default port will be 80
+			lcPort, err := cmd.Flags().GetString("lc-port")
+			if err != nil {
+				return err
+			}
+			noTls, err := cmd.Flags().GetBool("lc-no-tls")
+			if err != nil {
+				return err
+			}
+			if noTls && lcPort == "" {
+				err = cmd.Flags().Set("lc-port", "80")
+				if err != nil {
+					return err
+				}
+			}
+			if noTls == false && lcPort == "" {
+				err = cmd.Flags().Set("lc-port", "443")
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		},
 		Use:   "login",
 		Short: "Log in to codenotary.io or CodeNotary Ledger Compliance",
 		Long: `Log in to codenotary.io or CodeNotary Ledger Compliance.
@@ -84,7 +108,7 @@ in a non-interactive environment.
 		Args: cobra.MaximumNArgs(2),
 	}
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
-	cmd.Flags().String("lc-port", "443", meta.VcnLcPortFlagDesc)
+	cmd.Flags().String("lc-port", "", meta.VcnLcPortFlagDesc)
 	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
 	cmd.Flags().Bool("lc-skip-tls-verify", false, meta.VcnLcSkipTlsVerify)
 	cmd.Flags().Bool("lc-no-tls", false, meta.VcnLcNoTls)
