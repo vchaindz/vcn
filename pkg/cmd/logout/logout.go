@@ -31,7 +31,7 @@ func NewCommand() *cobra.Command {
 			if store.Config() == nil ||
 				(store.Config().CurrentContext.Email == "" &&
 					store.Config().CurrentContext.LcHost == "") {
-				fmt.Println("No logged user.")
+				fmt.Println("No logged-in user.")
 				return nil
 			}
 			if err := Execute(); err != nil {
