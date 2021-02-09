@@ -4,8 +4,40 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased]
 
 
+<a name="v0.9.4"></a>
+## [v0.9.4] - 2021-02-09
+### Bug Fixes
+- vcn docker notarization readme.md section
+- restore info when no user is logged
+- apikey is removed from userlist when logout
+- **pkg/cmd:** version check is enabled only for codenotary.io context
+- **pkg/cmd/sign:** fix cnlc hash signing
+- **pkg/store:** fix api keys clean on load config
+
+### Changes
+- improve logout message
+- no action on logout if there is no user logged
+- authenticate return 2 exit code if hash is not found
+- if --lc-no-tls is provided default port is 80
+- new no api key configured error message
+- renaming flag config in vcnpath and set default vcnpath in os.tmp folder
+- bump lc sdk
+- bump lc sdk
+- verify if config is present in context check
+- clean configuration file by removing api keys
+- user saving removed on lc login
+- disable version check in lc context
+
+### Code Refactoring
+- vcn lc mode uses as default env var for apikey
+
+### Features
+- add vcn exit codes
+- **pkg:** move exit-code flag to authenticate command
+
+
 <a name="v0.9.3"></a>
-## [v0.9.3] - 2021-01-29
+## [v0.9.3] - 2021-02-01
 ### Changes
 - adjust colors settings with fgreen
 - adjust colors settings
@@ -683,7 +715,8 @@ this commit introduce the config file with multi-keys support, and a huge refact
 <a name="v.0.1-beta.2"></a>
 ## v.0.1-beta.2 - 2019-02-19
 
-[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/vchain-us/vcn/compare/v0.9.4...HEAD
+[v0.9.4]: https://github.com/vchain-us/vcn/compare/v0.9.3...v0.9.4
 [v0.9.3]: https://github.com/vchain-us/vcn/compare/v0.9.2...v0.9.3
 [v0.9.2]: https://github.com/vchain-us/vcn/compare/v0.9.1...v0.9.2
 [v0.9.1]: https://github.com/vchain-us/vcn/compare/v0.9.0...v0.9.1
