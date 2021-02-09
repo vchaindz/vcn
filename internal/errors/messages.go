@@ -52,4 +52,4 @@ Please try again later. If the problem persists contact our support.`
 
 const SignFailed = `method <sign> failed`
 
-const NoLcApiKeyEnv = `no api key found on environment. Please set VCN_LC_API_KEY env var`
+const NoLcApiKeyEnv = `no API key configured. Please set the environment variable VCN_LC_API_KEY=<API-KEY> before running vcn login --lc-host`
