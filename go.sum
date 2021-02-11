@@ -88,6 +88,8 @@ github.com/codenotary/immudb v0.9.1-0.20210116234611-354c138186a5 h1:49DOuBy1TIZ
 github.com/codenotary/immudb v0.9.1-0.20210116234611-354c138186a5/go.mod h1:jaycynQMhlxXjM6at6dtm6U1YLCbK1m6qdINwfxV++k=
 github.com/codenotary/immudb v0.9.1-0.20210128143006-bd66cd19ff12 h1:VY6ApcC8nJc7RM6DLTK0uYURaD4p44TI2JAH8O6MltU=
 github.com/codenotary/immudb v0.9.1-0.20210128143006-bd66cd19ff12/go.mod h1:jaycynQMhlxXjM6at6dtm6U1YLCbK1m6qdINwfxV++k=
+github.com/codenotary/immudb v0.9.2-0.20210210174910-dc27e4a6729f h1:y+icg2hAqu241WMckwGB81u1Oa/kdVlCb2Ni9CdvNbA=
+github.com/codenotary/immudb v0.9.2-0.20210210174910-dc27e4a6729f/go.mod h1:jaycynQMhlxXjM6at6dtm6U1YLCbK1m6qdINwfxV++k=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/etcd v3.3.13+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
@@ -423,6 +425,8 @@ github.com/vchain-us/ledger-compliance-go v0.0.0-20210205131055-d26b04a91907 h1:
 github.com/vchain-us/ledger-compliance-go v0.0.0-20210205131055-d26b04a91907/go.mod h1:GYWDYf01ITEK9TMrNIPeIHTsQ7MjmqetZfozti93AMM=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20210210180530-4c3cd3e153ed h1:bvY0Hnu/nWf+Mc96J/4EXa8mrs3dynwjJX4INkAfhwE=
 github.com/vchain-us/ledger-compliance-go v0.0.0-20210210180530-4c3cd3e153ed/go.mod h1:GYWDYf01ITEK9TMrNIPeIHTsQ7MjmqetZfozti93AMM=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20210211142051-20bd91359b7f h1:Z9b7/k0clk1Mz9jEVjSDoAUC4xUfaT7ck4iZBAFdeG0=
+github.com/vchain-us/ledger-compliance-go v0.0.0-20210211142051-20bd91359b7f/go.mod h1:0LWcaFXeInMiF30zq7RwMo1GAw/f7sFaUz2d73ADH2Y=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
