@@ -93,9 +93,9 @@ Assets are referenced by passed ARG with notarization only accepting
 	cmd.Flags().BoolP("recursive", "r", false, "if set, wildcard usage will walk inside subdirectories of provided path")
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "443", meta.VcnLcPortFlagDesc)
-	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
-	cmd.Flags().Bool("lc-skip-tls-verify", false, meta.VcnLcSkipTlsVerify)
-	cmd.Flags().Bool("lc-no-tls", false, meta.VcnLcNoTls)
+	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPathDesc)
+	cmd.Flags().Bool("lc-skip-tls-verify", false, meta.VcnLcSkipTlsVerifyDesc)
+	cmd.Flags().Bool("lc-no-tls", false, meta.VcnLcNoTlsDesc)
 	cmd.SetUsageTemplate(
 		strings.Replace(cmd.UsageTemplate(), "{{.UseLine}}", "{{.UseLine}} ARG", 1),
 	)

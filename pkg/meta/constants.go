@@ -67,6 +67,11 @@ const (
 	VcnOtp                       string = "VCN_OTP"
 	VcnOtpEmpty                  string = "VCN_OTP_EMPTY"
 	VcnLcApiKey                  string = "VCN_LC_API_KEY"
+	VcnLcHost                    string = "VCN_LC_HOST"
+	VcnLcPort                    string = "VCN_LC_PORT"
+	VcnLcCert                    string = "VCN_LC_CERT"
+	VcnLcNoTls                   string = "VCN_LC_NO_TLS"
+	VcnLcSkipTlsVerify           string = "VCN_LC_SKIP_TLS_VERIFY"
 )
 
 const VcnExitCode string = "override default exit codes in case of success"
@@ -78,9 +83,9 @@ const VcnLCPluginTypeHeaderValue string = "vcn"
 
 const VcnLcHostFlagDesc string = "if set with host, action will be route to a CodeNotary Ledger Compliance server"
 const VcnLcPortFlagDesc string = "set port for set up a connection to a CodeNotary Ledger Compliance server (default 443). If --lc-no-tls is provided default port will be 80"
-const VcnLcCertPath string = "local or absolute path to a certificate file needed to set up tls connection to a CodeNotary Ledger Compliance server"
-const VcnLcSkipTlsVerify string = "disables tls certificate verification when connecting to a CodeNotary Ledger Compliance server"
-const VcnLcNoTls string = "allow insecure connections when connecting to a CodeNotary Ledger Compliance server"
+const VcnLcCertPathDesc string = "local or absolute path to a certificate file needed to set up tls connection to a CodeNotary Ledger Compliance server"
+const VcnLcSkipTlsVerifyDesc string = "disables tls certificate verification when connecting to a CodeNotary Ledger Compliance server"
+const VcnLcNoTlsDesc string = "allow insecure connections when connecting to a CodeNotary Ledger Compliance server"
 
 // UserAgent returns the vcn's User-Agent string
 func UserAgent() string {

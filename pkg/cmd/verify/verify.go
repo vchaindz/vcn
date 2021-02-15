@@ -120,9 +120,9 @@ ARG must be one of:
 	cmd.Flags().Int("exit-code", meta.VcnDefaultExitCode, meta.VcnExitCode)
 	cmd.Flags().String("lc-host", "", meta.VcnLcHostFlagDesc)
 	cmd.Flags().String("lc-port", "443", meta.VcnLcPortFlagDesc)
-	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPath)
-	cmd.Flags().Bool("lc-skip-tls-verify", false, meta.VcnLcSkipTlsVerify)
-	cmd.Flags().Bool("lc-no-tls", false, meta.VcnLcNoTls)
+	cmd.Flags().String("lc-cert", "", meta.VcnLcCertPathDesc)
+	cmd.Flags().Bool("lc-skip-tls-verify", false, meta.VcnLcSkipTlsVerifyDesc)
+	cmd.Flags().Bool("lc-no-tls", false, meta.VcnLcNoTlsDesc)
 	cmd.Flags().MarkHidden("raw-diff")
 
 	return cmd
