@@ -16,15 +16,16 @@ import (
 
 // GetUserFromContext returns a new the correct user based on the context
 func GetUserFromContext(context store.CurrentContext, lcApiKey string) (interface{}, error) {
-	if lcApiKey == "" {
-		return nil, fmt.Errorf(errors.NoLcApiKeyEnv)
-	}
+
 	if context.Email != "" {
 		return &User{
 			cfg: store.Config().UserByMail(context.Email),
 		}, nil
 	}
 	if context.LcHost != "" {
+		if lcApiKey == "" {
+			return nil, fmt.Errorf(errors.NoLcApiKeyEnv)
+		}
 		client, err := NewLcClientByContext(context, lcApiKey)
 		if err != nil {
 			return nil, err
