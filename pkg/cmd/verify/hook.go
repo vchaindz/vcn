@@ -10,7 +10,6 @@ package verify
 
 import (
 	"fmt"
-	"google.golang.org/grpc/status"
 	"path/filepath"
 
 	"github.com/vchain-us/vcn/pkg/store"
@@ -103,10 +102,10 @@ func (h *hook) lcFinalizeWithoutAlert(user *api.LcUser, output string, txId uint
 				fmt.Printf("Diff is unavailable because '%s' is invalid.\n\n", bundle.ManifestFilename)
 				return nil // ignore bad manifest
 			}
-			oldArtifact, _, err := user.LoadArtifact(oldDigest.Encoded(), "", txId)
+			oldArtifact, err := user.LoadArtifact(oldDigest.Encoded(), "", txId)
 
 			if err != nil {
-				if status.Convert(err).Message() == "key not found" {
+				if err == api.ErrNotFound {
 					fmt.Printf("%s was not notarized", oldDigest.Encoded())
 				} else {
 					return err

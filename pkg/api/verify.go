@@ -240,7 +240,7 @@ func LcVerify(hash string, lcHost, lcPort, lcCert string, lcSkipTlsVerify, lcNoT
 		return nil, err
 	}
 
-	lcUser :=  &LcUser{Client: client}
+	lcUser := &LcUser{Client: client}
 
 	err = lcUser.Client.Connect()
 	if err != nil {
@@ -248,10 +248,7 @@ func LcVerify(hash string, lcHost, lcPort, lcCert string, lcSkipTlsVerify, lcNoT
 	}
 
 	if hash != "" {
-		a, _, err = lcUser.LoadArtifact(hash, "", 0)
-		if err != nil {
-			return nil, err
-		}
+		return lcUser.LoadArtifact(hash, "", 0)
 	}
 
 	return a, nil

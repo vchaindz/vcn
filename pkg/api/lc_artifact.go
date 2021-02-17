@@ -11,11 +11,11 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	immuschema "github.com/codenotary/immudb/pkg/api/schema"
 	"github.com/vchain-us/ledger-compliance-go/schema"
 	"github.com/vchain-us/vcn/pkg/meta"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"time"
 )
 
@@ -104,10 +104,10 @@ type LcArtifact struct {
 	Status meta.Status `json:"status" yaml:"status" vcn:"Status"`
 }
 
-func (u LcUser) createArtifact(artifact Artifact, status meta.Status) (bool, uint64, error) {
+func (u LcUser) createArtifact(artifact Artifact, st meta.Status) (uint64, error) {
 
 	aR := artifact.toLcArtifact()
-	aR.Status = status
+	aR.Status = st
 
 	aR.Signer = GetSignerIDByApiKey()
 
@@ -122,16 +122,20 @@ func (u LcUser) createArtifact(artifact Artifact, status meta.Status) (bool, uin
 	// @todo use SafeSet when possible. Immudb need to support verifiableExecAll method
 	txMeta, err := u.Client.Set(ctx, key, arJson)
 	if err != nil {
-		if err == errors.New("data is corrupted") {
-			return false, 0, nil
+		s, ok := status.FromError(err)
+		if ok && s.Message() == "data is corrupted" {
+			return 0, ErrNotVerified
 		}
-		return false, 0, err
+		if err.Error() == "data is corrupted" {
+			return 0, ErrNotVerified
+		}
+		return 0, err
 	}
-	return true, txMeta.Id, nil
+	return txMeta.Id, nil
 }
 
 // LoadArtifact fetches and returns an *lcArtifact for the given hash and current u, if any.
-func (u *LcUser) LoadArtifact(hash, signerID string, tx uint64) (lc *LcArtifact, verified bool, err error) {
+func (u *LcUser) LoadArtifact(hash, signerID string, tx uint64) (lc *LcArtifact, err error) {
 
 	md := metadata.Pairs(meta.VcnLCPluginTypeHeaderName, meta.VcnLCPluginTypeHeaderValue)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
@@ -145,18 +149,25 @@ func (u *LcUser) LoadArtifact(hash, signerID string, tx uint64) (lc *LcArtifact,
 
 	jsonAr, err := u.Client.VerifiedGetExtAt(ctx, key, tx)
 	if err != nil {
-		if err == errors.New("data is corrupted") {
-			return nil, false, nil
+		s, ok := status.FromError(err)
+		if ok && s.Message() == "data is corrupted" {
+			return nil, ErrNotVerified
 		}
-		return nil, false, err
+		if err.Error() == "data is corrupted" {
+			return nil, ErrNotVerified
+		}
+		if ok && s.Message() == "key not found" {
+			return nil, ErrNotFound
+		}
+		return nil, err
 	}
 
 	lcArtifact, err := VerifiableItemExtToLcArtifact(jsonAr)
 	if err != nil {
-		return nil, false, err
+		return nil, err
 	}
 
-	return lcArtifact, true, nil
+	return lcArtifact, nil
 }
 
 func AppendPrefix(prefix string, key []byte) []byte {
