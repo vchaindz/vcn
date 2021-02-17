@@ -172,3 +172,14 @@ func AppendSignerId(signerId string, k []byte) []byte {
 	copy(prefixed[len(k):], "."+signerId)
 	return prefixed
 }
+
+// Date returns a RFC3339 formatted string of verification time (v.Timestamp), if any, otherwise an empty string.
+func (lca *LcArtifact) Date() string {
+	if lca != nil {
+		ut := lca.Timestamp.UTC()
+		if ut.Unix() > 0 {
+			return ut.Format(time.RFC3339)
+		}
+	}
+	return ""
+}
