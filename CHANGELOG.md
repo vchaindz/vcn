@@ -5,16 +5,19 @@ All notable changes to this project will be documented in this file. This projec
 
 
 <a name="v0.9.4"></a>
-## [v0.9.4] - 2021-02-09
+## [v0.9.4] - 2021-02-17
 ### Bug Fixes
+- apikey is removed from userlist when logout
 - vcn docker notarization readme.md section
 - restore info when no user is logged
-- apikey is removed from userlist when logout
+- **pkg/api:** return vcn lc apikey error missing only in lc context
 - **pkg/cmd:** version check is enabled only for codenotary.io context
 - **pkg/cmd/sign:** fix cnlc hash signing
 - **pkg/store:** fix api keys clean on load config
 
 ### Changes
+- update immudb dependency to latest 0.9.2 version and ledger-compliance-go to latest master
+- bump sdk version, it fixes notarization on empty cnlc ledger
 - improve logout message
 - no action on logout if there is no user logged
 - authenticate return 2 exit code if hash is not found
