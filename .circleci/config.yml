@@ -1,34 +1,26 @@
-version: 2
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
 jobs:
-  test-go-1-12:
+  build:
+    working_directory: ~/repo
     docker:
-      - image: circleci/golang:1.12
-    environment:
-      GO111MODULE: "on"
+      - image: circleci/golang:1.15.8
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y bzr
-      - run: make TEST_FLAGS="-timeout 60s -race -v" test
-  test-go-1-13:
-    docker:
-      - image: circleci/golang:1.13
-    environment:
-      GO111MODULE: "on"
-    steps:
-      - checkout
-      - run: sudo apt-get install -y bzr
-      - run: make TEST_FLAGS="-timeout 60s -coverprofile cover.out -race -v" test
-  test-go-1-15:
-    docker:
-      - image: circleci/golang:1.15
-    steps:
-      - checkout
-      - run: sudo apt-get install -y bzr
-      - run: make TEST_FLAGS="-timeout 60s -coverprofile cover.out -race -v" test
-workflows:
-  version: 2
-  testing:
-    jobs:
-      - test-go-1-13
-      - test-go-1-15
+      - restore_cache:
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+      - run:
+          name: Install Dependencies
+          command: go mod download
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+      - run:
+          name: Run tests
+          command: |
+            mkdir -p /tmp/test-reports
+            gotestsum --junitfile /tmp/test-reports/unit-tests.xml
+      - store_test_results:
+          path: /tmp/test-reports
